@@ -1,0 +1,118 @@
+import type { Objective } from '../types';
+
+export const mockObjectives: Objective[] = [
+  {
+    id: 'obj-001',
+    fullName: 'Gen. Ahmed Al-Rashidi',
+    title: 'Comandante de Zona Norte',
+    organization: 'Fuerzas Armadas de la República de Maravia',
+    country: 'Maravia',
+    project: 'Operación Puente Diplomático',
+    priority: 'critical',
+    status: 'active',
+    photoUrl: '',
+    biography:
+      'Ahmed Al-Rashidi, de 58 años, es una figura central en la estructura militar de Maravia. Formado en la Academia Militar de Tashkur y con postgrado en la Escuela Superior del Ejército de Francia. Habla árabe, francés e inglés con fluidez. Ha ejercido cargos de mando durante más de 25 años, siendo reconocido por su pragmatismo y capacidad negociadora. Es un interlocutor clave para la estabilización de la región norte.',
+    personalInterests: ['Historia militar', 'Equitación', 'Ajedrez', 'Poesía clásica árabe'],
+    professionalInterests: ['Seguridad regional', 'Cooperación antiterrorista', 'Modernización militar', 'Diplomacia de defensa'],
+    analystNotes:
+      'Persona clave para el proyecto Puente Diplomático. Se muestra receptivo a colaboración bilateral pero exige reciprocidad. Especial atención a protocolo. Prefiere reuniones presenciales. Contacto establecido en noviembre 2025.',
+    createdAt: '2025-11-15T09:00:00Z',
+    updatedAt: '2026-06-10T14:22:00Z',
+  },
+  {
+    id: 'obj-002',
+    fullName: 'Dra. Fatima Benkhouya',
+    title: 'Ministra de Cooperación Internacional',
+    organization: 'Gobierno de Maravia',
+    country: 'Maravia',
+    project: 'Operación Puente Diplomático',
+    priority: 'high',
+    status: 'active',
+    photoUrl: '',
+    biography:
+      'Fatima Benkhouya, 52 años, es una diplomática de carrera con amplia experiencia internacional. Estudió Relaciones Internacionales en la Universidad de Ginebra y Derecho Internacional en La Sorbona. Ha ocupado puestos en embajadas de tres países europeos antes de regresar a Maravia como Ministra. Es conocida por su enfoque reformista y su defensa de los derechos de la mujer en la región.',
+    personalInterests: ['Literatura francesa', 'Música clásica', 'Cocina mediterránea', 'Senderismo'],
+    professionalInterests: ['Cooperación al desarrollo', 'Igualdad de género', 'Integración regional', 'Reforma institucional'],
+    analystNotes:
+      'Excelente puerta de entrada al gobierno civil. Mantiene buenas relaciones con España. Posible aliada para proyectos de cooperación al desarrollo. Prefiere comunicación por canales formales. Muy protocolaria en público pero accesible en privado.',
+    createdAt: '2025-12-01T11:00:00Z',
+    updatedAt: '2026-06-08T10:15:00Z',
+  },
+  {
+    id: 'obj-003',
+    fullName: 'Ibrahim Diouf',
+    title: 'Director de Seguridad Interior',
+    organization: 'Ministerio del Interior de Senara',
+    country: 'Senara',
+    project: 'Proyecto Atlas',
+    priority: 'high',
+    status: 'active',
+    photoUrl: '',
+    biography:
+      'Ibrahim Diouf, 47 años, asumió el cargo de Director de Seguridad Interior en 2024. Anteriormente trabajó como jefe de inteligencia del servicio de policía nacional de Senara. Formado en la Academia Nacional de Policía y con estudios en gestión de crisis en el Centro George C. Marshall de Alemania. Habla francés, wolof e inglés.',
+    personalInterests: ['Fútbol', 'Pesca deportiva', 'Cine', 'Historia de África Occidental'],
+    professionalInterests: ['Lucha antiterrorista', 'Control de fronteras', 'Ciberseguridad', 'Formación policial'],
+    analystNotes:
+      'Contacto reciente pero prometedor. Mostró interés en programas de formación bilateral. Mantiene relaciones con servicios de inteligencia franceses. Necesita cultivo progresivo. Próxima interacción planificada para julio 2026.',
+    createdAt: '2026-02-20T08:30:00Z',
+    updatedAt: '2026-06-05T16:40:00Z',
+  },
+  {
+    id: 'obj-004',
+    fullName: 'Col. Viktor Petrenko',
+    title: 'Agregado de Defensa',
+    organization: 'Embajada de Moldania en España',
+    country: 'Moldania',
+    project: 'Proyecto Escudo Oriental',
+    priority: 'medium',
+    status: 'monitoring',
+    photoUrl: '',
+    biography:
+      'Viktor Petrenko, 44 años, fue designado como agregado de defensa de Moldania en España en 2025. Tiene formación como ingeniero militar y ha servido en varias misiones internacionales de mantenimiento de la paz. Habla ruso, moldano, inglés y español básico. Es un interlocutor técnico más que político.',
+    personalInterests: ['Aviación', 'Montañismo', 'Fotografía', 'Gastronomía española'],
+    professionalInterests: ['Industria de defensa', 'Modernización de equipos', 'Interoperabilidad OTAN', 'Cooperación técnica-militar'],
+    analystNotes:
+      'Perfil técnico interesante. Su interés por la industria de defensa española puede ser un punto de conexión. Accesible y directo. En seguimiento para evaluar su potencial como canal de información. No muestra señales adversas.',
+    createdAt: '2025-10-05T07:00:00Z',
+    updatedAt: '2026-05-28T12:00:00Z',
+  },
+  {
+    id: 'obj-005',
+    fullName: 'Sheikh Khalid bin Nasser Al-Thani',
+    title: 'Presidente del Consejo Empresarial',
+    organization: 'Cámara de Comercio del Golfo',
+    country: 'Emiratos del Golfo',
+    project: 'Proyecto Horizonte Azul',
+    priority: 'medium',
+    status: 'active',
+    photoUrl: '',
+    biography:
+      'Sheikh Khalid, 61 años, es una figura influyente en el mundo empresarial del Golfo. Educado en Oxford y la London School of Economics. Dirige un conglomerado de empresas con intereses en energía, construcción e inmobiliario. Mantiene contactos con gobiernos de la región y actúa como mediador informal en asuntos comerciales bilaterales.',
+    personalInterests: ['Cetrería', 'Coches clásicos', 'Arte islámico', 'Carreras de caballos'],
+    professionalInterests: ['Inversión extranjera', 'Energías renovables', 'Desarrollo inmobiliario', 'Relaciones comerciales UE-Golfo'],
+    analystNotes:
+      'Potencial facilitador de acuerdos comerciales. Contacto establecido a través de la embajada. Accesible pero exige trato de alto nivel. Interesado en oportunidades de inversión en España. Próxima visita programada a Madrid en septiembre 2026.',
+    createdAt: '2026-01-10T10:00:00Z',
+    updatedAt: '2026-06-12T09:30:00Z',
+  },
+  {
+    id: 'obj-006',
+    fullName: 'María Elena Castillo Vega',
+    title: 'Directora de Inteligencia Estratégica',
+    organization: 'Secretaría de Defensa de Centaria',
+    country: 'Centaria',
+    project: 'Proyecto Atlas',
+    priority: 'low',
+    status: 'closed',
+    photoUrl: '',
+    biography:
+      'María Elena Castillo, 50 años, lideró la dirección de inteligencia estratégica de Centaria durante 6 años. Formada en ciencias políticas y con máster en estudios de seguridad. Fue relevada del cargo en marzo 2026 tras un cambio de gobierno. Actualmente sin cargo oficial pero mantiene influencia en círculos de seguridad.',
+    personalInterests: ['Yoga', 'Pintura', 'Viajes culturales', 'Lectura de novela histórica'],
+    professionalInterests: ['Análisis de amenazas', 'Cooperación interagencial', 'Gestión de crisis', 'Reforma del sector seguridad'],
+    analystNotes:
+      'Caso cerrado tras su salida del cargo. Fue una interlocutora fiable durante su mandato. Mantener en archivo por posible reactivación si vuelve a un puesto relevante. Último contacto en febrero 2026.',
+    createdAt: '2024-06-15T08:00:00Z',
+    updatedAt: '2026-03-20T11:00:00Z',
+  },
+];

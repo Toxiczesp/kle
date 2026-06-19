@@ -35,7 +35,9 @@ export default function ObjectiveCreate() {
       <div className="section-header">
         <div>
           <h2 className="section-title">{pageTitle}</h2>
-          <p className="section-subtitle">Completa los datos minimos y genera el informe inicial.</p>
+          <p className="section-subtitle">
+            Completa los datos minimos, guarda el objetivo en la plataforma y abre su informe inicial.
+          </p>
         </div>
       </div>
 
@@ -114,6 +116,10 @@ export default function ObjectiveCreate() {
         </div>
 
         <div className="btn-group">
+          <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginBottom: 0 }}>
+            Al crear el objetivo, se guarda en la base local de la aplicacion y se abre directamente
+            la vista de informes de esa persona.
+          </p>
           <button className="btn btn-primary" type="submit">
             Crear y generar informe
           </button>

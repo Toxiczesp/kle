@@ -1,10 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Lock, Radar, Shield, UserPlus } from 'lucide-react';
+import { Lock, Shield, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import type { UserRole } from '../types';
-import headerBrandEmad from '../assets/emad.png';
-import headerBrandGobierno from '../assets/minisdef.png';
 
 type AuthMode = 'login' | 'register';
 
@@ -73,19 +71,6 @@ export default function AuthPage() {
   return (
     <div className="auth-layout">
       <div className="auth-panel auth-panel-brand">
-        <div className="auth-brand-strip">
-          <img
-            className="auth-brand-strip-gobierno"
-            src={headerBrandGobierno}
-            alt="Gobierno de Espana - Ministerio de Defensa"
-          />
-          <img
-            className="auth-brand-strip-emad"
-            src={headerBrandEmad}
-            alt="Estado Mayor de la Defensa - Integracion en el multidominio"
-          />
-        </div>
-
         <div className="auth-brand">
           <div className="auth-brand-badge">
             <Shield size={28} />
@@ -97,45 +82,11 @@ export default function AuthPage() {
         </div>
 
         <div className="auth-hero-copy">
-          <span className="auth-kicker">Estado Mayor | Entorno operativo KLE</span>
-          <h1>Centro de acceso para seguimiento estrategico, analisis e informes.</h1>
+          <h1>Acceso seguro a la plataforma de seguimiento e informes.</h1>
           <p>
-            Una entrada con identidad institucional para coordinar objetivos, consolidar
-            interacciones y consultar inteligencia operativa desde un unico puesto de mando.
+            Los analistas gestionan objetivos, interacciones y analisis. Las autoridades acceden
+            unicamente a la consulta de informes.
           </p>
-        </div>
-
-        <div className="auth-briefing-panel" aria-hidden="true">
-          <div className="auth-briefing-grid" />
-          <div className="auth-briefing-overlay" />
-          <div className="auth-briefing-header">
-            <div className="auth-briefing-chip">
-              <Radar size={14} />
-              Vigilancia activa
-            </div>
-            <div className="auth-briefing-status">EMAD LIVE</div>
-          </div>
-          <div className="auth-briefing-rings">
-            <span />
-            <span />
-            <span />
-          </div>
-          <div className="auth-briefing-card auth-briefing-card-primary">
-            <div className="auth-briefing-label">Teatro de operaciones</div>
-            <strong>Integracion multidominio</strong>
-            <span>Supervision centralizada de actividad, perfiles e informes.</span>
-          </div>
-          <div className="auth-briefing-card auth-briefing-card-secondary">
-            <div className="auth-briefing-label">Canales seguros</div>
-            <strong>Acceso autenticado</strong>
-            <span>Flujo protegido para analistas y autoridades.</span>
-          </div>
-        </div>
-
-        <div className="auth-feature-row">
-          <div className="auth-feature-pill">Seguimiento de objetivos</div>
-          <div className="auth-feature-pill">Analisis de personalidad</div>
-          <div className="auth-feature-pill">Informes clasificados</div>
         </div>
 
         <div className="auth-demo-box">
@@ -152,12 +103,6 @@ export default function AuthPage() {
       </div>
 
       <div className="auth-panel auth-panel-form">
-        <div className="auth-form-shell">
-          <div className="auth-form-intro">
-            <span className="auth-form-eyebrow">Acceso controlado</span>
-            <p>Portal de autenticacion con perfil institucional y operativa segura.</p>
-          </div>
-
         <div className="auth-tabs">
           <button
             className={`auth-tab${mode === 'login' ? ' active' : ''}`}
@@ -301,7 +246,6 @@ export default function AuthPage() {
             </button>
           </form>
         )}
-        </div>
       </div>
     </div>
   );

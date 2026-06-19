@@ -28,7 +28,7 @@ const templateIcons: Record<string, React.ReactNode> = {
 };
 
 const interactionTypeLabels: Record<InteractionType, string> = {
-  meeting: 'Reunión',
+  meeting: 'Reunion',
   call: 'Llamada',
   event: 'Evento',
   interview: 'Entrevista',
@@ -39,9 +39,7 @@ export default function Reports() {
   const { objectives } = useObjectives();
   const [searchParams] = useSearchParams();
   const preselected = searchParams.get('obj') || '';
-  const [selectedObjective, setSelectedObjective] = useState(
-    preselected || ''
-  );
+  const [selectedObjective, setSelectedObjective] = useState(preselected || '');
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -60,6 +58,98 @@ export default function Reports() {
     setTimeout(() => setToast(null), 3000);
   };
 
+  const getCurrentTemplateName = () =>
+    mockReportTemplates.find((template) => template.id === selectedTemplate)?.name ?? 'Informe';
+
+  const getCurrentReportText = () => {
+    const reportElement = document.getElementById('report-content');
+    return reportElement?.innerText?.trim() ?? '';
+  };
+
+  const handleExportPdf = () => {
+    if (!objective || !selectedTemplate) return;
+
+    const reportElement = document.getElementById('report-content');
+    if (!reportElement) {
+      showToast('No se pudo localizar el informe para exportar.');
+      return;
+    }
+
+    const popup = window.open('', '_blank', 'width=920,height=1200');
+    if (!popup) {
+      showToast('El navegador bloqueo la ventana de exportacion.');
+      return;
+    }
+
+    const title = `${getCurrentTemplateName()} - ${objective.fullName}`;
+    popup.document.write(`
+      <!doctype html>
+      <html lang="es">
+        <head>
+          <meta charset="utf-8" />
+          <title>${title}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 32px;
+              color: #1f2d4d;
+              line-height: 1.6;
+            }
+            h1, h2, h3 {
+              color: #243a6b;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 16px;
+            }
+            td {
+              border: 1px solid #c7d1e0;
+              padding: 8px 10px;
+              vertical-align: top;
+            }
+            ul {
+              padding-left: 20px;
+            }
+            hr {
+              border: none;
+              border-top: 1px solid #c7d1e0;
+              margin: 24px 0;
+            }
+            @media print {
+              body {
+                margin: 18px;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${reportElement.innerHTML}
+        </body>
+      </html>
+    `);
+    popup.document.close();
+    popup.focus();
+    popup.print();
+    showToast('Informe preparado para guardar como PDF.');
+  };
+
+  const handleSendEmail = () => {
+    if (!objective || !selectedTemplate) return;
+
+    const subject = encodeURIComponent(`${getCurrentTemplateName()} - ${objective.fullName}`);
+    const reportText = getCurrentReportText();
+    const snippet = reportText
+      ? reportText.slice(0, 1600)
+      : `Comparto el informe ${getCurrentTemplateName()} del objetivo ${objective.fullName}.`;
+    const body = encodeURIComponent(
+      `Comparto el informe "${getCurrentTemplateName()}" del objetivo ${objective.fullName}.\n\n${snippet}`
+    );
+
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    showToast('Se ha preparado el correo con el informe.');
+  };
+
   const renderReport = () => {
     if (!objective || !selectedTemplate) return null;
     const template = mockReportTemplates.find((t) => t.id === selectedTemplate);
@@ -73,43 +163,38 @@ export default function Reports() {
 
     return (
       <div>
-        <button
-          className="back-link"
-          onClick={() => setSelectedTemplate(null)}
-        >
+        <button className="back-link" onClick={() => setSelectedTemplate(null)}>
           <ArrowLeft size={16} /> Volver a plantillas
         </button>
 
         <div className="report-preview" id="report-content">
-          {/* Report Header */}
           <div className="report-meta">
             <div>
-              <div className="report-meta-label">Clasificación</div>
+              <div className="report-meta-label">Clasificacion</div>
               <div style={{ fontWeight: 700, color: 'var(--color-warning)' }}>
-                CONFIDENCIAL — USO INTERNO
+                CONFIDENCIAL - USO INTERNO
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div className="report-meta-label">Fecha de generación</div>
+              <div className="report-meta-label">Fecha de generacion</div>
               <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{now}</div>
             </div>
           </div>
 
           <h1>{template.name}</h1>
           <p style={{ color: 'var(--color-text-muted)', fontStyle: 'italic' }}>
-            Objetivo: {objective.fullName} — {objective.organization}
+            Objetivo: {objective.fullName} - {objective.organization}
           </p>
 
-          {/* Summary report */}
           {(selectedTemplate === 'rpt-summary' || selectedTemplate === 'rpt-consolidated') && (
             <>
-              <h2>1. Datos Básicos</h2>
+              <h2>1. Datos Basicos</h2>
               <table className="table" style={{ marginBottom: 'var(--space-4)' }}>
                 <tbody>
                   <tr><td style={{ fontWeight: 600, width: 200 }}>Nombre completo</td><td>{objective.fullName}</td></tr>
                   <tr><td style={{ fontWeight: 600 }}>Cargo</td><td>{objective.title}</td></tr>
-                  <tr><td style={{ fontWeight: 600 }}>Organización</td><td>{objective.organization}</td></tr>
-                  <tr><td style={{ fontWeight: 600 }}>País</td><td>{objective.country}</td></tr>
+                  <tr><td style={{ fontWeight: 600 }}>Organizacion</td><td>{objective.organization}</td></tr>
+                  <tr><td style={{ fontWeight: 600 }}>Pais</td><td>{objective.country}</td></tr>
                   <tr><td style={{ fontWeight: 600 }}>Proyecto</td><td>{objective.project}</td></tr>
                   <tr><td style={{ fontWeight: 600 }}>Prioridad</td><td style={{ textTransform: 'uppercase' }}>{objective.priority}</td></tr>
                   <tr><td style={{ fontWeight: 600 }}>Estado</td><td style={{ textTransform: 'uppercase' }}>{objective.status}</td></tr>
@@ -123,11 +208,11 @@ export default function Reports() {
                 </>
               )}
 
-              <h2>{analysis ? '3' : '2'}. Estado de la Relación</h2>
+              <h2>{analysis ? '3' : '2'}. Estado de la Relacion</h2>
               <p>
                 Se han registrado <strong>{interactions.length}</strong> interacciones con este objetivo.
                 {interactions.length > 0 && (
-                  <> La última interacción fue el {interactions[0]?.date} en {interactions[0]?.location}.</>
+                  <> La ultima interaccion fue el {interactions[0]?.date} en {interactions[0]?.location}.</>
                 )}
               </p>
 
@@ -140,10 +225,9 @@ export default function Reports() {
             </>
           )}
 
-          {/* Complete report */}
           {selectedTemplate === 'rpt-complete' && (
             <>
-              <h2>1. Datos Biográficos</h2>
+              <h2>1. Datos Biograficos</h2>
               <p>{objective.biography}</p>
 
               {analysis && (
@@ -154,10 +238,10 @@ export default function Reports() {
                   <h2>3. Motivaciones</h2>
                   <p>{analysis.motivations}</p>
 
-                  <h2>4. Puntos de Conexión</h2>
+                  <h2>4. Puntos de Conexion</h2>
                   <p>{analysis.connectionPoints}</p>
 
-                  <h2>5. Riesgos de Comunicación</h2>
+                  <h2>5. Riesgos de Comunicacion</h2>
                   <p>{analysis.communicationRisks}</p>
 
                   <h2>6. Recomendaciones</h2>
@@ -169,7 +253,7 @@ export default function Reports() {
               {interactions.length > 0 ? (
                 interactions.map((inter, idx) => (
                   <div key={inter.id} style={{ marginBottom: 'var(--space-4)' }}>
-                    <h3>{idx + 1}. {interactionTypeLabels[inter.type]} — {inter.date}</h3>
+                    <h3>{idx + 1}. {interactionTypeLabels[inter.type]} - {inter.date}</h3>
                     <p><strong>Lugar:</strong> {inter.location}</p>
                     <p><strong>Analista:</strong> {inter.analyst}</p>
                     <p><strong>Observaciones:</strong> {inter.observations}</p>
@@ -181,7 +265,6 @@ export default function Reports() {
             </>
           )}
 
-          {/* Sociocultural report */}
           {selectedTemplate === 'rpt-sociocultural' && (
             <>
               <h2>1. Intereses Personales</h2>
@@ -199,7 +282,7 @@ export default function Reports() {
                   <h2>3. Contexto Sociocultural</h2>
                   <p>{analysis.socioculturalInterests}</p>
 
-                  <h2>4. Puntos de Conexión</h2>
+                  <h2>4. Puntos de Conexion</h2>
                   <p>{analysis.connectionPoints}</p>
 
                   <h2>5. Recomendaciones Culturales</h2>
@@ -209,14 +292,13 @@ export default function Reports() {
             </>
           )}
 
-          {/* Interaction evaluation report */}
           {selectedTemplate === 'rpt-interaction' && (
             <>
               {interactions.length > 0 ? (
                 interactions.map((inter, idx) => (
                   <div key={inter.id}>
-                    <h2>{idx + 1}. {interactionTypeLabels[inter.type]} — {inter.date}</h2>
-                    <h3>Datos de la Interacción</h3>
+                    <h2>{idx + 1}. {interactionTypeLabels[inter.type]} - {inter.date}</h2>
+                    <h3>Datos de la Interaccion</h3>
                     <p><strong>Fecha:</strong> {inter.date}</p>
                     <p><strong>Lugar:</strong> {inter.location}</p>
                     <p><strong>Analista:</strong> {inter.analyst}</p>
@@ -227,7 +309,7 @@ export default function Reports() {
                       {inter.topicsDiscussed.map((t, i) => <li key={i}>{t}</li>)}
                     </ul>
 
-                    <h3>Evaluación</h3>
+                    <h3>Evaluacion</h3>
                     <p><strong>Actitud:</strong> {inter.attitude}</p>
                     <p><strong>Receptividad:</strong> {inter.receptivity}</p>
 
@@ -241,7 +323,7 @@ export default function Reports() {
                       {inter.risksAlerts.map((r, i) => <li key={i}>{r}</li>)}
                     </ul>
 
-                    <h3>Próximos Pasos</h3>
+                    <h3>Proximos Pasos</h3>
                     <ul>
                       {inter.nextSteps.map((s, i) => <li key={i}>{s}</li>)}
                     </ul>
@@ -249,7 +331,15 @@ export default function Reports() {
                     <h3>Observaciones</h3>
                     <p>{inter.observations}</p>
 
-                    {idx < interactions.length - 1 && <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-6) 0' }} />}
+                    {idx < interactions.length - 1 && (
+                      <hr
+                        style={{
+                          border: 'none',
+                          borderTop: '1px solid var(--color-border)',
+                          margin: 'var(--space-6) 0',
+                        }}
+                      />
+                    )}
                   </div>
                 ))
               ) : (
@@ -258,7 +348,6 @@ export default function Reports() {
             </>
           )}
 
-          {/* Consolidated */}
           {selectedTemplate === 'rpt-consolidated' && analysis && (
             <>
               <h2>5. Perfil de Personalidad</h2>
@@ -270,13 +359,13 @@ export default function Reports() {
               <h2>7. Motivaciones</h2>
               <p>{analysis.motivations}</p>
 
-              <h2>8. Evaluación de Riesgos</h2>
+              <h2>8. Evaluacion de Riesgos</h2>
               <p>{analysis.communicationRisks}</p>
 
               <h2>9. Historial de Interacciones</h2>
               {interactions.map((inter, idx) => (
                 <div key={inter.id} style={{ marginBottom: 'var(--space-3)' }}>
-                  <p><strong>{idx + 1}. {interactionTypeLabels[inter.type]}</strong> — {inter.date}, {inter.location}</p>
+                  <p><strong>{idx + 1}. {interactionTypeLabels[inter.type]}</strong> - {inter.date}, {inter.location}</p>
                   <p style={{ fontSize: '0.8rem' }}>{inter.observations}</p>
                 </div>
               ))}
@@ -286,35 +375,38 @@ export default function Reports() {
             </>
           )}
 
-          {/* Report footer */}
-          <div style={{ marginTop: 'var(--space-8)', paddingTop: 'var(--space-4)', borderTop: '2px solid var(--color-border)', textAlign: 'center' }}>
-            <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>
-              Documento generado automáticamente por KLE Platform — {now}
+          <div
+            style={{
+              marginTop: 'var(--space-8)',
+              paddingTop: 'var(--space-4)',
+              borderTop: '2px solid var(--color-border)',
+              textAlign: 'center',
+            }}
+          >
+            <p
+              style={{
+                fontSize: '0.7rem',
+                color: 'var(--color-text-muted)',
+                textTransform: 'uppercase',
+                letterSpacing: 1,
+              }}
+            >
+              Documento generado automaticamente por KLE Platform - {now}
             </p>
             <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
-              Este documento contiene información clasificada. Distribución restringida.
+              Este documento contiene informacion clasificada. Distribucion restringida.
             </p>
           </div>
         </div>
 
-        {/* Report Actions */}
         <div className="report-actions" style={{ maxWidth: 800, margin: '0 auto' }}>
-          <button
-            className="btn btn-primary"
-            onClick={() => showToast('PDF generado correctamente (simulación)')}
-          >
+          <button className="btn btn-primary" onClick={handleExportPdf}>
             <Download size={16} /> Exportar PDF
           </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => window.print()}
-          >
+          <button className="btn btn-secondary" onClick={() => window.print()}>
             <Printer size={16} /> Imprimir
           </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => showToast('Email enviado correctamente (simulación)')}
-          >
+          <button className="btn btn-secondary" onClick={handleSendEmail}>
             <Mail size={16} /> Enviar por Email
           </button>
         </div>
@@ -331,12 +423,13 @@ export default function Reports() {
       <BackButton />
       <div className="section-header">
         <div>
-          <h2 className="section-title">Generación de Informes</h2>
-          <p className="section-subtitle">Selecciona una plantilla y un objetivo para generar el informe</p>
+          <h2 className="section-title">Generacion de Informes</h2>
+          <p className="section-subtitle">
+            Selecciona una plantilla y un objetivo para generar el informe
+          </p>
         </div>
       </div>
 
-      {/* Objective Selector */}
       <div
         className="card"
         style={{
@@ -355,7 +448,9 @@ export default function Reports() {
           <Target size={20} />
         </div>
         <div style={{ flex: 1 }}>
-          <label className="form-label" style={{ margin: 0 }}>Objetivo para el informe</label>
+          <label className="form-label" style={{ margin: 0 }}>
+            Objetivo para el informe
+          </label>
           <select
             className="form-select"
             value={selectedObjective}
@@ -364,14 +459,13 @@ export default function Reports() {
           >
             {objectives.map((o) => (
               <option key={o.id} value={o.id}>
-                {o.fullName} — {o.organization}
+                {o.fullName} - {o.organization}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      {/* Templates Grid */}
       <div className="grid-3" style={{ marginBottom: 'var(--space-6)' }}>
         {mockReportTemplates.map((template) => (
           <div
@@ -379,18 +473,26 @@ export default function Reports() {
             className="report-card"
             onClick={() => setSelectedTemplate(template.id)}
           >
-            <div className="report-card-icon">
-              {templateIcons[template.icon]}
-            </div>
+            <div className="report-card-icon">{templateIcons[template.icon]}</div>
             <div className="report-card-title">{template.name}</div>
             <div className="report-card-desc">{template.description}</div>
             <div>
-              <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
+              <p
+                style={{
+                  fontSize: '0.7rem',
+                  color: 'var(--color-text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                  marginBottom: 4,
+                }}
+              >
                 Secciones incluidas
               </p>
               <div className="tag-list">
                 {template.sections.map((s) => (
-                  <span className="tag" key={s} style={{ fontSize: '0.65rem' }}>{s}</span>
+                  <span className="tag" key={s} style={{ fontSize: '0.65rem' }}>
+                    {s}
+                  </span>
                 ))}
               </div>
             </div>
@@ -398,7 +500,6 @@ export default function Reports() {
         ))}
       </div>
 
-      {/* Toast */}
       {toast && (
         <div className="toast">
           <CheckCircle2 size={18} />

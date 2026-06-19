@@ -7,20 +7,18 @@ import BackButton from '../components/BackButton';
 import { useObjectives } from '../context/ObjectivesContext';
 
 const suggestedQuestions = [
-  '¿Cómo debería preparar una reunión con esta persona?',
-  '¿Qué temas pueden generar confianza?',
-  '¿Qué riesgos debo evitar?',
-  '¿Cuáles son sus principales intereses?',
-  'Resume toda la información disponible.',
+  'Como deberia preparar una reunion con esta persona?',
+  'Que temas pueden generar confianza?',
+  'Que riesgos debo evitar?',
+  'Cuales son sus principales intereses?',
+  'Resume toda la informacion disponible.',
 ];
 
 export default function AIChat() {
   const { objectives } = useObjectives();
   const [searchParams] = useSearchParams();
   const preselected = searchParams.get('obj') || '';
-  const [selectedObjective, setSelectedObjective] = useState(
-    preselected || ''
-  );
+  const [selectedObjective, setSelectedObjective] = useState(preselected || '');
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -53,7 +51,6 @@ export default function AIChat() {
     setInput('');
     setIsTyping(true);
 
-    // Simulate AI response delay
     setTimeout(() => {
       const response = getAIResponse(text, objective.fullName);
       const aiMsg: AIMessage = {
@@ -79,7 +76,7 @@ export default function AIChat() {
       if (part.startsWith('**') && part.endsWith('**')) {
         return <strong key={i}>{part.slice(2, -2)}</strong>;
       }
-      // Handle line breaks
+
       return part.split('\n').map((line, j) => (
         <span key={`${i}-${j}`}>
           {j > 0 && <br />}
@@ -92,7 +89,6 @@ export default function AIChat() {
   return (
     <div>
       <BackButton />
-      {/* Objective selector */}
       <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-end', marginBottom: 'var(--space-6)' }}>
         <div className="form-group" style={{ margin: 0, flex: 1, maxWidth: 400 }}>
           <label className="form-label">Objetivo seleccionado</label>
@@ -115,14 +111,12 @@ export default function AIChat() {
         </div>
         {objective && (
           <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', paddingBottom: 8 }}>
-            {objective.title} — {objective.organization}
+            {objective.title} - {objective.organization}
           </div>
         )}
       </div>
 
-      {/* Chat Container */}
       <div className="card chat-container" style={{ padding: 0 }}>
-        {/* Chat Header */}
         <div className="chat-header">
           <div
             className="avatar"
@@ -135,14 +129,13 @@ export default function AIChat() {
             <Sparkles size={18} />
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Asistente IA — KLE</div>
+            <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Asistente IA - KLE</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-              Análisis de {objective?.fullName ?? 'objetivo'}
+              Analisis de {objective?.fullName ?? 'objetivo'}
             </div>
           </div>
         </div>
 
-        {/* Messages */}
         <div className="chat-messages">
           {messages.length === 0 && (
             <div style={{ textAlign: 'center', padding: 'var(--space-8)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
@@ -165,7 +158,7 @@ export default function AIChat() {
               </h3>
               <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', maxWidth: 400, marginBottom: 'var(--space-6)' }}>
                 Haz preguntas sobre {objective?.fullName ?? 'el objetivo seleccionado'}.
-                El asistente analizará toda la información disponible para generar respuestas relevantes.
+                El asistente analizara toda la informacion disponible para generar respuestas relevantes.
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', width: '100%', maxWidth: 450 }}>
                 <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
@@ -230,7 +223,6 @@ export default function AIChat() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input */}
         <form className="chat-input-area" onSubmit={handleSubmit}>
           <input
             className="chat-input"

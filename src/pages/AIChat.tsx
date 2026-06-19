@@ -14,10 +14,17 @@ const suggestedQuestions = [
   'Resume toda la informacion disponible.',
 ];
 
+const areaLabels: Record<string, string> = {
+  personality: 'Info Autoridad Objetivo',
+  'psychological-profile': 'Perfilado Personalidad',
+  sociocultural: 'Area Sociocultural',
+};
+
 export default function AIChat() {
   const { objectives } = useObjectives();
   const [searchParams] = useSearchParams();
   const preselected = searchParams.get('obj') || '';
+  const activeArea = searchParams.get('area') || 'personality';
   const [selectedObjective, setSelectedObjective] = useState(preselected || '');
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [input, setInput] = useState('');
@@ -91,7 +98,7 @@ export default function AIChat() {
       <BackButton />
       <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-end', marginBottom: 'var(--space-6)' }}>
         <div className="form-group" style={{ margin: 0, flex: 1, maxWidth: 400 }}>
-          <label className="form-label">Objetivo seleccionado</label>
+          <label className="form-label">Autoridad objetivo seleccionada</label>
           <select
             className="form-select"
             value={selectedObjective}
@@ -111,7 +118,7 @@ export default function AIChat() {
         </div>
         {objective && (
           <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', paddingBottom: 8 }}>
-            {objective.title} - {objective.organization}
+            {objective.title} - {objective.organization} · {areaLabels[activeArea] ?? areaLabels.personality}
           </div>
         )}
       </div>
@@ -131,7 +138,7 @@ export default function AIChat() {
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Asistente IA - KLE</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-              Analisis de {objective?.fullName ?? 'objetivo'}
+              Analisis de {objective?.fullName ?? 'autoridad objetivo'}
             </div>
           </div>
         </div>
@@ -157,7 +164,7 @@ export default function AIChat() {
                 Asistente de Inteligencia KLE
               </h3>
               <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', maxWidth: 400, marginBottom: 'var(--space-6)' }}>
-                Haz preguntas sobre {objective?.fullName ?? 'el objetivo seleccionado'}.
+                Haz preguntas sobre {objective?.fullName ?? 'la autoridad objetivo seleccionada'}.
                 El asistente analizara toda la informacion disponible para generar respuestas relevantes.
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', width: '100%', maxWidth: 450 }}>
@@ -227,7 +234,7 @@ export default function AIChat() {
           <input
             className="chat-input"
             type="text"
-            placeholder={`Pregunta sobre ${objective?.fullName ?? 'el objetivo'}...`}
+            placeholder={`Pregunta sobre ${objective?.fullName ?? 'la autoridad objetivo'}...`}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={isTyping}

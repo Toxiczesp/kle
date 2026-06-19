@@ -1048,6 +1048,80 @@ img {
   margin-top: var(--space-1);
 }
 
+.section-header-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+.area-context-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(36, 58, 107, 0.14);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(226, 234, 246, 0.98));
+  box-shadow: 0 10px 24px rgba(31, 45, 77, 0.08);
+  color: var(--color-text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.area-context-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.area-context-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-primary-500);
+  box-shadow: 0 0 0 4px rgba(71, 102, 166, 0.16);
+  flex-shrink: 0;
+}
+
+.area-context-badge strong {
+  color: var(--color-text-primary);
+  font-weight: 800;
+}
+
+.area-context-badge.personality {
+  border-color: rgba(71, 102, 166, 0.18);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(221, 231, 246, 0.98));
+}
+
+.area-context-badge.personality .area-context-dot {
+  background: var(--color-primary-500);
+  box-shadow: 0 0 0 4px rgba(71, 102, 166, 0.16);
+}
+
+.area-context-badge.psychological-profile {
+  border-color: rgba(123, 94, 167, 0.32);
+  background: linear-gradient(135deg, rgba(248, 244, 253, 0.98), rgba(238, 231, 247, 0.98));
+}
+
+.area-context-badge.psychological-profile .area-context-dot {
+  background: #7b5ea7;
+  box-shadow: 0 0 0 4px rgba(123, 94, 167, 0.18);
+}
+
+.area-context-badge.sociocultural {
+  border-color: rgba(242, 194, 48, 0.34);
+  background: linear-gradient(135deg, rgba(255, 251, 237, 0.98), rgba(253, 243, 212, 0.98));
+}
+
+.area-context-badge.sociocultural .area-context-dot {
+  background: var(--color-accent-500);
+  box-shadow: 0 0 0 4px rgba(242, 194, 48, 0.18);
+}
+
 /* ---- Buttons ---- */
 .btn {
   display: inline-flex;

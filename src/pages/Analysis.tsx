@@ -26,18 +26,25 @@ const analysisIcons: Record<string, React.ReactNode> = {
 
 const analysisTitles: Record<string, string> = {
   executiveSummary: 'Resumen Ejecutivo',
-  personalityProfile: 'Perfil de Personalidad',
+  personalityProfile: 'Perfilado Personalidad',
   socioculturalInterests: 'Intereses Socioculturales',
   motivations: 'Motivaciones',
-  connectionPoints: 'Puntos de Conexión',
-  communicationRisks: 'Riesgos de Comunicación',
+  connectionPoints: 'Puntos de Conexion',
+  communicationRisks: 'Riesgos de Comunicacion',
   recommendations: 'Recomendaciones',
+};
+
+const areaLabels: Record<string, string> = {
+  personality: 'Info Autoridad Objetivo',
+  'psychological-profile': 'Perfilado Personalidad',
+  sociocultural: 'Area Sociocultural',
 };
 
 export default function Analysis() {
   const { objectives } = useObjectives();
   const [searchParams] = useSearchParams();
   const preselected = searchParams.get('obj') || '';
+  const activeArea = searchParams.get('area') || 'personality';
   const [selectedObjective, setSelectedObjective] = useState(preselected || '');
 
   const analysis = mockAnalyses[selectedObjective];
@@ -54,16 +61,19 @@ export default function Analysis() {
       <BackButton />
       <div className="section-header">
         <div>
-          <h2 className="section-title">Análisis de Personalidad e Intereses</h2>
-          <p className="section-subtitle">
-            Perfil analítico completo del objetivo seleccionado
-          </p>
+          <h2 className="section-title">Info Autoridad Objetivo</h2>
+        </div>
+        <div className="section-header-side">
+          <div className={`area-context-badge ${activeArea}`}>
+            <span className="area-context-dot" />
+            <span className="area-context-label">Area actual</span>
+            <strong>{areaLabels[activeArea] ?? areaLabels.personality}</strong>
+          </div>
         </div>
       </div>
 
-      {/* Objective selector */}
       <div className="form-group" style={{ maxWidth: 400 }}>
-        <label className="form-label">Seleccionar Objetivo</label>
+        <label className="form-label">Seleccionar Autoridad Objetivo</label>
         <select
           className="form-select"
           value={selectedObjective}
@@ -73,13 +83,12 @@ export default function Analysis() {
             .filter((o) => o.status !== 'closed')
             .map((o) => (
               <option key={o.id} value={o.id}>
-                {o.fullName} — {o.organization}
+                {o.fullName} - {o.organization}
               </option>
             ))}
         </select>
       </div>
 
-      {/* Objective header */}
       {objective && (
         <div
           className="card"
@@ -92,13 +101,16 @@ export default function Analysis() {
             borderColor: 'rgba(0,212,255,0.15)',
           }}
         >
-          <div className="avatar avatar-lg" style={{ background: 'linear-gradient(135deg, var(--color-accent-500), var(--color-primary-400))' }}>
+          <div
+            className="avatar avatar-lg"
+            style={{ background: 'linear-gradient(135deg, var(--color-accent-500), var(--color-primary-400))' }}
+          >
             <Target size={28} />
           </div>
           <div>
             <div style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: 2 }}>{objective.fullName}</div>
             <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
-              {objective.title} — {objective.organization}
+              {objective.title} - {objective.organization}
             </div>
             <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
               {objective.country} • {objective.project}
@@ -107,7 +119,6 @@ export default function Analysis() {
         </div>
       )}
 
-      {/* Analysis Content */}
       {analysis ? (
         <div>
           {(Object.keys(analysisTitles) as Array<keyof typeof analysisTitles>).map((key) => {
@@ -129,10 +140,10 @@ export default function Analysis() {
           <div className="empty-state-icon">
             <BrainCircuit size={28} />
           </div>
-          <h3 className="empty-state-title">Análisis no disponible</h3>
+          <h3 className="empty-state-title">Analisis no disponible</h3>
           <p className="empty-state-text">
-            No se ha generado un análisis de personalidad para este objetivo.
-            En un entorno real, este análisis sería generado por IA a partir de la información recopilada.
+            No se ha generado un analisis para esta autoridad objetivo. En un entorno real, este analisis
+            seria generado por IA a partir de la informacion recopilada.
           </p>
         </div>
       )}

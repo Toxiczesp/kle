@@ -6,7 +6,7 @@ import BackButton from '../components/BackButton';
 import { useObjectives } from '../context/ObjectivesContext';
 
 const priorityLabels: Record<PriorityLevel, string> = {
-  critical: 'Crítico',
+  critical: 'Critico',
   high: 'Alto',
   medium: 'Medio',
   low: 'Bajo',
@@ -43,22 +43,20 @@ export default function ObjectivesList() {
           <p className="section-subtitle">{objectives.length} personas registradas</p>
         </div>
         <Link to="/objectives/new" className="btn btn-primary">
-          + Nuevo Objetivo
+          + Nueva Autoridad Objetivo
         </Link>
       </div>
 
-      {/* Search */}
       <div className="search-bar">
         <Search size={18} />
         <input
           type="text"
-          placeholder="Buscar por nombre, organización o país..."
+          placeholder="Buscar por nombre, organizacion o pais..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      {/* Filters */}
       <div className="filters">
         <Filter size={16} style={{ color: 'var(--color-text-muted)', marginRight: 4, alignSelf: 'center' }} />
         {['all', 'active', 'monitoring', 'closed'].map((s) => (
@@ -82,7 +80,6 @@ export default function ObjectivesList() {
         ))}
       </div>
 
-      {/* List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
         {filtered.map((obj) => (
           <Link to={`/objectives/${obj.id}`} className="obj-card" key={obj.id}>
@@ -95,7 +92,7 @@ export default function ObjectivesList() {
             </div>
             <div className="obj-card-info">
               <div className="obj-card-name">{obj.fullName}</div>
-              <div className="obj-card-role">{obj.title} — {obj.organization}</div>
+              <div className="obj-card-role">{obj.title} - {obj.organization}</div>
               <div className="obj-card-meta">
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
                   <MapPin size={12} /> {obj.country}
@@ -123,7 +120,7 @@ export default function ObjectivesList() {
               <Search size={28} />
             </div>
             <h3 className="empty-state-title">Sin resultados</h3>
-            <p className="empty-state-text">No se encontraron objetivos con los filtros seleccionados.</p>
+            <p className="empty-state-text">No se encontraron autoridades objetivo con los filtros seleccionados.</p>
           </div>
         )}
       </div>

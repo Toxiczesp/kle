@@ -35,10 +35,17 @@ const interactionTypeLabels: Record<InteractionType, string> = {
   informal: 'Contacto informal',
 };
 
+const areaLabels: Record<string, string> = {
+  personality: 'Info Autoridad Objetivo',
+  'psychological-profile': 'Perfilado Personalidad',
+  sociocultural: 'Area Sociocultural',
+};
+
 export default function Reports() {
   const { objectives } = useObjectives();
   const [searchParams] = useSearchParams();
   const preselected = searchParams.get('obj') || '';
+  const activeArea = searchParams.get('area') || 'personality';
   const [selectedObjective, setSelectedObjective] = useState(preselected || '');
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -89,38 +96,13 @@ export default function Reports() {
           <meta charset="utf-8" />
           <title>${title}</title>
           <style>
-            body {
-              font-family: Arial, sans-serif;
-              margin: 32px;
-              color: #1f2d4d;
-              line-height: 1.6;
-            }
-            h1, h2, h3 {
-              color: #243a6b;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-bottom: 16px;
-            }
-            td {
-              border: 1px solid #c7d1e0;
-              padding: 8px 10px;
-              vertical-align: top;
-            }
-            ul {
-              padding-left: 20px;
-            }
-            hr {
-              border: none;
-              border-top: 1px solid #c7d1e0;
-              margin: 24px 0;
-            }
-            @media print {
-              body {
-                margin: 18px;
-              }
-            }
+            body { font-family: Arial, sans-serif; margin: 32px; color: #1f2d4d; line-height: 1.6; }
+            h1, h2, h3 { color: #243a6b; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+            td { border: 1px solid #c7d1e0; padding: 8px 10px; vertical-align: top; }
+            ul { padding-left: 20px; }
+            hr { border: none; border-top: 1px solid #c7d1e0; margin: 24px 0; }
+            @media print { body { margin: 18px; } }
           </style>
         </head>
         <body>
@@ -141,9 +123,9 @@ export default function Reports() {
     const reportText = getCurrentReportText();
     const snippet = reportText
       ? reportText.slice(0, 1600)
-      : `Comparto el informe ${getCurrentTemplateName()} del objetivo ${objective.fullName}.`;
+      : `Comparto el informe ${getCurrentTemplateName()} de la autoridad objetivo ${objective.fullName}.`;
     const body = encodeURIComponent(
-      `Comparto el informe "${getCurrentTemplateName()}" del objetivo ${objective.fullName}.\n\n${snippet}`
+      `Comparto el informe "${getCurrentTemplateName()}" de la autoridad objetivo ${objective.fullName}.\n\n${snippet}`
     );
 
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
@@ -183,7 +165,7 @@ export default function Reports() {
 
           <h1>{template.name}</h1>
           <p style={{ color: 'var(--color-text-muted)', fontStyle: 'italic' }}>
-            Objetivo: {objective.fullName} - {objective.organization}
+            Autoridad objetivo: {objective.fullName} - {objective.organization}
           </p>
 
           {(selectedTemplate === 'rpt-summary' || selectedTemplate === 'rpt-consolidated') && (
@@ -210,7 +192,7 @@ export default function Reports() {
 
               <h2>{analysis ? '3' : '2'}. Estado de la Relacion</h2>
               <p>
-                Se han registrado <strong>{interactions.length}</strong> interacciones con este objetivo.
+                Se han registrado <strong>{interactions.length}</strong> interacciones con esta autoridad objetivo.
                 {interactions.length > 0 && (
                   <> La ultima interaccion fue el {interactions[0]?.date} en {interactions[0]?.location}.</>
                 )}
@@ -232,7 +214,7 @@ export default function Reports() {
 
               {analysis && (
                 <>
-                  <h2>2. Perfil de Personalidad</h2>
+                  <h2>2. Perfilado Personalidad</h2>
                   <p>{analysis.personalityProfile}</p>
 
                   <h2>3. Motivaciones</h2>
@@ -343,14 +325,14 @@ export default function Reports() {
                   </div>
                 ))
               ) : (
-                <p>No hay interacciones registradas para este objetivo.</p>
+                <p>No hay interacciones registradas para esta autoridad objetivo.</p>
               )}
             </>
           )}
 
           {selectedTemplate === 'rpt-consolidated' && analysis && (
             <>
-              <h2>5. Perfil de Personalidad</h2>
+              <h2>5. Perfilado Personalidad</h2>
               <p>{analysis.personalityProfile}</p>
 
               <h2>6. Intereses Socioculturales</h2>
@@ -424,9 +406,13 @@ export default function Reports() {
       <div className="section-header">
         <div>
           <h2 className="section-title">Generacion de Informes</h2>
-          <p className="section-subtitle">
-            Selecciona una plantilla y un objetivo para generar el informe
-          </p>
+        </div>
+        <div className="section-header-side">
+          <div className={`area-context-badge ${activeArea}`}>
+            <span className="area-context-dot" />
+            <span className="area-context-label">Area actual</span>
+            <strong>{areaLabels[activeArea] ?? areaLabels.personality}</strong>
+          </div>
         </div>
       </div>
 
@@ -449,7 +435,7 @@ export default function Reports() {
         </div>
         <div style={{ flex: 1 }}>
           <label className="form-label" style={{ margin: 0 }}>
-            Objetivo para el informe
+            Autoridad objetivo para el informe
           </label>
           <select
             className="form-select"

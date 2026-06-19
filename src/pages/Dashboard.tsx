@@ -18,28 +18,28 @@ import { useObjectives } from '../context/ObjectivesContext';
 const analystAreas = [
   {
     id: 'personality',
-    title: 'Area de Personalidad',
+    title: 'Info Autoridad Objetivo',
     description:
-      'Espacio de trabajo para consolidar rasgos de personalidad, evaluacion individual y soporte multimedia del objetivo.',
+      'Espacio de trabajo para consolidar rasgos de personalidad, evaluacion individual y soporte documental de la autoridad objetivo.',
     icon: BrainCircuit,
     accentClass: 'personality',
     cta: { label: 'Ir a analisis', to: '/analysis' },
     items: [
       { label: 'Documentacion / Doc', description: 'Base documental inicial del perfil.', icon: FileSearch, to: '/repository' },
       { label: 'Resumen Doc', description: 'Version sintetica para consulta rapida.', icon: FileText, to: '/analysis' },
-      { label: 'Completo Doc', description: 'Analisis integral extendido del objetivo.', icon: FileStack, to: '/analysis' },
+      { label: 'Completo Doc', description: 'Analisis integral extendido de la autoridad objetivo.', icon: FileStack, to: '/analysis' },
     ],
   },
   {
     id: 'psychological-profile',
-    title: 'Perfil Psicologico',
+    title: 'Perfilado Personalidad',
     description:
-      'Seccion especifica para soporte visual y desarrollo completo del perfil psicologico del objetivo.',
+      'Seccion especifica para soporte visual y desarrollo completo del perfil psicologico de la autoridad objetivo.',
     icon: Camera,
     accentClass: 'psychological',
     cta: { label: 'Ir a repositorio', to: '/repository' },
     items: [
-      { label: 'Doc Imagenes', description: 'Material visual asociado al objetivo.', icon: FileImage, to: '/repository' },
+      { label: 'Doc Imagenes', description: 'Material visual asociado a la autoridad objetivo.', icon: FileImage, to: '/repository' },
       { label: 'Doc Videos', description: 'Clips, entrevistas y contenido audiovisual.', icon: PlaySquare, to: '/repository' },
       { label: 'Doc Completo', description: 'Documento psicologico extendido y estructurado.', icon: FileStack, to: '/analysis' },
     ],
@@ -77,7 +77,7 @@ export default function Dashboard() {
 
   const handleGenerateReport = () => {
     if (!exactObjective) return;
-    navigate(`/reports?obj=${exactObjective.id}`);
+    navigate(`/reports?obj=${exactObjective.id}&area=${selectedArea.id}`);
   };
 
   const handleCreateObjective = () => {
@@ -90,17 +90,17 @@ export default function Dashboard() {
         <div>
           <h2 className="section-title">Centro de trabajo del analista</h2>
           <p className="section-subtitle">
-            Estructura operativa por areas de personalidad y sociocultural.
+            Estructura operativa por areas de info, perfilado y sociocultural.
           </p>
         </div>
       </div>
 
       <div className="person-search-card">
         <div className="person-search-copy">
-          <h3 className="person-search-title">Buscar persona o crear objetivo</h3>
+          <h3 className="person-search-title">Buscar persona o crear autoridad objetivo</h3>
           <p className="person-search-text">
             Escribe el nombre de la persona. Si ya existe, te llevamos a su informe. Si no existe,
-            puedes crear el objetivo y generar el informe inicial.
+            puedes crear la autoridad objetivo y generar el informe inicial.
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export default function Dashboard() {
               onClick={handleCreateObjective}
               disabled={!personName.trim() || Boolean(exactObjective)}
             >
-              <Plus size={16} /> Anadir objetivo
+              <Plus size={16} /> Anadir autoridad
             </button>
           </div>
         </div>
@@ -142,7 +142,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="person-search-status">
-                No existe una coincidencia exacta. Puedes crear el objetivo con ese nombre.
+                No existe una coincidencia exacta. Puedes crear la autoridad objetivo con ese nombre.
               </div>
             )}
 
@@ -199,7 +199,7 @@ export default function Dashboard() {
                 <p className="analyst-area-description">{selectedArea.description}</p>
               </div>
             </div>
-            <Link to={selectedArea.cta.to} className="btn btn-secondary btn-sm">
+            <Link to={`${selectedArea.cta.to}?area=${selectedArea.id}`} className="btn btn-secondary btn-sm">
               {selectedArea.cta.label}
             </Link>
           </div>
@@ -209,7 +209,7 @@ export default function Dashboard() {
               const ItemIcon = item.icon;
 
               return (
-                <Link to={item.to} className="analyst-module-card" key={item.label}>
+                <Link to={`${item.to}?area=${selectedArea.id}`} className="analyst-module-card" key={item.label}>
                   <div className="analyst-module-icon">
                     <ItemIcon size={18} />
                   </div>

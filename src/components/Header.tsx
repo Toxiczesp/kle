@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell,
   BrainCircuit,
-  Check,
   ClipboardList,
   FileBarChart,
   FolderOpen,
@@ -21,26 +20,24 @@ import headerBrandGobierno from '../assets/minisdef.png';
 
 const pageTitles: Record<string, string> = {
   '/': 'Dashboard',
-  '/objectives': 'Objetivos',
+  '/objectives': 'Autoridades Objetivo',
   '/repository': 'Repositorio',
   '/interactions': 'Interacciones',
-  '/analysis': 'Analisis de Personalidad',
+  '/analysis': 'Info Autoridad Objetivo',
   '/ai-chat': 'Preguntas IA',
   '/reports': 'Informes',
 };
 
-/* ---- Searchable pages ---- */
 const searchablePages = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard, description: 'Panel principal del analista' },
-  { path: '/objectives', label: 'Objetivos', icon: Target, description: 'Gestion de objetivos KLE' },
+  { path: '/objectives', label: 'Autoridades Objetivo', icon: Target, description: 'Gestion de autoridades objetivo KLE' },
   { path: '/repository', label: 'Repositorio', icon: FolderOpen, description: 'Documentos y archivos' },
   { path: '/interactions', label: 'Interacciones', icon: ClipboardList, description: 'Historial de interacciones' },
-  { path: '/analysis', label: 'Analisis de Personalidad', icon: BrainCircuit, description: 'Perfiles psicologicos' },
+  { path: '/analysis', label: 'Info Autoridad Objetivo', icon: BrainCircuit, description: 'Perfilado de personalidad y contexto operativo' },
   { path: '/ai-chat', label: 'Preguntas IA', icon: MessageSquareText, description: 'Asistente inteligente' },
   { path: '/reports', label: 'Informes', icon: FileBarChart, description: 'Generar y consultar informes' },
 ];
 
-/* ---- Mock notifications ---- */
 interface Notification {
   id: string;
   title: string;
@@ -53,15 +50,15 @@ interface Notification {
 const initialNotifications: Notification[] = [
   {
     id: 'n1',
-    title: 'Nuevo documento añadido',
-    message: 'Se ha subido "Informe de interacción - Marzo 2026" al repositorio del Gral. Al-Rashidi.',
+    title: 'Nuevo documento anadido',
+    message: 'Se ha subido "Informe de interaccion - Marzo 2026" al repositorio del Gral. Al-Rashidi.',
     time: 'Hace 12 min',
     read: false,
     type: 'info',
   },
   {
     id: 'n2',
-    title: 'Objetivo actualizado',
+    title: 'Autoridad objetivo actualizada',
     message: 'La prioridad de Ibrahim Diouf ha sido elevada a "Alta".',
     time: 'Hace 2 h',
     read: false,
@@ -83,14 +80,12 @@ export default function Header() {
   const { user, logout } = useAuth();
   const isAnalyst = user?.role === 'analista';
 
-  /* ---- State ---- */
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  /* ---- Refs ---- */
   const searchInputRef = useRef<HTMLInputElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const notifBtnRef = useRef<HTMLButtonElement>(null);
@@ -99,7 +94,6 @@ export default function Header() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  /* ---- Title ---- */
   const getTitle = () => {
     for (const [path, title] of Object.entries(pageTitles)) {
       if (location.pathname === path || (path !== '/' && location.pathname.startsWith(path))) {
@@ -109,7 +103,6 @@ export default function Header() {
     return 'KLE Platform';
   };
 
-  /* ---- Search logic ---- */
   const filteredPages = searchQuery.trim()
     ? searchablePages.filter(
         (p) =>
@@ -124,7 +117,6 @@ export default function Header() {
     setSearchQuery('');
   };
 
-  /* ---- Notifications logic ---- */
   const markAsRead = (id: string) => {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
   };
@@ -133,7 +125,6 @@ export default function Header() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
-  /* ---- Close dropdowns on outside click ---- */
   const handleClickOutside = useCallback(
     (e: MouseEvent) => {
       if (
@@ -163,7 +154,6 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [handleClickOutside]);
 
-  /* ---- Keyboard shortcuts ---- */
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -172,7 +162,6 @@ export default function Header() {
         setSettingsOpen(false);
         setSearchQuery('');
       }
-      // Ctrl+K to open search
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         setSearchOpen(true);
@@ -184,10 +173,8 @@ export default function Header() {
     return () => document.removeEventListener('keydown', handleKey);
   }, []);
 
-  /* ---- Auto-focus search input ---- */
   useEffect(() => {
     if (searchOpen) {
-      // Small delay for the animation
       const timer = setTimeout(() => searchInputRef.current?.focus(), 100);
       return () => clearTimeout(timer);
     }
@@ -227,7 +214,6 @@ export default function Header() {
             </span>
             {isAnalyst && (
               <>
-                {/* ---- Search Button ---- */}
                 <button
                   className="header-icon-btn"
                   title="Buscar (Ctrl+K)"
@@ -240,7 +226,6 @@ export default function Header() {
                   <Search size={18} />
                 </button>
 
-                {/* ---- Notifications Button ---- */}
                 <div style={{ position: 'relative' }}>
                   <button
                     ref={notifBtnRef}
@@ -258,112 +243,79 @@ export default function Header() {
 
                   {notificationsOpen && (
                     <div className="header-dropdown header-dropdown-notifications" ref={notifRef}>
-                      <div className="header-dropdown-head">
-                        <span className="header-dropdown-title">Notificaciones</span>
-                        {unreadCount > 0 && (
-                          <button className="header-dropdown-action" onClick={markAllAsRead}>
-                            <Check size={14} />
-                            Marcar todas
-                          </button>
-                        )}
-                      </div>
-                      <div className="header-dropdown-body">
-                        {notifications.length === 0 ? (
-                          <div className="header-dropdown-empty">No hay notificaciones</div>
-                        ) : (
-                          notifications.map((n) => (
-                            <button
-                              key={n.id}
-                              className={`header-notif-item ${n.read ? 'read' : ''}`}
-                              onClick={() => markAsRead(n.id)}
-                            >
-                              <div className={`header-notif-dot ${n.type}`} />
-                              <div className="header-notif-content">
-                                <div className="header-notif-title">{n.title}</div>
-                                <div className="header-notif-msg">{n.message}</div>
-                                <div className="header-notif-time">{n.time}</div>
-                              </div>
-                            </button>
-                          ))
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* ---- Settings Button ---- */}
-                <div style={{ position: 'relative' }}>
-                  <button
-                    ref={settingsBtnRef}
-                    className={`header-icon-btn ${settingsOpen ? 'active' : ''}`}
-                    title="Configuracion"
-                    onClick={() => {
-                      setSettingsOpen(!settingsOpen);
-                      setNotificationsOpen(false);
-                      setSearchOpen(false);
-                    }}
-                  >
-                    <Settings size={18} />
-                  </button>
-
-                  {settingsOpen && (
-                    <div className="header-dropdown header-dropdown-settings" ref={settingsRef}>
-                      <div className="header-dropdown-head">
-                        <span className="header-dropdown-title">Configuracion</span>
-                      </div>
-                      <div className="header-dropdown-body">
-                        <div className="header-settings-section">
-                          <div className="header-settings-label">Cuenta</div>
-                          <div className="header-settings-row">
-                            <span className="header-settings-key">Nombre</span>
-                            <span className="header-settings-value">{user?.name ?? 'Usuario'}</span>
-                          </div>
-                          <div className="header-settings-row">
-                            <span className="header-settings-key">Email</span>
-                            <span className="header-settings-value">{user?.email ?? '—'}</span>
-                          </div>
-                          <div className="header-settings-row">
-                            <span className="header-settings-key">Rol</span>
-                            <span className="header-settings-value">
-                              {user?.role === 'autoridad' ? 'Autoridad' : 'Analista'}
-                            </span>
-                          </div>
+                      <div className="header-dropdown-top">
+                        <div>
+                          <div className="header-dropdown-title">Notificaciones</div>
+                          <div className="header-dropdown-subtitle">{unreadCount} sin leer</div>
                         </div>
-                        <div className="header-settings-section">
-                          <div className="header-settings-label">Plataforma</div>
-                          <div className="header-settings-row">
-                            <span className="header-settings-key">Version</span>
-                            <span className="header-settings-value">1.0.0</span>
-                          </div>
-                          <div className="header-settings-row">
-                            <span className="header-settings-key">Entorno</span>
-                            <span className="header-settings-value">Desarrollo</span>
-                          </div>
-                        </div>
-                        <button
-                          className="header-settings-logout"
-                          onClick={() => {
-                            setSettingsOpen(false);
-                            logout();
-                          }}
-                        >
-                          <LogOut size={16} />
-                          Cerrar sesion
+                        <button className="header-text-btn" onClick={markAllAsRead}>
+                          Marcar todas
                         </button>
+                      </div>
+                      <div className="header-dropdown-list">
+                        {notifications.map((notification) => (
+                          <button
+                            key={notification.id}
+                            className={`notification-item ${notification.read ? '' : 'unread'}`}
+                            onClick={() => markAsRead(notification.id)}
+                          >
+                            <div className={`notification-dot ${notification.type}`} />
+                            <div className="notification-copy">
+                              <div className="notification-title-row">
+                                <span className="notification-title">{notification.title}</span>
+                                {!notification.read && <span className="notification-badge">Nuevo</span>}
+                              </div>
+                              <p className="notification-message">{notification.message}</p>
+                              <span className="notification-time">{notification.time}</span>
+                            </div>
+                          </button>
+                        ))}
                       </div>
                     </div>
                   )}
                 </div>
               </>
             )}
-            <button className="header-icon-btn" title="Cerrar sesion" onClick={logout}>
-              <LogOut size={18} />
-            </button>
+
+            <div style={{ position: 'relative' }}>
+              <button
+                ref={settingsBtnRef}
+                className={`header-icon-btn ${settingsOpen ? 'active' : ''}`}
+                title="Opciones"
+                onClick={() => {
+                  setSettingsOpen(!settingsOpen);
+                  setNotificationsOpen(false);
+                  setSearchOpen(false);
+                }}
+              >
+                <Settings size={18} />
+              </button>
+
+              {settingsOpen && (
+                <div className="header-dropdown header-dropdown-settings" ref={settingsRef}>
+                  <div className="header-dropdown-top">
+                    <div>
+                      <div className="header-dropdown-title">{user?.name ?? 'Usuario'}</div>
+                      <div className="header-dropdown-subtitle">{user?.role === 'autoridad' ? 'Autoridad' : 'Analista'}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="settings-item danger"
+                    onClick={() => {
+                      logout();
+                      setSettingsOpen(false);
+                    }}
+                  >
+                    <LogOut size={16} />
+                    Cerrar sesion
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
 
-      {/* ---- Search Modal (Command Palette) ---- */}
       {searchOpen && (
         <div className="search-overlay" onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>
           <div className="search-modal" onClick={(e) => e.stopPropagation()}>
@@ -372,27 +324,22 @@ export default function Header() {
               <input
                 ref={searchInputRef}
                 className="search-modal-input"
-                type="text"
-                placeholder="Buscar pagina, seccion o funcionalidad..."
+                placeholder="Buscar paginas y modulos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && filteredPages.length > 0) {
-                    handleSearchSelect(filteredPages[0].path);
-                  }
-                }}
               />
               <button className="search-modal-close" onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>
                 <X size={18} />
               </button>
             </div>
+
             <div className="search-modal-results">
               {filteredPages.length === 0 ? (
                 <div className="search-modal-empty">No se encontraron resultados para "{searchQuery}"</div>
               ) : (
                 filteredPages.map((page) => {
-                  const Icon = page.icon;
                   const isCurrentPage = location.pathname === page.path;
+                  const Icon = page.icon;
                   return (
                     <button
                       key={page.path}
@@ -412,9 +359,11 @@ export default function Header() {
                 })
               )}
             </div>
+
             <div className="search-modal-footer">
               <span className="search-shortcut"><kbd>↵</kbd> Seleccionar</span>
               <span className="search-shortcut"><kbd>Esc</kbd> Cerrar</span>
+              <span className="search-shortcut"><kbd>Ctrl</kbd> + <kbd>K</kbd> Buscar</span>
             </div>
           </div>
         </div>

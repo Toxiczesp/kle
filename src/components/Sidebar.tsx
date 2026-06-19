@@ -13,10 +13,10 @@ import { useAuth } from '../context/AuthContext';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/objectives', icon: Target, label: 'Objetivos' },
+  { to: '/objectives', icon: Target, label: 'Autoridades Objetivo' },
   { to: '/repository', icon: FolderOpen, label: 'Repositorio' },
   { to: '/interactions', icon: ClipboardList, label: 'Interacciones' },
-  { to: '/analysis', icon: BrainCircuit, label: 'Analisis' },
+  { to: '/analysis', icon: BrainCircuit, label: 'Info Autoridad Objetivo' },
   { to: '/ai-chat', icon: MessageSquareText, label: 'Preguntas IA' },
   { to: '/reports', icon: FileBarChart, label: 'Informes' },
 ];
@@ -97,9 +97,7 @@ export default function Sidebar() {
           </div>
           <div>
             <div className="sidebar-user-name">{user?.name ?? 'Usuario'}</div>
-            <div className="sidebar-user-role">
-              {user?.role === 'autoridad' ? 'Autoridad' : 'Analista'}
-            </div>
+            <div className="sidebar-user-role">{user?.role === 'autoridad' ? 'Autoridad' : 'Analista'}</div>
           </div>
         </div>
       </div>

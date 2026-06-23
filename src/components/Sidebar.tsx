@@ -1,17 +1,20 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   BrainCircuit,
+  ClipboardCheck,
   ClipboardList,
   FileBarChart,
+  FilePlus2,
   FolderOpen,
   LayoutDashboard,
   MessageSquareText,
   Shield,
   Target,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const navItems = [
+const analystNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/objectives', icon: Target, label: 'Autoridades Objetivo' },
   { to: '/repository', icon: FolderOpen, label: 'Repositorio' },
@@ -21,11 +24,20 @@ const navItems = [
   { to: '/reports', icon: FileBarChart, label: 'Informes' },
 ];
 
+const authorityNavItems = [
+  { to: '/authority', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/authority/kle', icon: Users, label: 'Buscador KLE' },
+  { to: '/authority/interactions', icon: ClipboardList, label: 'Interacciones' },
+  { to: '/authority/requests', icon: FilePlus2, label: 'Solicitud de Informes' },
+  { to: '/authority/ai', icon: MessageSquareText, label: 'Preguntas IA' },
+  { to: '/authority/evaluations', icon: ClipboardCheck, label: 'Valoraciones' },
+];
+
 export default function Sidebar() {
   const location = useLocation();
   const { user } = useAuth();
   const isAnalyst = user?.role === 'analista';
-  const visibleItems = isAnalyst ? navItems : navItems.filter((item) => item.to === '/reports');
+  const visibleItems = isAnalyst ? analystNavItems : authorityNavItems;
 
   return (
     <aside className="sidebar">
@@ -71,7 +83,7 @@ export default function Sidebar() {
           </>
         ) : (
           <>
-            <div className="sidebar-section-label">Consulta</div>
+            <div className="sidebar-section-label">Portal Autoridad</div>
             {visibleItems.map((item) => (
               <NavLink
                 key={item.to}

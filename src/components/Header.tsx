@@ -3,8 +3,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell,
   BrainCircuit,
+  ClipboardCheck,
   ClipboardList,
   FileBarChart,
+  FilePlus2,
   FolderOpen,
   LayoutDashboard,
   LogOut,
@@ -12,13 +14,14 @@ import {
   Search,
   Settings,
   Target,
+  Users,
   X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import headerBrandEmad from '../assets/emad.png';
 import headerBrandGobierno from '../assets/minisdef.png';
 
-const pageTitles: Record<string, string> = {
+const analystPageTitles: Record<string, string> = {
   '/': 'Dashboard',
   '/objectives': 'Autoridades Objetivo',
   '/repository': 'Repositorio',
@@ -28,7 +31,16 @@ const pageTitles: Record<string, string> = {
   '/reports': 'Informes',
 };
 
-const searchablePages = [
+const authorityPageTitles: Record<string, string> = {
+  '/authority': 'Dashboard Autoridad',
+  '/authority/kle': 'Buscador KLE',
+  '/authority/interactions': 'Buscador de Interacciones',
+  '/authority/requests': 'Solicitud de Informes',
+  '/authority/ai': 'Preguntas IA',
+  '/authority/evaluations': 'Valoracion de Interacciones',
+};
+
+const analystSearchablePages = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard, description: 'Panel principal del analista' },
   { path: '/objectives', label: 'Autoridades Objetivo', icon: Target, description: 'Gestion de autoridades objetivo KLE' },
   { path: '/repository', label: 'Repositorio', icon: FolderOpen, description: 'Documentos y archivos' },
@@ -36,6 +48,15 @@ const searchablePages = [
   { path: '/analysis', label: 'Info Autoridad Objetivo', icon: BrainCircuit, description: 'Perfilado de personalidad y contexto operativo' },
   { path: '/ai-chat', label: 'Preguntas IA', icon: MessageSquareText, description: 'Asistente inteligente' },
   { path: '/reports', label: 'Informes', icon: FileBarChart, description: 'Generar y consultar informes' },
+];
+
+const authoritySearchablePages = [
+  { path: '/authority', label: 'Dashboard Autoridad', icon: LayoutDashboard, description: 'Panel principal de consulta y coordinacion' },
+  { path: '/authority/kle', label: 'Buscador KLE', icon: Users, description: 'Fichas, informes e historicos por autoridad' },
+  { path: '/authority/interactions', label: 'Buscador de Interacciones', icon: ClipboardList, description: 'Consultas por fecha, lugar, pais y organizacion' },
+  { path: '/authority/requests', label: 'Solicitud de Informes', icon: FilePlus2, description: 'Encargos y seguimiento al equipo de analisis' },
+  { path: '/authority/ai', label: 'Preguntas IA', icon: BrainCircuit, description: 'Asistente conversacional sobre informacion operativa' },
+  { path: '/authority/evaluations', label: 'Valoracion de Interacciones', icon: ClipboardCheck, description: 'Registro de resultados, riesgos y oportunidades' },
 ];
 
 interface Notification {
@@ -79,6 +100,8 @@ export default function Header() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const isAnalyst = user?.role === 'analista';
+  const pageTitles = isAnalyst ? analystPageTitles : authorityPageTitles;
+  const searchablePages = isAnalyst ? analystSearchablePages : authoritySearchablePages;
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -95,7 +118,8 @@ export default function Header() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const getTitle = () => {
-    for (const [path, title] of Object.entries(pageTitles)) {
+    const sortedTitles = Object.entries(pageTitles).sort(([pathA], [pathB]) => pathB.length - pathA.length);
+    for (const [path, title] of sortedTitles) {
       if (location.pathname === path || (path !== '/' && location.pathname.startsWith(path))) {
         return title;
       }
@@ -275,6 +299,20 @@ export default function Header() {
                   )}
                 </div>
               </>
+            )}
+
+            {!isAnalyst && (
+              <button
+                className="header-icon-btn"
+                title="Buscar (Ctrl+K)"
+                onClick={() => {
+                  setSearchOpen(true);
+                  setNotificationsOpen(false);
+                  setSettingsOpen(false);
+                }}
+              >
+                <Search size={18} />
+              </button>
             )}
 
             <div style={{ position: 'relative' }}>

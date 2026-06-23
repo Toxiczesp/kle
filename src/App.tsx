@@ -11,6 +11,13 @@ import Analysis from './pages/Analysis';
 import AIChat from './pages/AIChat';
 import Reports from './pages/Reports';
 import AuthPage from './pages/Auth';
+import AuthorityAI from './pages/AuthorityAI';
+import AuthorityDashboard from './pages/AuthorityDashboard';
+import AuthorityEvaluations from './pages/AuthorityEvaluations';
+import AuthorityInteractions from './pages/AuthorityInteractions';
+import AuthorityKLE from './pages/AuthorityKLE';
+import AuthorityProfile from './pages/AuthorityProfile';
+import AuthorityRequests from './pages/AuthorityRequests';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ObjectivesProvider } from './context/ObjectivesContext';
 import type { UserRole } from './types';
@@ -38,12 +45,12 @@ function RequireRole({ allowedRoles, children }: { allowedRoles: UserRole[]; chi
   const { user } = useAuth();
   if (!user) return <Navigate to="/auth" replace />;
 
-  return allowedRoles.includes(user.role) ? <>{children}</> : <Navigate to="/reports" replace />;
+  return allowedRoles.includes(user.role) ? <>{children}</> : <Navigate to={user.role === 'autoridad' ? '/authority' : '/'} replace />;
 }
 
 function AppRoutes() {
   const { isAuthenticated, user } = useAuth();
-  const defaultPrivateRoute = user?.role === 'autoridad' ? '/reports' : '/';
+  const defaultPrivateRoute = user?.role === 'autoridad' ? '/authority' : '/';
 
   return (
     <BrowserRouter>
@@ -115,7 +122,70 @@ function AppRoutes() {
                 </RequireRole>
               }
             />
-            <Route path="/reports" element={<Reports />} />
+            <Route
+              path="/reports"
+              element={
+                <RequireRole allowedRoles={['analista']}>
+                  <Reports />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/authority"
+              element={
+                <RequireRole allowedRoles={['autoridad']}>
+                  <AuthorityDashboard />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/authority/kle"
+              element={
+                <RequireRole allowedRoles={['autoridad']}>
+                  <AuthorityKLE />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/authority/kle/:id"
+              element={
+                <RequireRole allowedRoles={['autoridad']}>
+                  <AuthorityProfile />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/authority/interactions"
+              element={
+                <RequireRole allowedRoles={['autoridad']}>
+                  <AuthorityInteractions />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/authority/requests"
+              element={
+                <RequireRole allowedRoles={['autoridad']}>
+                  <AuthorityRequests />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/authority/ai"
+              element={
+                <RequireRole allowedRoles={['autoridad']}>
+                  <AuthorityAI />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/authority/evaluations"
+              element={
+                <RequireRole allowedRoles={['autoridad']}>
+                  <AuthorityEvaluations />
+                </RequireRole>
+              }
+            />
           </Route>
         </Route>
         <Route

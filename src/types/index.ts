@@ -8,6 +8,14 @@ export type InteractionType = 'meeting' | 'call' | 'event' | 'interview' | 'info
 export type ReceptivityLevel = 'very_high' | 'high' | 'moderate' | 'low' | 'hostile';
 export type AttitudeType = 'cooperative' | 'neutral' | 'reserved' | 'defensive' | 'hostile';
 export type UserRole = 'analista' | 'autoridad';
+export type AuthorityRequestType =
+  | 'new-report'
+  | 'report-update'
+  | 'sociocultural-update'
+  | 'behavior-update'
+  | 'full-dossier';
+export type AuthorityRequestStatus = 'pending' | 'drafting' | 'review' | 'done';
+export type InteractionRating = 1 | 2 | 3 | 4 | 5;
 
 export interface Objective {
   id: string;
@@ -95,4 +103,28 @@ export interface AuthUser {
   name: string;
   email: string;
   role: UserRole;
+}
+
+export interface AuthorityRequest {
+  id: string;
+  title: string;
+  description: string;
+  objectiveId: string;
+  priority: PriorityLevel;
+  dueDate: string;
+  type: AuthorityRequestType;
+  status: AuthorityRequestStatus;
+  createdAt: string;
+}
+
+export interface AuthorityEvaluation {
+  id: string;
+  objectiveId: string;
+  date: string;
+  location: string;
+  plannedObjective: string;
+  actualResult: string;
+  rating: InteractionRating;
+  observations: string;
+  createdAt: string;
 }

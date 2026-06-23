@@ -8,7 +8,7 @@ type AuthMode = 'login' | 'register';
 
 const roleDescriptions: Record<UserRole, string> = {
   analista: 'Acceso completo a objetivos, interacciones, analisis y generacion de informes.',
-  autoridad: 'Acceso limitado a consulta y lectura de informes disponibles.',
+  autoridad: 'Acceso al portal de consulta KLE, interacciones, solicitudes, IA y valoraciones.',
 };
 
 export default function AuthPage() {
@@ -26,7 +26,7 @@ export default function AuthPage() {
 
   const redirectTo = useMemo(() => {
     if (!user) return '/';
-    return user.role === 'autoridad' ? '/reports' : '/';
+    return user.role === 'autoridad' ? '/authority' : '/';
   }, [user]);
 
   if (isAuthenticated) {
@@ -85,7 +85,7 @@ export default function AuthPage() {
           <h1>Acceso seguro a la plataforma de seguimiento e informes.</h1>
           <p>
             Los analistas gestionan objetivos, interacciones y analisis. Las autoridades acceden
-            unicamente a la consulta de informes.
+            a un portal propio para consultar KLE, revisar interacciones, solicitar informes y registrar valoraciones.
           </p>
         </div>
 

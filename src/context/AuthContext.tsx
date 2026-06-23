@@ -33,7 +33,7 @@ const defaultUsers: StoredUser[] = [
   },
   {
     id: 'usr-002',
-    name: 'Autoridad Invitada',
+    name: 'Autoridad Apoyada',
     email: 'autoridad@kle.local',
     password: 'demo1234',
     role: 'autoridad',

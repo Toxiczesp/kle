@@ -103,8 +103,8 @@ const evaluationSections = [
   },
   {
     id: 'observation',
-    title: 'Cuestionario de observacion',
-    description: 'Anota indicadores observados, alertas y recomendaciones para futuras interacciones.',
+    title: 'Cuestionarios del observador',
+    description: 'Recoge observaciones, alertas y patrones detectados durante las interacciones.',
   },
 ] as const;
 
@@ -548,7 +548,7 @@ export default function AuthorityEvaluations() {
       </section>
 
       {activeSection === 'interaction' && (
-        <section className="authority-grid authority-grid-2">
+        <section className="authority-section-stack">
           <form className="authority-panel" onSubmit={handleInteractionSubmit}>
             <div className="authority-panel-header">
               <div>
@@ -691,7 +691,7 @@ export default function AuthorityEvaluations() {
       )}
 
       {activeSection === 'dossier' && (
-        <section className="authority-grid authority-grid-2">
+        <section className="authority-section-stack">
           <form className="authority-panel" onSubmit={handleDossierSubmit}>
             <div className="authority-panel-header">
               <div>
@@ -840,11 +840,11 @@ export default function AuthorityEvaluations() {
       )}
 
       {activeSection === 'observation' && (
-        <section className="authority-grid authority-grid-2">
+        <section className="authority-section-stack">
           <form className="authority-panel" onSubmit={handleObservationSubmit}>
             <div className="authority-panel-header">
               <div>
-                <h2>Cuestionario de observacion</h2>
+                <h2>Cuestionarios del observador</h2>
                 <p>Registra lo observado durante o despues de la interaccion para alimentar el seguimiento.</p>
               </div>
             </div>

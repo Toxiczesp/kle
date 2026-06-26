@@ -3223,6 +3223,12 @@ img {
   margin-bottom: var(--space-6);
 }
 
+.authority-section-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
 .authority-evaluations-nav {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

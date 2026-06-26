@@ -10,6 +10,7 @@ import Interactions from './pages/Interactions';
 import Analysis from './pages/Analysis';
 import AIChat from './pages/AIChat';
 import Reports from './pages/Reports';
+import AnalystRequests from './pages/AnalystRequests';
 import AuthPage from './pages/Auth';
 import AuthorityAI from './pages/AuthorityAI';
 import AuthorityDashboard from './pages/AuthorityDashboard';
@@ -127,6 +128,14 @@ function AppRoutes() {
               element={
                 <RequireRole allowedRoles={['analista']}>
                   <Reports />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/analyst/requests"
+              element={
+                <RequireRole allowedRoles={['analista']}>
+                  <AnalystRequests />
                 </RequireRole>
               }
             />

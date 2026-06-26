@@ -42,6 +42,20 @@ const defaultUsers: StoredUser[] = [
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+function migrateLegacyUsers(users: StoredUser[]) {
+  let changed = false;
+
+  const migrated = users.map((user) => {
+    if (user.email === 'autoridad@kle.local' && user.name === 'Autoridad Invitada') {
+      changed = true;
+      return { ...user, name: 'Autoridad Apoyada' };
+    }
+    return user;
+  });
+
+  return { changed, users: migrated };
+}
+
 function readUsers(): StoredUser[] {
   const raw = localStorage.getItem(STORAGE_USERS_KEY);
   if (!raw) {
@@ -51,7 +65,12 @@ function readUsers(): StoredUser[] {
 
   try {
     const parsed = JSON.parse(raw) as StoredUser[];
-    return parsed.length > 0 ? parsed : defaultUsers;
+    const sourceUsers = parsed.length > 0 ? parsed : defaultUsers;
+    const migrated = migrateLegacyUsers(sourceUsers);
+    if (migrated.changed) {
+      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(migrated.users));
+    }
+    return migrated.users;
   } catch {
     localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(defaultUsers));
     return defaultUsers;

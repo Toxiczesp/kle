@@ -20,6 +20,7 @@ const analystNavItems = [
   { to: '/repository', icon: FolderOpen, label: 'Repositorio' },
   { to: '/interactions', icon: ClipboardList, label: 'Interacciones' },
   { to: '/analysis', icon: BrainCircuit, label: 'Info Autoridad Objetivo' },
+  { to: '/analyst/requests', icon: FilePlus2, label: 'Solicitudes' },
   { to: '/ai-chat', icon: MessageSquareText, label: 'Preguntas IA' },
   { to: '/reports', icon: FileBarChart, label: 'Informes' },
 ];
@@ -28,9 +29,9 @@ const authorityNavItems = [
   { to: '/authority', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/authority/kle', icon: Users, label: 'Buscador KLE' },
   { to: '/authority/interactions', icon: ClipboardList, label: 'Interacciones' },
-  { to: '/authority/requests', icon: FilePlus2, label: 'Solicitud de Informes' },
-  { to: '/authority/ai', icon: MessageSquareText, label: 'Preguntas IA' },
   { to: '/authority/evaluations', icon: ClipboardCheck, label: 'Valoraciones' },
+  { to: '/authority/requests', icon: FilePlus2, label: 'Solicitud de Informes' },
+  { to: '/authority/ai', icon: MessageSquareText, label: 'Asistente IA' },
 ];
 
 export default function Sidebar() {

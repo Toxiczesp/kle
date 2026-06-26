@@ -72,7 +72,7 @@ export default function AuthorityAI() {
       <section className="authority-panel">
         <div className="authority-panel-header">
           <div>
-            <h2>Preguntas IA</h2>
+            <h2>Asistente IA</h2>
             <p>Asistente conversacional alimentado por informes, historicos e interacciones registradas.</p>
           </div>
         </div>

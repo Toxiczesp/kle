@@ -1,6 +1,7 @@
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthorityDateRangeField from '../components/AuthorityDateRangeField';
 import { useObjectives } from '../context/ObjectivesContext';
 import { getAuthorityCountries, getLastInteractionForObjective } from '../data/authorityPortal';
 
@@ -8,22 +9,40 @@ export default function AuthorityKLE() {
   const navigate = useNavigate();
   const { objectives } = useObjectives();
   const countries = getAuthorityCountries(objectives);
-
-  const [filters, setFilters] = useState({
+  const defaultFilters = {
     name: '',
-    title: '',
+    roleOrOrganization: '',
+    exactDate: '',
+    startDate: '',
+    endDate: '',
     country: 'all',
-    organization: '',
-  });
+  };
+
+  const [filters, setFilters] = useState(defaultFilters);
 
   const results = useMemo(
     () =>
       objectives.filter((objective) => {
+        const lastInteraction = getLastInteractionForObjective(objective.id);
+        const lastInteractionDate = lastInteraction ? new Date(lastInteraction.date).getTime() : null;
         const matchesName = objective.fullName.toLowerCase().includes(filters.name.toLowerCase());
-        const matchesTitle = objective.title.toLowerCase().includes(filters.title.toLowerCase());
+        const matchesRoleOrOrganization =
+          objective.title.toLowerCase().includes(filters.roleOrOrganization.toLowerCase()) ||
+          objective.organization.toLowerCase().includes(filters.roleOrOrganization.toLowerCase());
+        const matchesExactDate = !filters.exactDate || lastInteraction?.date === filters.exactDate;
+        const matchesStartDate =
+          !filters.startDate || (lastInteractionDate !== null && lastInteractionDate >= new Date(filters.startDate).getTime());
+        const matchesEndDate =
+          !filters.endDate || (lastInteractionDate !== null && lastInteractionDate <= new Date(filters.endDate).getTime());
         const matchesCountry = filters.country === 'all' || objective.country === filters.country;
-        const matchesOrganization = objective.organization.toLowerCase().includes(filters.organization.toLowerCase());
-        return matchesName && matchesTitle && matchesCountry && matchesOrganization;
+        return (
+          matchesName &&
+          matchesRoleOrOrganization &&
+          matchesExactDate &&
+          matchesStartDate &&
+          matchesEndDate &&
+          matchesCountry
+        );
       }),
     [filters, objectives]
   );
@@ -34,34 +53,78 @@ export default function AuthorityKLE() {
         <div className="authority-panel-header">
           <div>
             <h2>Buscador KLE</h2>
-            <p>Localiza otras autoridades registradas y accede a su ficha completa.</p>
+            <p>Localiza autoridades por nombre, cargo u organismo y filtra por un rango de fechas.</p>
           </div>
-          <div className="authority-results-chip">{results.length} resultados</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+            {(
+              filters.name ||
+              filters.roleOrOrganization ||
+              filters.exactDate ||
+              filters.startDate ||
+              filters.endDate ||
+              filters.country !== 'all'
+            ) && (
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => setFilters(defaultFilters)}
+              >
+                Limpiar filtros
+              </button>
+            )}
+            <div className="authority-results-chip">{results.length} resultados</div>
+          </div>
         </div>
 
-        <div className="authority-grid authority-grid-4 authority-filter-grid">
+        <div className="authority-grid authority-grid-5 authority-filter-grid">
           <div className="form-group">
-            <label className="form-label">Nombre</label>
+            <label className="form-label">Autoridad</label>
             <div className="authority-search-input">
               <Search size={16} />
               <input
                 type="text"
+                list="authority-kle-names"
                 value={filters.name}
                 onChange={(e) => setFilters((prev) => ({ ...prev, name: e.target.value }))}
                 placeholder="Nombre de la autoridad"
               />
+              <datalist id="authority-kle-names">
+                {objectives.map((objective) => (
+                  <option key={objective.id} value={objective.fullName} />
+                ))}
+              </datalist>
             </div>
           </div>
           <div className="form-group">
-            <label className="form-label">Cargo</label>
+            <label className="form-label">Cargo / organismo</label>
             <input
               className="form-input"
               type="text"
-              value={filters.title}
-              onChange={(e) => setFilters((prev) => ({ ...prev, title: e.target.value }))}
-              placeholder="Cargo o funcion"
+              value={filters.roleOrOrganization}
+              onChange={(e) => setFilters((prev) => ({ ...prev, roleOrOrganization: e.target.value }))}
+              placeholder="Cargo, ministerio, embajada..."
             />
           </div>
+          <AuthorityDateRangeField
+            className="authority-date-range-field-single authority-date-range-field-right"
+            startDate={filters.startDate}
+            endDate={filters.endDate}
+            onChange={({ startDate, endDate }) =>
+              setFilters((prev) => ({ ...prev, startDate, endDate }))
+            }
+          />
+          <div className="form-group">
+            <label className="form-label">Fecha concreta</label>
+            <input
+              className="form-input"
+              type="date"
+              value={filters.exactDate}
+              onChange={(e) => setFilters((prev) => ({ ...prev, exactDate: e.target.value }))}
+            />
+          </div>
+        </div>
+
+        <div className="authority-grid authority-grid-3 authority-filter-grid">
           <div className="form-group">
             <label className="form-label">Pais</label>
             <select
@@ -74,16 +137,6 @@ export default function AuthorityKLE() {
                 <option key={country} value={country}>{country}</option>
               ))}
             </select>
-          </div>
-          <div className="form-group">
-            <label className="form-label">Organizacion</label>
-            <input
-              className="form-input"
-              type="text"
-              value={filters.organization}
-              onChange={(e) => setFilters((prev) => ({ ...prev, organization: e.target.value }))}
-              placeholder="Ministerio, embajada, consejo..."
-            />
           </div>
         </div>
       </section>
@@ -117,7 +170,7 @@ export default function AuthorityKLE() {
               </div>
               <div className="authority-objective-footer">
                 <span className={`badge badge-${objective.priority}`}>{objective.priority}</span>
-                <strong>Ver ficha completa</strong>
+                <strong>Abrir dosier</strong>
               </div>
             </button>
           );

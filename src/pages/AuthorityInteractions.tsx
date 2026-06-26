@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import AuthorityDateRangeField from '../components/AuthorityDateRangeField';
 import { useObjectives } from '../context/ObjectivesContext';
 import { mockInteractions } from '../data/interactions';
 import { getAuthorityCountries } from '../data/authorityPortal';
@@ -7,10 +8,10 @@ export default function AuthorityInteractions() {
   const { objectives } = useObjectives();
   const countries = getAuthorityCountries(objectives);
   const [filters, setFilters] = useState({
-    date: '',
-    location: '',
+    startDate: '',
+    endDate: '',
     country: 'all',
-    objectiveId: 'all',
+    location: '',
     organization: '',
   });
 
@@ -21,12 +22,15 @@ export default function AuthorityInteractions() {
           const objective = objectives.find((item) => item.id === interaction.objectiveId);
           if (!objective) return false;
 
-          const matchesDate = !filters.date || interaction.date.includes(filters.date);
-          const matchesLocation = interaction.location.toLowerCase().includes(filters.location.toLowerCase());
+          const interactionDate = new Date(interaction.date).getTime();
+          const matchesStartDate =
+            !filters.startDate || interactionDate >= new Date(filters.startDate).getTime();
+          const matchesEndDate =
+            !filters.endDate || interactionDate <= new Date(filters.endDate).getTime();
           const matchesCountry = filters.country === 'all' || objective.country === filters.country;
-          const matchesObjective = filters.objectiveId === 'all' || interaction.objectiveId === filters.objectiveId;
+          const matchesLocation = interaction.location.toLowerCase().includes(filters.location.toLowerCase());
           const matchesOrganization = objective.organization.toLowerCase().includes(filters.organization.toLowerCase());
-          return matchesDate && matchesLocation && matchesCountry && matchesObjective && matchesOrganization;
+          return matchesStartDate && matchesEndDate && matchesCountry && matchesLocation && matchesOrganization;
         })
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
     [filters, objectives]
@@ -39,32 +43,19 @@ export default function AuthorityInteractions() {
       <section className="authority-panel">
         <div className="authority-panel-header">
           <div>
-            <h2>Buscador de interacciones</h2>
-            <p>Consulta reuniones e interacciones registradas por fecha, lugar, autoridad o pais.</p>
+            <h2>Interacciones</h2>
+            <p>Consulta reuniones e interacciones registradas por rango de fechas, pais, lugar u organismo.</p>
           </div>
         </div>
 
         <div className="authority-grid authority-grid-5 authority-filter-grid">
-          <div className="form-group">
-            <label className="form-label">Fecha</label>
-            <input
-              className="form-input"
-              type="text"
-              value={filters.date}
-              onChange={(e) => setFilters((prev) => ({ ...prev, date: e.target.value }))}
-              placeholder="2026-05 o 2026-05-15"
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Lugar</label>
-            <input
-              className="form-input"
-              type="text"
-              value={filters.location}
-              onChange={(e) => setFilters((prev) => ({ ...prev, location: e.target.value }))}
-              placeholder="Madrid, videoconferencia..."
-            />
-          </div>
+          <AuthorityDateRangeField
+            startDate={filters.startDate}
+            endDate={filters.endDate}
+            onChange={({ startDate, endDate }) =>
+              setFilters((prev) => ({ ...prev, startDate, endDate }))
+            }
+          />
           <div className="form-group">
             <label className="form-label">Pais</label>
             <select
@@ -77,20 +68,17 @@ export default function AuthorityInteractions() {
             </select>
           </div>
           <div className="form-group">
-            <label className="form-label">Autoridad</label>
-            <select
-              className="form-select"
-              value={filters.objectiveId}
-              onChange={(e) => setFilters((prev) => ({ ...prev, objectiveId: e.target.value }))}
-            >
-              <option value="all">Todas las autoridades</option>
-              {objectives.map((objective) => (
-                <option key={objective.id} value={objective.id}>{objective.fullName}</option>
-              ))}
-            </select>
+            <label className="form-label">Lugar</label>
+            <input
+              className="form-input"
+              type="text"
+              value={filters.location}
+              onChange={(e) => setFilters((prev) => ({ ...prev, location: e.target.value }))}
+              placeholder="Madrid, videoconferencia..."
+            />
           </div>
           <div className="form-group">
-            <label className="form-label">Organizacion</label>
+            <label className="form-label">Cargo/Organismo</label>
             <input
               className="form-input"
               type="text"
@@ -126,6 +114,7 @@ export default function AuthorityInteractions() {
                 <th>Autoridad</th>
                 <th>Pais</th>
                 <th>Lugar</th>
+                <th>Organismo</th>
                 <th>Objetivo / resultado</th>
               </tr>
             </thead>
@@ -138,6 +127,7 @@ export default function AuthorityInteractions() {
                     <td>{objective?.fullName ?? '-'}</td>
                     <td>{objective?.country ?? '-'}</td>
                     <td>{interaction.location}</td>
+                    <td>{objective?.organization ?? '-'}</td>
                     <td>{interaction.observations}</td>
                   </tr>
                 );

@@ -1,27 +1,33 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, FileText, Globe2, Radar, ScrollText } from 'lucide-react';
+import { ArrowLeft, FileBadge2, FileText, FolderOpen, ScrollText } from 'lucide-react';
 import { useObjectives } from '../context/ObjectivesContext';
-import { mockAnalyses, mockDocuments } from '../data/misc';
+import { mockDocuments } from '../data/misc';
 import { mockInteractions } from '../data/interactions';
-import { getLastInteractionForObjective, ratingLabels, readAuthorityEvaluations } from '../data/authorityPortal';
+import {
+  getLastInteractionForObjective,
+  getPublishedProfileForObjective,
+  getSharedDocumentsForObjective,
+  readAuthorityEvaluations,
+} from '../data/authorityPortal';
 
 const tabs = [
-  { id: 'executive', label: 'Resumen ejecutivo', icon: FileText },
-  { id: 'behavior', label: 'Analisis de comportamiento', icon: Radar },
-  { id: 'sociocultural', label: 'Analisis sociocultural', icon: Globe2 },
-  { id: 'full-report', label: 'Documento completo', icon: ScrollText },
+  { id: 'dossier', label: 'Dosier KLE', icon: FileText },
+  { id: 'documents', label: 'Documentos del analista', icon: FolderOpen },
+  { id: 'full-report', label: 'Documento integral', icon: ScrollText },
   { id: 'history', label: 'Historial de interacciones', icon: FileText },
+  { id: 'feedback', label: 'Valoraciones', icon: FileBadge2 },
 ] as const;
 
 export default function AuthorityProfile() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { objectives } = useObjectives();
-  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['id']>('executive');
+  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['id']>('dossier');
 
   const objective = objectives.find((item) => item.id === id);
-  const analysis = id ? mockAnalyses[id] : undefined;
+  const publishedProfile = id ? getPublishedProfileForObjective(id) : undefined;
+  const sharedDocuments = id ? getSharedDocumentsForObjective(id) : [];
   const lastInteraction = id ? getLastInteractionForObjective(id) : undefined;
   const documents = mockDocuments.filter((document) => document.objectiveId === id);
   const interactions = useMemo(
@@ -32,6 +38,18 @@ export default function AuthorityProfile() {
     [id]
   );
   const evaluations = readAuthorityEvaluations().filter((evaluation) => evaluation.objectiveId === id);
+
+  const averageEvaluation = (evaluation: (typeof evaluations)[number]) => {
+    const values = [
+      evaluation.strategyFit,
+      evaluation.trustAndCommunication,
+      evaluation.objectiveProgress,
+      evaluation.objectionHandling,
+      evaluation.nextStepsClarity,
+    ];
+
+    return (values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(1);
+  };
 
   if (!objective) {
     return (
@@ -108,12 +126,16 @@ export default function AuthorityProfile() {
           ))}
         </div>
 
-        {activeTab === 'executive' && (
+        {activeTab === 'dossier' && (
           <div className="authority-rich-content">
-            <h3>Informacion general</h3>
-            <p>{objective.biography}</p>
+            <h3>Dosier publicado por el analista</h3>
+            <p>{publishedProfile?.generalInfo ?? 'Pendiente de publicacion por el analista.'}</p>
             <h3>Resumen ejecutivo</h3>
-            <p>{analysis?.executiveSummary ?? 'No hay resumen ejecutivo disponible todavia.'}</p>
+            <p>{publishedProfile?.executiveSummary ?? 'Pendiente de publicacion por el analista.'}</p>
+            <h3>Analisis de comportamiento</h3>
+            <p>{publishedProfile?.behaviorAnalysis ?? 'Pendiente de publicacion por el analista.'}</p>
+            <h3>Analisis sociocultural</h3>
+            <p>{publishedProfile?.socioculturalAnalysis ?? 'Pendiente de publicacion por el analista.'}</p>
             <h3>Aspectos mas relevantes</h3>
             <ul>
               {objective.professionalInterests.map((interest) => <li key={interest}>{interest}</li>)}
@@ -121,52 +143,35 @@ export default function AuthorityProfile() {
           </div>
         )}
 
-        {activeTab === 'behavior' && (
+        {activeTab === 'documents' && (
           <div className="authority-rich-content">
-            <h3>Forma de comunicacion</h3>
-            <p>{analysis?.personalityProfile ?? objective.analystNotes}</p>
-            <h3>Patrones observados</h3>
-            <ul>
-              {interactions.slice(0, 3).map((interaction) => (
-                <li key={interaction.id}>
-                  {interaction.date}: {interaction.topicsDiscussed.join(', ')}.
-                </li>
-              ))}
-            </ul>
-            <h3>Intereses detectados</h3>
-            <ul>
-              {objective.personalInterests.concat(objective.professionalInterests).slice(0, 6).map((interest) => (
-                <li key={interest}>{interest}</li>
-              ))}
-            </ul>
-            <h3>Riesgos y oportunidades</h3>
-            <p>{analysis?.communicationRisks ?? 'Sin riesgos documentados.'}</p>
-            <p>{analysis?.recommendations ?? 'Sin oportunidades registradas.'}</p>
-          </div>
-        )}
+            <h3>Documentacion sincronizada entre analista y autoridad</h3>
+            <div className="authority-doc-list">
+              {sharedDocuments.length > 0 ? (
+                sharedDocuments.map((document) => (
+                  <div key={document.id} className="authority-doc-card">
+                    <strong>{document.name}</strong>
+                    <span>{document.description}</span>
+                    <small>
+                      {document.category} · {new Date(document.uploadedAt).toLocaleString('es-ES')} · {document.analystName}
+                    </small>
+                    <a
+                      className="authority-inline-link"
+                      href={document.fileDataUrl}
+                      download={document.name}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Abrir documento
+                    </a>
+                  </div>
+                ))
+              ) : (
+                <p>Pendiente de subida de documentos por el analista.</p>
+              )}
+            </div>
 
-        {activeTab === 'sociocultural' && (
-          <div className="authority-rich-content">
-            <h3>Contexto cultural</h3>
-            <p>{analysis?.socioculturalInterests ?? 'No hay analisis sociocultural disponible.'}</p>
-            <h3>Consideraciones protocolarias</h3>
-            <p>{objective.analystNotes}</p>
-            <h3>Sensibilidades identificadas</h3>
-            <ul>
-              {interactions.flatMap((interaction) => interaction.risksAlerts).slice(0, 5).map((risk, index) => (
-                <li key={`${risk}-${index}`}>{risk}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {activeTab === 'full-report' && (
-          <div className="authority-rich-content">
-            <h3>Documento completo elaborado por analistas</h3>
-            <p>{analysis?.executiveSummary ?? objective.biography}</p>
-            <p>{analysis?.personalityProfile ?? objective.analystNotes}</p>
-            <p>{analysis?.socioculturalInterests ?? ''}</p>
-            <h3>Documentos asociados</h3>
+            <h3>Documentos asociados del expediente</h3>
             <div className="authority-doc-list">
               {documents.map((document) => (
                 <div key={document.id} className="authority-doc-card">
@@ -176,6 +181,20 @@ export default function AuthorityProfile() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {activeTab === 'full-report' && (
+          <div className="authority-rich-content">
+            <h3>Documento integral elaborado por analistas</h3>
+            <p style={{ whiteSpace: 'pre-line' }}>
+              {publishedProfile?.fullReport ?? 'Pendiente de publicacion por el analista.'}
+            </p>
+            {publishedProfile && (
+              <small style={{ color: 'var(--color-text-muted)' }}>
+                Publicado por {publishedProfile.analystName}.
+              </small>
+            )}
           </div>
         )}
 
@@ -193,10 +212,34 @@ export default function AuthorityProfile() {
                     </div>
                     <p><strong>Objetivo:</strong> {interaction.nextSteps[0] ?? 'Seguimiento relacional y operativo.'}</p>
                     <p><strong>Resultado:</strong> {interaction.observations}</p>
-                    <p><strong>Valoracion:</strong> {evaluation ? `${evaluation.rating} - ${ratingLabels[evaluation.rating]}` : 'Sin valoracion registrada'}</p>
+                    <p><strong>Valoracion:</strong> {evaluation ? `Media ${averageEvaluation(evaluation)}/10` : 'Sin valoracion registrada'}</p>
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'feedback' && (
+          <div className="authority-rich-content">
+            <h3>Valoraciones de interacciones</h3>
+            <div className="authority-history-list">
+              {evaluations.length > 0 ? (
+                evaluations.map((evaluation) => (
+                  <div key={evaluation.id} className="authority-history-card">
+                    <div className="authority-history-card-head">
+                      <strong>{evaluation.date}</strong>
+                      <span>Media {averageEvaluation(evaluation)}/10</span>
+                    </div>
+                    <p><strong>Lugar:</strong> {evaluation.location}</p>
+                    <p><strong>Dificultades:</strong> {evaluation.difficulties}</p>
+                    <p><strong>Oportunidades:</strong> {evaluation.opportunities}</p>
+                    <p><strong>Cambios futuros:</strong> {evaluation.futureChanges}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No hay valoraciones de interacciones registradas.</p>
+              )}
             </div>
           </div>
         )}

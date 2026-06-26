@@ -14,6 +14,7 @@ import {
   PlaySquare,
 } from 'lucide-react';
 import { useObjectives } from '../context/ObjectivesContext';
+import { authorityRequestStatusLabels, readAuthorityRequests } from '../data/authorityPortal';
 
 const analystAreas = [
   {
@@ -69,6 +70,8 @@ export default function Dashboard() {
   const SelectedAreaIcon = selectedArea.icon;
   const normalizedName = personName.trim().toLowerCase();
   const exactObjective = normalizedName ? findObjectiveByName(personName) : undefined;
+  const analystRequests = readAuthorityRequests();
+  const pendingRequests = analystRequests.filter((request) => request.status !== 'done').slice(0, 3);
   const matchingObjectives = normalizedName
     ? objectives
         .filter((objective) => objective.fullName.toLowerCase().includes(normalizedName))
@@ -162,6 +165,39 @@ export default function Dashboard() {
             )}
           </div>
         )}
+      </div>
+
+      <div className="card" style={{ marginBottom: 'var(--space-6)' }}>
+        <div className="section-header" style={{ marginBottom: 'var(--space-4)' }}>
+          <div>
+            <h3 className="section-title" style={{ marginBottom: 4 }}>Solicitudes recibidas de autoridad</h3>
+            <p className="section-subtitle">
+              Las peticiones registradas por la autoridad aparecen aqui para que el analista las gestione y las devuelva.
+            </p>
+          </div>
+          <Link to="/analyst/requests" className="btn btn-secondary btn-sm">
+            Abrir bandeja
+          </Link>
+        </div>
+
+        <div className="authority-status-stack">
+          {pendingRequests.map((request) => {
+            const objective = objectives.find((item) => item.id === request.objectiveId);
+            return (
+              <Link key={request.id} to="/analyst/requests" className="authority-request-card">
+                <div className="authority-request-top">
+                  <strong>{request.title}</strong>
+                  <span className="authority-status-pill">{authorityRequestStatusLabels[request.status]}</span>
+                </div>
+                <p>{request.description}</p>
+                <div className="authority-request-meta">
+                  <span>{objective?.fullName ?? '-'}</span>
+                  <span>Limite {request.dueDate}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       </div>
 
       <div className="analyst-tabs-shell">

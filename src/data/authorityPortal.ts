@@ -1,9 +1,13 @@
 import { mockInteractions } from './interactions';
 import type {
+  AuthorityDossierEvaluation,
   AuthorityEvaluation,
+  AuthorityObservationQuestionnaire,
+  AuthorityPublishedProfile,
   AuthorityRequest,
   AuthorityRequestStatus,
   AuthorityRequestType,
+  AuthoritySharedDocument,
   InteractionRating,
   Objective,
   PriorityLevel,
@@ -11,6 +15,10 @@ import type {
 
 export const AUTHORITY_REQUESTS_KEY = 'kle-authority-requests';
 export const AUTHORITY_EVALUATIONS_KEY = 'kle-authority-evaluations';
+export const AUTHORITY_PUBLISHED_PROFILES_KEY = 'kle-authority-published-profiles';
+export const AUTHORITY_SHARED_DOCUMENTS_KEY = 'kle-authority-shared-documents';
+export const AUTHORITY_DOSSIER_EVALUATIONS_KEY = 'kle-authority-dossier-evaluations';
+export const AUTHORITY_OBSERVATION_QUESTIONNAIRES_KEY = 'kle-authority-observation-questionnaires';
 
 export const authorityRequestTypeLabels: Record<AuthorityRequestType, string> = {
   'new-report': 'Nuevo informe',
@@ -28,11 +36,16 @@ export const authorityRequestStatusLabels: Record<AuthorityRequestStatus, string
 };
 
 export const ratingLabels: Record<InteractionRating, string> = {
-  1: 'Muy negativa',
-  2: 'Negativa',
-  3: 'Neutral',
-  4: 'Positiva',
-  5: 'Muy positiva',
+  1: '1/10',
+  2: '2/10',
+  3: '3/10',
+  4: '4/10',
+  5: '5/10',
+  6: '6/10',
+  7: '7/10',
+  8: '8/10',
+  9: '9/10',
+  10: '10/10',
 };
 
 export const priorityLabels: Record<PriorityLevel, string> = {
@@ -53,6 +66,9 @@ const initialRequests: AuthorityRequest[] = [
     type: 'behavior-update',
     status: 'review',
     createdAt: '2026-06-14T08:00:00Z',
+    updatedAt: '2026-06-15T10:30:00Z',
+    analystName: 'Analista Demo',
+    analystResponse: 'Se ha revisado el perfil conductual y se han actualizado los riesgos de comunicacion pendientes de validacion final.',
   },
   {
     id: 'req-002',
@@ -64,6 +80,9 @@ const initialRequests: AuthorityRequest[] = [
     type: 'full-dossier',
     status: 'drafting',
     createdAt: '2026-06-18T10:30:00Z',
+    updatedAt: '2026-06-21T09:00:00Z',
+    analystName: 'Analista Demo',
+    analystResponse: 'Dossier en elaboracion con foco en contexto relacional, intereses y ultimas interacciones.',
   },
   {
     id: 'req-003',
@@ -84,10 +103,15 @@ const initialEvaluations: AuthorityEvaluation[] = [
     objectiveId: 'obj-001',
     date: '2026-05-15',
     location: 'Embajada de Espana en Maravia',
-    plannedObjective: 'Consolidar la invitacion oficial a una visita tecnica y medir receptividad a cooperacion bilateral.',
-    actualResult: 'Alta receptividad. Acepta explorar una visita y solicita informacion tecnica adicional.',
-    rating: 4,
-    observations: 'Buena sintonia personal. Conviene mantener seguimiento trimestral y reforzar el componente cultural.',
+    strategyFit: 8,
+    trustAndCommunication: 8,
+    objectiveProgress: 7,
+    objectionHandling: 7,
+    nextStepsClarity: 8,
+    difficulties: 'La principal barrera fue el tiempo limitado disponible durante la reunion.',
+    opportunities: 'Alta receptividad a una visita tecnica y buena disposicion a cooperacion bilateral.',
+    futureChanges: 'Preparar con mayor antelacion documentacion tecnica resumida y reforzar seguimiento previo.',
+    otherRelevantAspects: 'Buena sintonia personal y conveniencia de mantener seguimiento trimestral.',
     createdAt: '2026-05-15T19:10:00Z',
   },
   {
@@ -95,11 +119,98 @@ const initialEvaluations: AuthorityEvaluation[] = [
     objectiveId: 'obj-005',
     date: '2026-06-01',
     location: 'Camara de Comercio de Madrid',
-    plannedObjective: 'Explorar oportunidades de inversion y evaluar predisposicion a una agenda economica de largo plazo.',
-    actualResult: 'Interes concreto en energias renovables y desarrollo portuario. Solicita dossier adicional.',
-    rating: 5,
-    observations: 'Conviene coordinar con ICEX y preparar siguiente contacto con enfoque muy ejecutivo.',
+    strategyFit: 9,
+    trustAndCommunication: 9,
+    objectiveProgress: 8,
+    objectionHandling: 8,
+    nextStepsClarity: 9,
+    difficulties: 'No surgieron resistencias relevantes, aunque hubo que concretar mejor el alcance temporal.',
+    opportunities: 'Interes claro en energias renovables y desarrollo portuario; oportunidad de seguimiento economico.',
+    futureChanges: 'Llevar propuestas aun mas ejecutivas y coordinadas con actores economicos institucionales.',
+    otherRelevantAspects: 'Solicita dossier adicional y conviene coordinar con ICEX.',
     createdAt: '2026-06-01T13:30:00Z',
+  },
+];
+
+const initialDossierEvaluations: AuthorityDossierEvaluation[] = [
+  {
+    id: 'dossier-eval-001',
+    objectiveId: 'obj-001',
+    date: '2026-05-14',
+    overallScore: 8,
+    clarityScore: 8,
+    usefulnessScore: 9,
+    targetFitScore: 8,
+    strengths: 'Sintesis clara, foco ejecutivo y buena priorizacion de riesgos y oportunidades.',
+    improvements: 'Conviene anadir un bloque final con mensajes clave para la reunion y posibles objeciones.',
+    additionalComments: 'El formato es util para preparar el encuentro con poco tiempo de antelacion.',
+    createdAt: '2026-05-16T08:15:00Z',
+  },
+];
+
+const initialObservationQuestionnaires: AuthorityObservationQuestionnaire[] = [
+  {
+    id: 'obs-001',
+    objectiveId: 'obj-001',
+    date: '2026-05-15',
+    context: 'Reunion bilateral en entorno protocolario con presencia de dos asesores tecnicos.',
+    positiveIndicators: 'Actitud abierta, escucha activa y buena disposicion a continuar el contacto tecnico.',
+    alertIndicators: 'Sensibilidad ante cuestiones de plazos y necesidad de concretar mejor los retornos esperados.',
+    recommendations: 'Mantener enfoque directo, documentacion muy sintetica y cierre con siguientes pasos definidos.',
+    createdAt: '2026-05-15T18:40:00Z',
+    observerName: 'Cnel. Ruiz',
+    observerRankRole: 'Agregado de Defensa, Ejercito de Tierra',
+    startTimeDuration: '10:00 - 11:30 (90 min)',
+    cityLocation: 'Embajada de Espana, Maravia',
+    interactionReason: 'Reunion Bilateral de Seguimiento',
+    interactionLanguage: 'Español',
+    targetOtherLanguages: 'Ingles (Alto), Frances (Medio)',
+    usedInterpreters: 'no',
+    companions: [
+      { name: 'Tte. Coronel Martinez', rankArmy: 'Jefe de Seccion, Ejercito del Aire' }
+    ],
+    previousInteractions: [
+      { date: '2026-03-12', location: 'Ministerio de Defensa', reason: 'Presentacion de credenciales' }
+    ],
+    qGeneral: [
+      'Persona muy expresiva y abierta, mantiene contacto fisico natural.',
+      'Habla pausada y clara, tono medio. Gesticula moderadamente al enfatizar puntos clave.',
+      'Se rige principalmente por la planificacion y la razon, muy estructurado.',
+      'Si, complexion atletica.',
+      'No se percibio ninguna dificultad fisica.',
+      'Uniforme de gala impecable, limpio y ordenado.',
+      'Traje formal en reuniones no oficiales.',
+      'No tomo notas el mismo; delego en sus asesores.'
+    ],
+    qInteraction: [
+      'Trato muy cordial y respetuoso, pero exigente en los detalles tecnicos.',
+      'Saludo formal con mano tendida, firme y prolongado. Trato similar a toda la comitiva.',
+      'Persona muy culta. Hablo de geopolitica regional, historia local y aficiones deportivas.',
+      'Mostro gusto por la comida local tradicional, prefiere platos especiados.',
+      'Aficionado a la equitacion y lectura historica militar.',
+      'Relacion formal y respetuosa con su conyuge; trato profesional con otras mujeres.',
+      'Menciono de forma anecdotica su paso por la academia militar en España.',
+      'Muestra gran respeto por las tradiciones españolas y conoce bien el idioma.'
+    ],
+    qTeam: [
+      'Trato correcto y jerarquico pero cercano. Se dirigio por su empleo al Capitan Lopez.',
+      'Mayor afinidad con el Tte. Coronel Benitez (asesor juridico). Menor interaccion con el secretario.',
+      'Complicidad tecnica alta en la validacion de plazos con su asesor economico.',
+      'El Tte. Coronel Benitez actua como lider de staff en su ausencia.',
+      'Equipo muy cohesionado y de alta preparacion profesional.'
+    ],
+    qPersonality: [
+      true, false, true, true, false, false, false, false, false, false,
+      false, false, false, false, true, false, true, false, false, true,
+      false, false, true, true, false, false, true, false, true, false
+    ],
+    qBehaviors: [
+      true, false, true, true, false, false, false, false, false, true,
+      false, false, false, false, false, false, false, false, false, false,
+      false, false, false, false, false, false, false, false, false, false,
+      true, false, false, false, false, false, false, false, false, false,
+      false, false, false, false, false, false
+    ]
   },
 ];
 
@@ -151,6 +262,128 @@ export function readAuthorityEvaluations() {
 export function writeAuthorityEvaluations(evaluations: AuthorityEvaluation[]) {
   if (!canUseStorage()) return;
   window.localStorage.setItem(AUTHORITY_EVALUATIONS_KEY, JSON.stringify(evaluations));
+}
+
+export function readAuthorityPublishedProfiles() {
+  if (!canUseStorage()) return [];
+
+  const raw = window.localStorage.getItem(AUTHORITY_PUBLISHED_PROFILES_KEY);
+  if (!raw) {
+    window.localStorage.setItem(AUTHORITY_PUBLISHED_PROFILES_KEY, JSON.stringify([]));
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as AuthorityPublishedProfile[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    window.localStorage.setItem(AUTHORITY_PUBLISHED_PROFILES_KEY, JSON.stringify([]));
+    return [];
+  }
+}
+
+export function writeAuthorityPublishedProfiles(profiles: AuthorityPublishedProfile[]) {
+  if (!canUseStorage()) return;
+  window.localStorage.setItem(AUTHORITY_PUBLISHED_PROFILES_KEY, JSON.stringify(profiles));
+}
+
+export function readAuthoritySharedDocuments() {
+  if (!canUseStorage()) return [];
+
+  const raw = window.localStorage.getItem(AUTHORITY_SHARED_DOCUMENTS_KEY);
+  if (!raw) {
+    window.localStorage.setItem(AUTHORITY_SHARED_DOCUMENTS_KEY, JSON.stringify([]));
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as AuthoritySharedDocument[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    window.localStorage.setItem(AUTHORITY_SHARED_DOCUMENTS_KEY, JSON.stringify([]));
+    return [];
+  }
+}
+
+export function writeAuthoritySharedDocuments(documents: AuthoritySharedDocument[]) {
+  if (!canUseStorage()) return;
+  window.localStorage.setItem(AUTHORITY_SHARED_DOCUMENTS_KEY, JSON.stringify(documents));
+}
+
+export function getSharedDocumentsForObjective(objectiveId: string) {
+  return readAuthoritySharedDocuments()
+    .filter((document) => document.objectiveId === objectiveId)
+    .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+}
+
+export function readAuthorityDossierEvaluations() {
+  if (!canUseStorage()) return initialDossierEvaluations;
+
+  const raw = window.localStorage.getItem(AUTHORITY_DOSSIER_EVALUATIONS_KEY);
+  if (!raw) {
+    window.localStorage.setItem(
+      AUTHORITY_DOSSIER_EVALUATIONS_KEY,
+      JSON.stringify(initialDossierEvaluations)
+    );
+    return initialDossierEvaluations;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as AuthorityDossierEvaluation[];
+    return parsed.length > 0 ? parsed : initialDossierEvaluations;
+  } catch {
+    window.localStorage.setItem(
+      AUTHORITY_DOSSIER_EVALUATIONS_KEY,
+      JSON.stringify(initialDossierEvaluations)
+    );
+    return initialDossierEvaluations;
+  }
+}
+
+export function writeAuthorityDossierEvaluations(evaluations: AuthorityDossierEvaluation[]) {
+  if (!canUseStorage()) return;
+  window.localStorage.setItem(
+    AUTHORITY_DOSSIER_EVALUATIONS_KEY,
+    JSON.stringify(evaluations)
+  );
+}
+
+export function readAuthorityObservationQuestionnaires() {
+  if (!canUseStorage()) return initialObservationQuestionnaires;
+
+  const raw = window.localStorage.getItem(AUTHORITY_OBSERVATION_QUESTIONNAIRES_KEY);
+  if (!raw) {
+    window.localStorage.setItem(
+      AUTHORITY_OBSERVATION_QUESTIONNAIRES_KEY,
+      JSON.stringify(initialObservationQuestionnaires)
+    );
+    return initialObservationQuestionnaires;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as AuthorityObservationQuestionnaire[];
+    return parsed.length > 0 ? parsed : initialObservationQuestionnaires;
+  } catch {
+    window.localStorage.setItem(
+      AUTHORITY_OBSERVATION_QUESTIONNAIRES_KEY,
+      JSON.stringify(initialObservationQuestionnaires)
+    );
+    return initialObservationQuestionnaires;
+  }
+}
+
+export function writeAuthorityObservationQuestionnaires(
+  questionnaires: AuthorityObservationQuestionnaire[]
+) {
+  if (!canUseStorage()) return;
+  window.localStorage.setItem(
+    AUTHORITY_OBSERVATION_QUESTIONNAIRES_KEY,
+    JSON.stringify(questionnaires)
+  );
+}
+
+export function getPublishedProfileForObjective(objectiveId: string) {
+  return readAuthorityPublishedProfiles().find((profile) => profile.objectiveId === objectiveId);
 }
 
 export function getLastInteractionForObjective(objectiveId: string) {

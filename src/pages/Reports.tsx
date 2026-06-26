@@ -15,8 +15,17 @@ import {
 } from 'lucide-react';
 import { mockInteractions } from '../data/interactions';
 import { mockAnalyses, mockReportTemplates } from '../data/misc';
-import type { InteractionType } from '../types';
+import {
+  getPublishedProfileForObjective,
+  readAuthorityPublishedProfiles,
+  readAuthoritySharedDocuments,
+  getSharedDocumentsForObjective,
+  writeAuthorityPublishedProfiles,
+  writeAuthoritySharedDocuments,
+} from '../data/authorityPortal';
+import type { AuthorityPublishedProfile, AuthoritySharedDocument, InteractionType } from '../types';
 import BackButton from '../components/BackButton';
+import { useAuth } from '../context/AuthContext';
 import { useObjectives } from '../context/ObjectivesContext';
 
 const templateIcons: Record<string, React.ReactNode> = {
@@ -42,6 +51,7 @@ const areaLabels: Record<string, string> = {
 };
 
 export default function Reports() {
+  const { user } = useAuth();
   const { objectives } = useObjectives();
   const [searchParams] = useSearchParams();
   const preselected = searchParams.get('obj') || '';
@@ -49,6 +59,21 @@ export default function Reports() {
   const [selectedObjective, setSelectedObjective] = useState(preselected || '');
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [publishedProfile, setPublishedProfile] = useState<AuthorityPublishedProfile | null>(null);
+  const [sharedDocuments, setSharedDocuments] = useState<AuthoritySharedDocument[]>([]);
+  const [authorityDraft, setAuthorityDraft] = useState({
+    generalInfo: '',
+    executiveSummary: '',
+    behaviorAnalysis: '',
+    socioculturalAnalysis: '',
+    fullReport: '',
+  });
+  const [documentDraft, setDocumentDraft] = useState({
+    name: '',
+    description: '',
+    category: 'PDF KLE',
+  });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const objective = objectives.find((o) => o.id === selectedObjective);
   const analysis = mockAnalyses[selectedObjective];
@@ -60,9 +85,99 @@ export default function Reports() {
     }
   }, [objectives, preselected, selectedObjective]);
 
+  useEffect(() => {
+    if (!selectedObjective) return;
+
+    const existingProfile = getPublishedProfileForObjective(selectedObjective) ?? null;
+    setSharedDocuments(getSharedDocumentsForObjective(selectedObjective));
+    setPublishedProfile(existingProfile);
+    setAuthorityDraft({
+      generalInfo: existingProfile?.generalInfo ?? objective?.biography ?? '',
+      executiveSummary: existingProfile?.executiveSummary ?? analysis?.executiveSummary ?? '',
+      behaviorAnalysis: existingProfile?.behaviorAnalysis ?? analysis?.personalityProfile ?? '',
+      socioculturalAnalysis: existingProfile?.socioculturalAnalysis ?? analysis?.socioculturalInterests ?? '',
+      fullReport:
+        existingProfile?.fullReport ??
+        [analysis?.executiveSummary, analysis?.personalityProfile, analysis?.socioculturalInterests]
+          .filter(Boolean)
+          .join('\n\n'),
+    });
+  }, [analysis, objective, selectedObjective]);
+
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const readFileAsDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ''));
+      reader.onerror = () => reject(new Error('No se pudo leer el archivo seleccionado.'));
+      reader.readAsDataURL(file);
+    });
+
+  const handlePublishAuthorityProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedObjective || !user) return;
+
+    const now = new Date().toISOString();
+    const nextProfile: AuthorityPublishedProfile = {
+      objectiveId: selectedObjective,
+      generalInfo: authorityDraft.generalInfo.trim(),
+      executiveSummary: authorityDraft.executiveSummary.trim(),
+      behaviorAnalysis: authorityDraft.behaviorAnalysis.trim(),
+      socioculturalAnalysis: authorityDraft.socioculturalAnalysis.trim(),
+      fullReport: authorityDraft.fullReport.trim(),
+      publishedAt: publishedProfile?.publishedAt ?? now,
+      updatedAt: now,
+      analystName: user.name,
+    };
+
+    const others = readAuthorityPublishedProfiles().filter((profile) => profile.objectiveId !== selectedObjective);
+    const nextProfiles = [nextProfile, ...others];
+    writeAuthorityPublishedProfiles(nextProfiles);
+    setPublishedProfile(nextProfile);
+    showToast('Contenido publicado para el portal de autoridad.');
+  };
+
+  const handleUploadSharedDocument = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedObjective || !user || !selectedFile) {
+      showToast('Selecciona un PDF antes de subirlo al portal de autoridad.');
+      return;
+    }
+
+    try {
+      const fileDataUrl = await readFileAsDataUrl(selectedFile);
+      const created: AuthoritySharedDocument = {
+        id: `shared-doc-${Date.now()}`,
+        objectiveId: selectedObjective,
+        name: documentDraft.name.trim() || selectedFile.name,
+        description: documentDraft.description.trim(),
+        category: documentDraft.category.trim() || 'PDF KLE',
+        mimeType: selectedFile.type || 'application/pdf',
+        fileDataUrl,
+        uploadedAt: new Date().toISOString(),
+        analystName: user.name,
+      };
+
+      const nextDocuments = [
+        created,
+        ...readAuthoritySharedDocuments(),
+      ];
+      writeAuthoritySharedDocuments(nextDocuments);
+      setSharedDocuments(getSharedDocumentsForObjective(selectedObjective));
+      setDocumentDraft({
+        name: '',
+        description: '',
+        category: 'PDF KLE',
+      });
+      setSelectedFile(null);
+      showToast('Documento sincronizado con la ficha de autoridad.');
+    } catch {
+      showToast('No se pudo procesar el documento seleccionado.');
+    }
   };
 
   const getCurrentTemplateName = () =>
@@ -451,6 +566,172 @@ export default function Reports() {
           </select>
         </div>
       </div>
+
+      <form
+        className="card"
+        onSubmit={handlePublishAuthorityProfile}
+        style={{ marginBottom: 'var(--space-6)' }}
+      >
+        <div className="section-header" style={{ marginBottom: 'var(--space-4)' }}>
+          <div>
+            <h3 className="section-title" style={{ marginBottom: 4 }}>Contenido para portal de autoridad</h3>
+            <p className="section-subtitle">
+              El analista rellena este contenido y la autoridad lo vera en su ficha cuando quede publicado.
+            </p>
+          </div>
+          <div className="section-header-side" style={{ textAlign: 'right' }}>
+            <div className="badge badge-active">
+              {publishedProfile ? 'Publicado' : 'Pendiente'}
+            </div>
+            {publishedProfile && (
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
+                Ultima actualizacion: {new Date(publishedProfile.updatedAt).toLocaleString('es-ES')}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Informacion general</label>
+          <textarea
+            className="form-textarea"
+            rows={4}
+            value={authorityDraft.generalInfo}
+            onChange={(e) => setAuthorityDraft((prev) => ({ ...prev, generalInfo: e.target.value }))}
+            placeholder="Contexto general que podra consultar la autoridad..."
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Resumen ejecutivo</label>
+          <textarea
+            className="form-textarea"
+            rows={4}
+            value={authorityDraft.executiveSummary}
+            onChange={(e) => setAuthorityDraft((prev) => ({ ...prev, executiveSummary: e.target.value }))}
+            placeholder="Resumen ejecutivo preparado por el analista..."
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Analisis de comportamiento</label>
+          <textarea
+            className="form-textarea"
+            rows={4}
+            value={authorityDraft.behaviorAnalysis}
+            onChange={(e) => setAuthorityDraft((prev) => ({ ...prev, behaviorAnalysis: e.target.value }))}
+            placeholder="Patrones, forma de comunicacion, riesgos y oportunidades..."
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Analisis sociocultural</label>
+          <textarea
+            className="form-textarea"
+            rows={4}
+            value={authorityDraft.socioculturalAnalysis}
+            onChange={(e) => setAuthorityDraft((prev) => ({ ...prev, socioculturalAnalysis: e.target.value }))}
+            placeholder="Contexto sociocultural y consideraciones protocolarias..."
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Documento completo</label>
+          <textarea
+            className="form-textarea"
+            rows={8}
+            value={authorityDraft.fullReport}
+            onChange={(e) => setAuthorityDraft((prev) => ({ ...prev, fullReport: e.target.value }))}
+            placeholder="Version completa que se mostrara en el portal de autoridad..."
+            required
+          />
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+            {publishedProfile
+              ? `Publicado por ${publishedProfile.analystName}.`
+              : 'Todavia no hay contenido publicado para esta autoridad.'}
+          </div>
+          <button className="btn btn-primary" type="submit">
+            Publicar para autoridad
+          </button>
+        </div>
+      </form>
+
+      <form
+        className="card"
+        onSubmit={handleUploadSharedDocument}
+        style={{ marginBottom: 'var(--space-6)' }}
+      >
+        <div className="section-header" style={{ marginBottom: 'var(--space-4)' }}>
+          <div>
+            <h3 className="section-title" style={{ marginBottom: 4 }}>Documentos para autoridad</h3>
+            <p className="section-subtitle">
+              Los PDFs y documentos que suba el analista apareceran en la ficha de la autoridad.
+            </p>
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Nombre del documento</label>
+            <input
+              className="form-input"
+              value={documentDraft.name}
+              onChange={(e) => setDocumentDraft((prev) => ({ ...prev, name: e.target.value }))}
+              placeholder="Ej. Dosier actualizado junio 2026"
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Categoria</label>
+            <input
+              className="form-input"
+              value={documentDraft.category}
+              onChange={(e) => setDocumentDraft((prev) => ({ ...prev, category: e.target.value }))}
+              placeholder="PDF KLE"
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Descripcion</label>
+          <textarea
+            className="form-textarea"
+            rows={3}
+            value={documentDraft.description}
+            onChange={(e) => setDocumentDraft((prev) => ({ ...prev, description: e.target.value }))}
+            placeholder="Indica que contiene el documento y por que es relevante para la autoridad"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Archivo PDF</label>
+          <input
+            className="form-input"
+            type="file"
+            accept="application/pdf,.pdf"
+            onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+            required
+          />
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+            {sharedDocuments.length > 0
+              ? `${sharedDocuments.length} documento(s) visible(s) ya en la ficha de autoridad.`
+              : 'Todavia no hay documentos sincronizados con la ficha de autoridad.'}
+          </div>
+          <button className="btn btn-primary" type="submit">
+            Subir documento al portal
+          </button>
+        </div>
+      </form>
 
       <div className="grid-3" style={{ marginBottom: 'var(--space-6)' }}>
         {mockReportTemplates.map((template) => (

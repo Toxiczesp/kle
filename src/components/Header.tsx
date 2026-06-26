@@ -27,6 +27,7 @@ const analystPageTitles: Record<string, string> = {
   '/repository': 'Repositorio',
   '/interactions': 'Interacciones',
   '/analysis': 'Info Autoridad Objetivo',
+  '/analyst/requests': 'Solicitudes de Autoridad',
   '/ai-chat': 'Preguntas IA',
   '/reports': 'Informes',
 };
@@ -34,10 +35,10 @@ const analystPageTitles: Record<string, string> = {
 const authorityPageTitles: Record<string, string> = {
   '/authority': 'Dashboard Autoridad',
   '/authority/kle': 'Buscador KLE',
-  '/authority/interactions': 'Buscador de Interacciones',
+  '/authority/interactions': 'Interacciones',
+  '/authority/evaluations': 'Valoraciones',
   '/authority/requests': 'Solicitud de Informes',
-  '/authority/ai': 'Preguntas IA',
-  '/authority/evaluations': 'Valoracion de Interacciones',
+  '/authority/ai': 'Asistente IA',
 };
 
 const analystSearchablePages = [
@@ -46,17 +47,18 @@ const analystSearchablePages = [
   { path: '/repository', label: 'Repositorio', icon: FolderOpen, description: 'Documentos y archivos' },
   { path: '/interactions', label: 'Interacciones', icon: ClipboardList, description: 'Historial de interacciones' },
   { path: '/analysis', label: 'Info Autoridad Objetivo', icon: BrainCircuit, description: 'Perfilado de personalidad y contexto operativo' },
+  { path: '/analyst/requests', label: 'Solicitudes de Autoridad', icon: FilePlus2, description: 'Encargos recibidos desde la cuenta autoridad' },
   { path: '/ai-chat', label: 'Preguntas IA', icon: MessageSquareText, description: 'Asistente inteligente' },
   { path: '/reports', label: 'Informes', icon: FileBarChart, description: 'Generar y consultar informes' },
 ];
 
 const authoritySearchablePages = [
   { path: '/authority', label: 'Dashboard Autoridad', icon: LayoutDashboard, description: 'Panel principal de consulta y coordinacion' },
-  { path: '/authority/kle', label: 'Buscador KLE', icon: Users, description: 'Fichas, informes e historicos por autoridad' },
-  { path: '/authority/interactions', label: 'Buscador de Interacciones', icon: ClipboardList, description: 'Consultas por fecha, lugar, pais y organizacion' },
+  { path: '/authority/kle', label: 'Buscador KLE', icon: Users, description: 'Dosieres, documentos y fichas por autoridad' },
+  { path: '/authority/interactions', label: 'Interacciones', icon: ClipboardList, description: 'Consultas por fechas, pais, lugar y organismo' },
+  { path: '/authority/evaluations', label: 'Valoraciones', icon: ClipboardCheck, description: 'Valoracion del dosier KLE y de cada interaccion' },
   { path: '/authority/requests', label: 'Solicitud de Informes', icon: FilePlus2, description: 'Encargos y seguimiento al equipo de analisis' },
-  { path: '/authority/ai', label: 'Preguntas IA', icon: BrainCircuit, description: 'Asistente conversacional sobre informacion operativa' },
-  { path: '/authority/evaluations', label: 'Valoracion de Interacciones', icon: ClipboardCheck, description: 'Registro de resultados, riesgos y oportunidades' },
+  { path: '/authority/ai', label: 'Asistente IA', icon: BrainCircuit, description: 'Asistente conversacional sobre informacion operativa' },
 ];
 
 interface Notification {

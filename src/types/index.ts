@@ -16,6 +16,12 @@ export type AuthorityRequestType =
   | 'full-dossier';
 export type AuthorityRequestStatus = 'pending' | 'drafting' | 'review' | 'done';
 export type InteractionRating = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type DossierContributionRating =
+  | 'Muy deficiente'
+  | 'Deficiente'
+  | 'Aceptable'
+  | 'Buena'
+  | 'Excelente';
 
 export interface Objective {
   id: string;
@@ -173,13 +179,20 @@ export interface AuthorityDossierEvaluation {
   id: string;
   objectiveId: string;
   date: string;
-  overallScore: InteractionRating;
-  clarityScore: InteractionRating;
-  usefulnessScore: InteractionRating;
-  targetFitScore: InteractionRating;
-  strengths: string;
-  improvements: string;
-  additionalComments: string;
+  profileUsefulness: InteractionRating;
+  structureClarity: InteractionRating;
+  psychologicalAdvantage: InteractionRating;
+  biographyDepth: InteractionRating;
+  behaviorGuidance: InteractionRating;
+  conversationTopics: InteractionRating;
+  socioculturalFramework: InteractionRating;
+  geopoliticalAccuracy: InteractionRating;
+  precisionAndReliability: InteractionRating;
+  detailLevel: InteractionRating;
+  additionalInformationNeeded: string;
+  contentChanges: string;
+  otherRelevantAspects: string;
+  globalContribution: DossierContributionRating;
   createdAt: string;
 }
 

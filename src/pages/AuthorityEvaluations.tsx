@@ -12,6 +12,7 @@ import type {
   AuthorityDossierEvaluation,
   AuthorityEvaluation,
   AuthorityObservationQuestionnaire,
+  DossierContributionRating,
   InteractionRating,
 } from '../types';
 
@@ -39,11 +40,55 @@ const likertQuestions = [
 ] as const;
 
 const dossierQuestions = [
-  { key: 'overallScore', label: 'Valoracion global del dosier KLE.' },
-  { key: 'clarityScore', label: 'Claridad y facilidad de lectura del dosier.' },
-  { key: 'usefulnessScore', label: 'Utilidad operativa para preparar la interaccion.' },
-  { key: 'targetFitScore', label: 'Adecuacion del contenido al objetivo y perfil de la autoridad.' },
+  {
+    key: 'profileUsefulness',
+    label: '1.1 La informacion proporcionada fue util para comprender adecuadamente el perfil de la autoridad, asi como para preparar la interaccion y la estrategia de aproximacion.',
+  },
+  {
+    key: 'structureClarity',
+    label: '1.2 La estructura y organizacion del dosier facilitaron localizar rapidamente la informacion relevante.',
+  },
+  {
+    key: 'psychologicalAdvantage',
+    label: '1.3 El perfil psicologico y de comportamiento de la Autoridad Objetivo me proporciono una ventaja clara para anticipar la interaccion.',
+  },
+  {
+    key: 'biographyDepth',
+    label: '1.4 La profundidad de los datos biograficos, familiares y de trayectoria profesional fue la adecuada para mis necesidades.',
+  },
+  {
+    key: 'behaviorGuidance',
+    label: '1.5 Las orientaciones de comportamiento recomendadas me resultaron utiles y faciles de aplicar durante el encuentro.',
+  },
+  {
+    key: 'conversationTopics',
+    label: '1.6 Los temas de conversacion sugeridos resultaron apropiados y me ayudaron en mi interaccion.',
+  },
+  {
+    key: 'socioculturalFramework',
+    label: '1.7 La informacion sobre los aspectos socioculturales y el marco comparativo con Espana fue acertada y util para el encuentro.',
+  },
+  {
+    key: 'geopoliticalAccuracy',
+    label: '1.8 La informacion sobre aspectos geopoliticos estaba correctamente orientada y actualizada.',
+  },
+  {
+    key: 'precisionAndReliability',
+    label: '1.9 La informacion contenida en el dosier fue precisa, fiable y acorde con la realidad observada durante la interaccion.',
+  },
+  {
+    key: 'detailLevel',
+    label: '1.10 El nivel de detalle de la informacion fue optimo para mis necesidades.',
+  },
 ] as const;
+
+const dossierContributionOptions: DossierContributionRating[] = [
+  'Muy deficiente',
+  'Deficiente',
+  'Aceptable',
+  'Buena',
+  'Excelente',
+];
 
 const evaluationSections = [
   {
@@ -191,10 +236,16 @@ function averageInteractionEvaluation(evaluation: AuthorityEvaluation) {
 
 function averageDossierEvaluation(evaluation: AuthorityDossierEvaluation) {
   const values = [
-    evaluation.overallScore,
-    evaluation.clarityScore,
-    evaluation.usefulnessScore,
-    evaluation.targetFitScore,
+    evaluation.profileUsefulness,
+    evaluation.structureClarity,
+    evaluation.psychologicalAdvantage,
+    evaluation.biographyDepth,
+    evaluation.behaviorGuidance,
+    evaluation.conversationTopics,
+    evaluation.socioculturalFramework,
+    evaluation.geopoliticalAccuracy,
+    evaluation.precisionAndReliability,
+    evaluation.detailLevel,
   ];
 
   return (values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(1);
@@ -263,13 +314,20 @@ export default function AuthorityEvaluations() {
   const [dossierForm, setDossierForm] = useState({
     objectiveId: objectives[0]?.id ?? '',
     date: '',
-    overallScore: 5 as InteractionRating,
-    clarityScore: 5 as InteractionRating,
-    usefulnessScore: 5 as InteractionRating,
-    targetFitScore: 5 as InteractionRating,
-    strengths: '',
-    improvements: '',
-    additionalComments: '',
+    profileUsefulness: 5 as InteractionRating,
+    structureClarity: 5 as InteractionRating,
+    psychologicalAdvantage: 5 as InteractionRating,
+    biographyDepth: 5 as InteractionRating,
+    behaviorGuidance: 5 as InteractionRating,
+    conversationTopics: 5 as InteractionRating,
+    socioculturalFramework: 5 as InteractionRating,
+    geopoliticalAccuracy: 5 as InteractionRating,
+    precisionAndReliability: 5 as InteractionRating,
+    detailLevel: 5 as InteractionRating,
+    additionalInformationNeeded: '',
+    contentChanges: '',
+    otherRelevantAspects: '',
+    globalContribution: 'Aceptable' as DossierContributionRating,
   });
 
   const [observationForm, setObservationForm] = useState({
@@ -366,13 +424,20 @@ export default function AuthorityEvaluations() {
       id: `dossier-eval-${Date.now()}`,
       objectiveId: dossierForm.objectiveId,
       date: dossierForm.date,
-      overallScore: dossierForm.overallScore,
-      clarityScore: dossierForm.clarityScore,
-      usefulnessScore: dossierForm.usefulnessScore,
-      targetFitScore: dossierForm.targetFitScore,
-      strengths: dossierForm.strengths,
-      improvements: dossierForm.improvements,
-      additionalComments: dossierForm.additionalComments,
+      profileUsefulness: dossierForm.profileUsefulness,
+      structureClarity: dossierForm.structureClarity,
+      psychologicalAdvantage: dossierForm.psychologicalAdvantage,
+      biographyDepth: dossierForm.biographyDepth,
+      behaviorGuidance: dossierForm.behaviorGuidance,
+      conversationTopics: dossierForm.conversationTopics,
+      socioculturalFramework: dossierForm.socioculturalFramework,
+      geopoliticalAccuracy: dossierForm.geopoliticalAccuracy,
+      precisionAndReliability: dossierForm.precisionAndReliability,
+      detailLevel: dossierForm.detailLevel,
+      additionalInformationNeeded: dossierForm.additionalInformationNeeded,
+      contentChanges: dossierForm.contentChanges,
+      otherRelevantAspects: dossierForm.otherRelevantAspects,
+      globalContribution: dossierForm.globalContribution,
       createdAt: new Date().toISOString(),
     };
 
@@ -382,13 +447,20 @@ export default function AuthorityEvaluations() {
     setDossierForm({
       objectiveId: objectives[0]?.id ?? '',
       date: '',
-      overallScore: 5,
-      clarityScore: 5,
-      usefulnessScore: 5,
-      targetFitScore: 5,
-      strengths: '',
-      improvements: '',
-      additionalComments: '',
+      profileUsefulness: 5,
+      structureClarity: 5,
+      psychologicalAdvantage: 5,
+      biographyDepth: 5,
+      behaviorGuidance: 5,
+      conversationTopics: 5,
+      socioculturalFramework: 5,
+      geopoliticalAccuracy: 5,
+      precisionAndReliability: 5,
+      detailLevel: 5,
+      additionalInformationNeeded: '',
+      contentChanges: '',
+      otherRelevantAspects: '',
+      globalContribution: 'Aceptable',
     });
   };
 
@@ -623,8 +695,8 @@ export default function AuthorityEvaluations() {
           <form className="authority-panel" onSubmit={handleDossierSubmit}>
             <div className="authority-panel-header">
               <div>
-                <h2>Valoracion del dosier KLE</h2>
-                <p>Evalua la calidad del dosier recibido y deja feedback util para el equipo de analisis.</p>
+                <h2>Evaluacion del dosier KLE</h2>
+                <p>Valora de forma clara la utilidad del dosier para preparar la interaccion.</p>
               </div>
             </div>
 
@@ -654,7 +726,13 @@ export default function AuthorityEvaluations() {
             </div>
 
             <div className="authority-rich-content" style={{ marginBottom: 'var(--space-5)' }}>
-              <h3>Valora el dosier en una escala del 1 al 10.</h3>
+              <div className="authority-intro-card">
+                <span className="authority-intro-eyebrow">Bloque 1</span>
+                <h3>Valoracion de la informacion recibida</h3>
+                <p>
+                  Con el fin de valorar la efectividad de la informacion proporcionada en el Dosier KLE elaborado para su encuentro, valore las siguientes afirmaciones en una escala del 1 al 10, donde 1 significa "Totalmente en desacuerdo / Muy insatisfecho" y 10 significa "Totalmente de acuerdo / Muy satisfecho".
+                </p>
+              </div>
               {dossierQuestions.map((question) => (
                 <ScoreSlider
                   key={question.key}
@@ -665,36 +743,58 @@ export default function AuthorityEvaluations() {
               ))}
             </div>
 
+            <div className="authority-rich-content" style={{ marginBottom: 'var(--space-5)' }}>
+              <div className="authority-intro-card authority-intro-card-compact">
+                <span className="authority-intro-eyebrow">Bloque 2</span>
+                <h3>Valoracion general</h3>
+              </div>
+            </div>
+
             <div className="form-group">
-              <label className="form-label">Puntos fuertes del dosier</label>
+              <label className="form-label">Si tuviera que preparar una nueva interaccion con una autoridad similar, que informacion adicional, habilidades o conocimientos concretos le habria resultado util recibir y que no estaba incluida en este dosier?</label>
               <textarea
                 className="form-textarea"
                 rows={4}
-                value={dossierForm.strengths}
-                onChange={(e) => setDossierForm((prev) => ({ ...prev, strengths: e.target.value }))}
+                value={dossierForm.additionalInformationNeeded}
+                onChange={(e) => setDossierForm((prev) => ({ ...prev, additionalInformationNeeded: e.target.value }))}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Aspectos a mejorar</label>
+              <label className="form-label">Indique que contenidos del dosier eliminaria, modificaria o presentaria de otra forma para aumentar su utilidad.</label>
               <textarea
                 className="form-textarea"
                 rows={4}
-                value={dossierForm.improvements}
-                onChange={(e) => setDossierForm((prev) => ({ ...prev, improvements: e.target.value }))}
+                value={dossierForm.contentChanges}
+                onChange={(e) => setDossierForm((prev) => ({ ...prev, contentChanges: e.target.value }))}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Comentarios adicionales</label>
+              <label className="form-label">Senale cualquier otro aspecto que considere de interes y debamos tener en cuenta para la preparacion de futuros encuentros.</label>
               <textarea
                 className="form-textarea"
                 rows={4}
-                value={dossierForm.additionalComments}
-                onChange={(e) => setDossierForm((prev) => ({ ...prev, additionalComments: e.target.value }))}
+                value={dossierForm.otherRelevantAspects}
+                onChange={(e) => setDossierForm((prev) => ({ ...prev, otherRelevantAspects: e.target.value }))}
+                required
               />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Valoracion global del dosier en cuanto a su contribucion a alcanzar los objetivos previstos en la interaccion.</label>
+              <select
+                className="form-select"
+                value={dossierForm.globalContribution}
+                onChange={(e) => setDossierForm((prev) => ({ ...prev, globalContribution: e.target.value as DossierContributionRating }))}
+                required
+              >
+                {dossierContributionOptions.map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
             </div>
 
             <button className="btn btn-primary" type="submit">Guardar valoracion del dosier</button>
@@ -717,13 +817,20 @@ export default function AuthorityEvaluations() {
                       <span className="authority-status-pill">Media {averageDossierEvaluation(evaluation)}/10</span>
                     </div>
                     <p><strong>Fecha:</strong> {evaluation.date}</p>
-                    <p><strong>Valoracion global:</strong> {evaluation.overallScore}/10</p>
-                    <p><strong>Claridad:</strong> {evaluation.clarityScore}/10</p>
-                    <p><strong>Utilidad operativa:</strong> {evaluation.usefulnessScore}/10</p>
-                    <p><strong>Adecuacion al objetivo:</strong> {evaluation.targetFitScore}/10</p>
-                    <p><strong>Puntos fuertes:</strong> {evaluation.strengths}</p>
-                    <p><strong>Aspectos a mejorar:</strong> {evaluation.improvements}</p>
-                    <p><strong>Comentarios adicionales:</strong> {evaluation.additionalComments || 'Sin comentarios adicionales.'}</p>
+                    <p><strong>Valoracion global final:</strong> {evaluation.globalContribution}</p>
+                    <p><strong>1.1 Perfil y preparacion:</strong> {evaluation.profileUsefulness}/10</p>
+                    <p><strong>1.2 Estructura:</strong> {evaluation.structureClarity}/10</p>
+                    <p><strong>1.3 Perfil psicologico:</strong> {evaluation.psychologicalAdvantage}/10</p>
+                    <p><strong>1.4 Profundidad biografica:</strong> {evaluation.biographyDepth}/10</p>
+                    <p><strong>1.5 Orientaciones de comportamiento:</strong> {evaluation.behaviorGuidance}/10</p>
+                    <p><strong>1.6 Temas de conversacion:</strong> {evaluation.conversationTopics}/10</p>
+                    <p><strong>1.7 Aspectos socioculturales:</strong> {evaluation.socioculturalFramework}/10</p>
+                    <p><strong>1.8 Aspectos geopoliticos:</strong> {evaluation.geopoliticalAccuracy}/10</p>
+                    <p><strong>1.9 Precision y fiabilidad:</strong> {evaluation.precisionAndReliability}/10</p>
+                    <p><strong>1.10 Nivel de detalle:</strong> {evaluation.detailLevel}/10</p>
+                    <p><strong>Informacion adicional util:</strong> {evaluation.additionalInformationNeeded}</p>
+                    <p><strong>Cambios de contenido o formato:</strong> {evaluation.contentChanges}</p>
+                    <p><strong>Otros aspectos:</strong> {evaluation.otherRelevantAspects}</p>
                   </div>
                 );
               })}

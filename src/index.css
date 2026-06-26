@@ -3185,6 +3185,40 @@ img {
   padding-left: 1.2rem;
 }
 
+.authority-intro-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-radius: 18px;
+  border: 1px solid rgba(242, 194, 48, 0.18);
+  background: linear-gradient(180deg, rgba(242, 194, 48, 0.06), rgba(8, 17, 31, 0.28));
+}
+
+.authority-intro-card-compact {
+  padding-block: var(--space-3);
+}
+
+.authority-intro-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f6cf58;
+}
+
+.authority-intro-card h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.3;
+}
+
+.authority-intro-card p {
+  margin: 0;
+  color: rgba(226, 235, 247, 0.82);
+  line-height: 1.65;
+}
+
 .authority-evaluations-nav-panel {
   margin-bottom: var(--space-6);
 }

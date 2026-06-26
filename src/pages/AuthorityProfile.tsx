@@ -83,7 +83,7 @@ export default function AuthorityProfile() {
             <div className="authority-profile-tags">
               <span>{objective.organization}</span>
               <span>{objective.country}</span>
-              <span>{lastInteraction ? `Ultima interaccion: ${lastInteraction.date}` : 'Sin interacciones registradas'}</span>
+              <span>{lastInteraction ? `Última interacción: ${lastInteraction.date}` : 'Sin interacciones registradas'}</span>
             </div>
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function AuthorityProfile() {
           <strong>{objective.title}</strong>
         </div>
         <div className="authority-info-card">
-          <span>Organizacion</span>
+          <span>Organización</span>
           <strong>{objective.organization}</strong>
         </div>
         <div className="authority-info-card">
@@ -129,14 +129,14 @@ export default function AuthorityProfile() {
         {activeTab === 'dossier' && (
           <div className="authority-rich-content">
             <h3>Dosier publicado por el analista</h3>
-            <p>{publishedProfile?.generalInfo ?? 'Pendiente de publicacion por el analista.'}</p>
+            <p>{publishedProfile?.generalInfo ?? 'Pendiente de publicación por el analista.'}</p>
             <h3>Resumen ejecutivo</h3>
-            <p>{publishedProfile?.executiveSummary ?? 'Pendiente de publicacion por el analista.'}</p>
-            <h3>Analisis de comportamiento</h3>
-            <p>{publishedProfile?.behaviorAnalysis ?? 'Pendiente de publicacion por el analista.'}</p>
-            <h3>Analisis sociocultural</h3>
-            <p>{publishedProfile?.socioculturalAnalysis ?? 'Pendiente de publicacion por el analista.'}</p>
-            <h3>Aspectos mas relevantes</h3>
+            <p>{publishedProfile?.executiveSummary ?? 'Pendiente de publicación por el analista.'}</p>
+            <h3>Análisis de comportamiento</h3>
+            <p>{publishedProfile?.behaviorAnalysis ?? 'Pendiente de publicación por el analista.'}</p>
+            <h3>Análisis sociocultural</h3>
+            <p>{publishedProfile?.socioculturalAnalysis ?? 'Pendiente de publicación por el analista.'}</p>
+            <h3>Aspectos más relevantes</h3>
             <ul>
               {objective.professionalInterests.map((interest) => <li key={interest}>{interest}</li>)}
             </ul>
@@ -188,7 +188,7 @@ export default function AuthorityProfile() {
           <div className="authority-rich-content">
             <h3>Documento integral elaborado por analistas</h3>
             <p style={{ whiteSpace: 'pre-line' }}>
-              {publishedProfile?.fullReport ?? 'Pendiente de publicacion por el analista.'}
+              {publishedProfile?.fullReport ?? 'Pendiente de publicación por el analista.'}
             </p>
             {publishedProfile && (
               <small style={{ color: 'var(--color-text-muted)' }}>
@@ -200,7 +200,7 @@ export default function AuthorityProfile() {
 
         {activeTab === 'history' && (
           <div className="authority-rich-content">
-            <h3>Historial cronologico</h3>
+            <h3>Historial cronológico</h3>
             <div className="authority-history-list">
               {interactions.map((interaction) => {
                 const evaluation = evaluations.find((item) => item.date === interaction.date && item.location === interaction.location);
@@ -212,7 +212,7 @@ export default function AuthorityProfile() {
                     </div>
                     <p><strong>Objetivo:</strong> {interaction.nextSteps[0] ?? 'Seguimiento relacional y operativo.'}</p>
                     <p><strong>Resultado:</strong> {interaction.observations}</p>
-                    <p><strong>Valoracion:</strong> {evaluation ? `Media ${averageEvaluation(evaluation)}/10` : 'Sin valoracion registrada'}</p>
+                    <p><strong>Valoración:</strong> {evaluation ? `Media ${averageEvaluation(evaluation)}/10` : 'Sin valoración registrada'}</p>
                   </div>
                 );
               })}

@@ -43,7 +43,7 @@ const authorityPageTitles: Record<string, string> = {
 
 const analystSearchablePages = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard, description: 'Panel principal del analista' },
-  { path: '/objectives', label: 'Autoridades Objetivo', icon: Target, description: 'Gestion de autoridades objetivo KLE' },
+  { path: '/objectives', label: 'Autoridades Objetivo', icon: Target, description: 'Gestión de autoridades objetivo KLE' },
   { path: '/repository', label: 'Repositorio', icon: FolderOpen, description: 'Documentos y archivos' },
   { path: '/interactions', label: 'Interacciones', icon: ClipboardList, description: 'Historial de interacciones' },
   { path: '/analysis', label: 'Info Autoridad Objetivo', icon: BrainCircuit, description: 'Perfilado de personalidad y contexto operativo' },
@@ -53,12 +53,12 @@ const analystSearchablePages = [
 ];
 
 const authoritySearchablePages = [
-  { path: '/authority', label: 'Dashboard Autoridad', icon: LayoutDashboard, description: 'Panel principal de consulta y coordinacion' },
+  { path: '/authority', label: 'Dashboard Autoridad', icon: LayoutDashboard, description: 'Panel principal de consulta y coordinación' },
   { path: '/authority/kle', label: 'Buscador KLE', icon: Users, description: 'Dosieres, documentos y fichas por autoridad' },
-  { path: '/authority/interactions', label: 'Interacciones', icon: ClipboardList, description: 'Consultas por fechas, pais, lugar y organismo' },
-  { path: '/authority/evaluations', label: 'Valoraciones', icon: ClipboardCheck, description: 'Valoracion del dosier KLE y de cada interaccion' },
-  { path: '/authority/requests', label: 'Solicitud de Informes', icon: FilePlus2, description: 'Encargos y seguimiento al equipo de analisis' },
-  { path: '/authority/ai', label: 'Asistente IA', icon: BrainCircuit, description: 'Asistente conversacional sobre informacion operativa' },
+  { path: '/authority/interactions', label: 'Interacciones', icon: ClipboardList, description: 'Consultas por fechas, país, lugar y organismo' },
+  { path: '/authority/evaluations', label: 'Valoraciones', icon: ClipboardCheck, description: 'Valoración del dosier KLE y de cada interacción' },
+  { path: '/authority/requests', label: 'Solicitud de Informes', icon: FilePlus2, description: 'Encargos y seguimiento al equipo de análisis' },
+  { path: '/authority/ai', label: 'Asistente IA', icon: BrainCircuit, description: 'Asistente conversacional sobre información operativa' },
 ];
 
 interface Notification {
@@ -73,8 +73,8 @@ interface Notification {
 const initialNotifications: Notification[] = [
   {
     id: 'n1',
-    title: 'Nuevo documento anadido',
-    message: 'Se ha subido "Informe de interaccion - Marzo 2026" al repositorio del Gral. Al-Rashidi.',
+    title: 'Nuevo documento añadido',
+    message: 'Se ha subido "Informe de interacción - Marzo 2026" al repositorio del Gral. Al-Rashidi.',
     time: 'Hace 12 min',
     read: false,
     type: 'info',
@@ -90,7 +90,7 @@ const initialNotifications: Notification[] = [
   {
     id: 'n3',
     title: 'Informe generado',
-    message: 'El informe consolidado de la Dra. Benkhouya esta disponible para revision.',
+    message: 'El informe consolidado de la Dra. Benkhouya está disponible para revisión.',
     time: 'Hace 5 h',
     read: false,
     type: 'success',
@@ -221,13 +221,13 @@ export default function Header() {
               <img
                 className="header-brand-gobierno-image"
                 src={headerBrandGobierno}
-                alt="Gobierno de Espana - Ministerio de Defensa"
+                alt="Gobierno de España - Ministerio de Defensa"
               />
             </a>
             <img
               className="header-brand-emad-image"
               src={headerBrandEmad}
-              alt="Estado Mayor de la Defensa - Integracion en el multidominio"
+              alt="Estado Mayor de la Defensa - Integración en el multidominio"
             />
           </div>
         </div>

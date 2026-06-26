@@ -179,6 +179,7 @@ export interface AuthorityDossierEvaluation {
   id: string;
   objectiveId: string;
   date: string;
+  location: string;
   profileUsefulness: InteractionRating;
   structureClarity: InteractionRating;
   psychologicalAdvantage: InteractionRating;

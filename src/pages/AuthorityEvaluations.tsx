@@ -19,66 +19,66 @@ import type {
 const likertQuestions = [
   {
     key: 'strategyFit',
-    label: '1.1 La estrategia empleada durante la interaccion fue adecuada para las circunstancias y el perfil del interlocutor.',
+    label: '1.1 La estrategia empleada durante la interacción fue adecuada para las circunstancias y el perfil del interlocutor.',
   },
   {
     key: 'trustAndCommunication',
-    label: '1.2 Se logro establecer un clima de confianza y comunicacion efectiva con la otra persona.',
+    label: '1.2 Se logró establecer un clima de confianza y comunicación efectiva con la otra persona.',
   },
   {
     key: 'objectiveProgress',
-    label: '1.3 La interaccion permitio avanzar hacia los objetivos previamente establecidos.',
+    label: '1.3 La interacción permitió avanzar hacia los objetivos previamente establecidos.',
   },
   {
     key: 'objectionHandling',
-    label: '1.4 Durante la interaccion se gestionaron de forma adecuada las objeciones, desacuerdos o resistencias que surgieron.',
+    label: '1.4 Durante la interacción se gestionaron de forma adecuada las objeciones, desacuerdos o resistencias que surgieron.',
   },
   {
     key: 'nextStepsClarity',
-    label: '1.5 Al finalizar la interaccion, se establecieron pasos concretos o compromisos que facilitan la consecucion de los objetivos.',
+    label: '1.5 Al finalizar la interacción, se establecieron pasos concretos o compromisos que facilitan la consecución de los objetivos.',
   },
 ] as const;
 
 const dossierQuestions = [
   {
     key: 'profileUsefulness',
-    label: '1.1 La informacion proporcionada fue util para comprender adecuadamente el perfil de la autoridad, asi como para preparar la interaccion y la estrategia de aproximacion.',
+    label: '1.1 La información proporcionada fue útil para comprender adecuadamente el perfil de la autoridad, así como para preparar la interacción y la estrategia de aproximación.',
   },
   {
     key: 'structureClarity',
-    label: '1.2 La estructura y organizacion del dosier facilitaron localizar rapidamente la informacion relevante.',
+    label: '1.2 La estructura y organización del dosier facilitaron localizar rápidamente la información relevante.',
   },
   {
     key: 'psychologicalAdvantage',
-    label: '1.3 El perfil psicologico y de comportamiento de la Autoridad Objetivo me proporciono una ventaja clara para anticipar la interaccion.',
+    label: '1.3 El perfil psicológico y de comportamiento de la Autoridad Objetivo me proporcionó una ventaja clara para anticipar la interacción.',
   },
   {
     key: 'biographyDepth',
-    label: '1.4 La profundidad de los datos biograficos, familiares y de trayectoria profesional fue la adecuada para mis necesidades.',
+    label: '1.4 La profundidad de los datos biográficos, familiares y de trayectoria profesional fue la adecuada para mis necesidades.',
   },
   {
     key: 'behaviorGuidance',
-    label: '1.5 Las orientaciones de comportamiento recomendadas me resultaron utiles y faciles de aplicar durante el encuentro.',
+    label: '1.5 Las orientaciones de comportamiento recomendadas me resultaron útiles y fáciles de aplicar durante el encuentro.',
   },
   {
     key: 'conversationTopics',
-    label: '1.6 Los temas de conversacion sugeridos resultaron apropiados y me ayudaron en mi interaccion.',
+    label: '1.6 Los temas de conversación sugeridos resultaron apropiados y me ayudaron en mi interacción.',
   },
   {
     key: 'socioculturalFramework',
-    label: '1.7 La informacion sobre los aspectos socioculturales y el marco comparativo con Espana fue acertada y util para el encuentro.',
+    label: '1.7 La información sobre los aspectos socioculturales y el marco comparativo con España fue acertada y útil para el encuentro.',
   },
   {
     key: 'geopoliticalAccuracy',
-    label: '1.8 La informacion sobre aspectos geopoliticos estaba correctamente orientada y actualizada.',
+    label: '1.8 La información sobre aspectos geopolíticos estaba correctamente orientada y actualizada.',
   },
   {
     key: 'precisionAndReliability',
-    label: '1.9 La informacion contenida en el dosier fue precisa, fiable y acorde con la realidad observada durante la interaccion.',
+    label: '1.9 La información contenida en el dosier fue precisa, fiable y acorde con la realidad observada durante la interacción.',
   },
   {
     key: 'detailLevel',
-    label: '1.10 El nivel de detalle de la informacion fue optimo para mis necesidades.',
+    label: '1.10 El nivel de detalle de la información fue óptimo para mis necesidades.',
   },
 ] as const;
 
@@ -93,54 +93,54 @@ const dossierContributionOptions: DossierContributionRating[] = [
 const evaluationSections = [
   {
     id: 'dossier',
-    title: 'Valoracion del dosier KLE',
-    description: 'Recoge feedback sobre utilidad, claridad y adecuacion de los dosieres recibidos.',
+    title: 'Valoración del dosier KLE',
+    description: 'Valore la utilidad, claridad y adecuación de los dosieres KLE recibidos.',
   },
   {
     id: 'interaction',
-    title: 'Valoracion de la interaccion',
-    description: 'Evalua la reunion realizada y registra aprendizajes para siguientes contactos.',
+    title: 'Valoración de la interacción',
+    description: 'Valore la interacción realizada y deje constancia de los aspectos relevantes para futuros contactos.',
   },
   {
     id: 'observation',
     title: 'Cuestionarios del observador',
-    description: 'Recoge observaciones, alertas y patrones detectados durante las interacciones.',
+    description: 'Consulte y complete los cuestionarios de observación con un enfoque formal y estructurado.',
   },
 ] as const;
 
 type EvaluationSection = (typeof evaluationSections)[number]['id'];
 
 const personalityQuestions = [
-  "1. ¿Considera usted que se trata de una persona que se pare a pensar las cosas antes de hacerlas?",
+  "1. ¿Considera usted que se trata de una persona que se para a pensar las cosas antes de hacerlas?",
   "2. ¿Infiere usted que su estado de ánimo pudiera sufrir altibajos con frecuencia?",
   "3. ¿Considera usted que es una persona habladora?",
-  "4. ¿Estima usted que se trate de una persona más bien animada o vital?",
+  "4. ¿Estima usted que se trata de una persona más bien animada o vital?",
   "5. ¿Observa usted que sea una persona irritable?",
-  "6. ¿Cree usted que le importe poco lo que piensen los demás en general?",
+  "6. ¿Cree usted que le importa poco lo que piensen los demás en general?",
   "7. ¿Infiere usted que pudiera tender a mantenerse apartado en situaciones sociales?",
   "8. ¿Considera usted que los límites entre lo que está bien y lo que está mal los tuviera menos claros que la mayoría de la gente?",
-  "9. ¿Observa usted que tendiera a actuar como quiere sin seguir las normas sociales?",
+  "9. ¿Observa usted que tiende a actuar como quiere sin seguir las normas sociales?",
   "10. ¿Estima que pudiera tener a menudo sentimientos de culpa?",
   "11. ¿Observa usted que sea una persona nerviosa?",
   "12. ¿Estima usted que sus deseos personales estuvieran por encima de las normas sociales?",
-  "13. En general, ¿observa usted que suela estar callado cuando está con otras personas?",
+  "13. En general, ¿observa usted que suele estar callado cuando está con otras personas?",
   "14. ¿Considera usted que la mayoría de las cosas le resultan indiferentes?",
-  "15. ¿Observa usted que le guste mezclarse con la gente?",
-  "16. ¿Estima que con frecuencia tome decisiones sin pararse a reflexionar?",
-  "17. ¿Considera usted que le guste el bullicio y la agitación de su alrededor?",
+  "15. ¿Observa usted que le gusta mezclarse con la gente?",
+  "16. ¿Estima que con frecuencia toma decisiones sin pararse a reflexionar?",
+  "17. ¿Considera usted que le gusta el bullicio y la agitación de su alrededor?",
   "18. ¿Considera que es una persona que pudiera preocuparse a menudo por cosas que no debería haber dicho o hecho?",
-  "19. ¿Observa usted que se sienta fácilmente herido en sus sentimientos?",
-  "20. ¿Infiere usted que tenga muchos amigos?",
+  "19. ¿Observa usted que se siente fácilmente herido en sus sentimientos?",
+  "20. ¿Infiere usted que tiene muchos amigos?",
   "21. ¿Infiere usted que fuera más indulgente que la mayoría de las personas acerca del bien y del mal?",
-  "22. ¿Observa usted que se sienta intranquilo por su salud?",
-  "23. ¿Considera usted que se preocupe si hay errores en su trabajo?",
-  "24. ¿Considera usted que casi siempre tenga una respuesta a punto cuando le hablan?",
-  "25. ¿Infiere usted que le guste hacer cosas en las que tiene que actuar rápidamente?",
+  "22. ¿Observa usted que se siente intranquilo por su salud?",
+  "23. ¿Considera usted que se preocupa si hay errores en su trabajo?",
+  "24. ¿Considera usted que casi siempre tiene una respuesta a punto cuando le hablan?",
+  "25. ¿Infiere usted que le gusta hacer cosas en las que tiene que actuar rápidamente?",
   "26. ¿Considera usted que le pudiera preocupar mucho su aspecto?",
-  "27. ¿Observa usted que trate de no ser grosero con la gente?",
+  "27. ¿Observa usted que trata de no ser grosero con la gente?",
   "28. Después de una experiencia embarazosa, ¿considera usted que se encontraría preocupado durante mucho tiempo?",
-  "29. ¿Observa usted que frecuentemente improvise decisiones en función de la situación?",
-  "30. ¿Considera usted que cuando tuviera mal humor le costaría controlarse?"
+  "29. ¿Observa usted que frecuentemente improvisa decisiones en función de la situación?",
+  "30. ¿Considera usted que cuando tiene mal humor le costaría controlarse?"
 ];
 
 const behaviorQuestions = [
@@ -148,7 +148,7 @@ const behaviorQuestions = [
   "2. ¿Se mueve mucho?",
   "3. ¿Sonríe?",
   "4. ¿Mantiene la mirada?",
-  "5. ¿Tono voz elevado?",
+  "5. ¿Tono de voz elevado?",
   "6. ¿Ropa llamativa?",
   "7. ¿Viajero? ¿Deportista?",
   "8. ¿Interrumpe?",
@@ -160,7 +160,7 @@ const behaviorQuestions = [
   "14. ¿Se muerde las uñas?",
   "15. ¿Fuma?",
   "16. ¿Se rasca? ¿Suda? ¿Se sonroja?",
-  "17. ¿Mira hacia todos los lados; desconfianza?",
+  "17. ¿Mira hacia todos los lados; muestra desconfianza?",
   "18. ¿Impaciente, inquieto, irritable?",
   "19. ¿Toquetea cosas del ambiente?",
   "20. ¿Supersticioso? (amuletos)",
@@ -174,7 +174,7 @@ const behaviorQuestions = [
   "28. ¿Mirada desafiante / fija? ¿Sanpaku?",
   "29. ¿Frialdad? ¿Huraño? ¿Antipático?",
   "30. ¿Agresivo, frustrado, irritable?",
-  "31. ¿Expresa preocupación por familiares / por alguien?",
+  "31. ¿Expresa preocupación por familiares o por alguien?",
   "32. ¿Trata de manipular o de seducir? ¿Busca su propio beneficio más que el de otros?",
   "33. ¿Egoísta? ¿Insolidario? ¿Quejoso? ¿Cizañero?",
   "34. ¿Desafiante? ¿Autoritario? ¿Presume?",
@@ -188,38 +188,38 @@ const behaviorQuestions = [
   "42. ¿Despreocupado por su trabajo / estudios?",
   "43. ¿Chapucero? ¿No se esfuerza? ¿Vago? ¿Perezoso?",
   "44. ¿No se equivoca nunca?",
-  "45. ¿Miente con con descaro?",
+  "45. ¿Miente con descaro?",
   "46. ¿Individualista, no cooperativo?"
 ];
 
 const qGeneralLabels = [
-  "1. ¿Considera a la Autoridad Objetivo como una persona expresiva y abierta con necesidad de mantener contacto físico o por el contrario la considera una persona que se siente incómoda en actividades sociales con numerosas personas?",
+  "1. ¿Considera a la Autoridad Objetivo como una persona expresiva y abierta, con necesidad de mantener contacto físico, o por el contrario la considera una persona que se siente incómoda en actividades sociales con numerosas personas?",
   "2. ¿Cómo calificaría su forma de hablar: rápida, lenta, voz baja, muy alta, etc.? ¿Suele gesticular mucho con las manos al hablar o poco?",
-  "3. ¿Diría que la Autoridad Objetivo se rige más por la planificación y razón o por la espontaneidad o impulsividad?",
+  "3. ¿Diría que la Autoridad Objetivo se rige más por la planificación y la razón o por la espontaneidad o impulsividad?",
   "4. ¿Diría que es una persona deportista?",
   "5. ¿Se percibía alguna dificultad para caminar, coger cosas, hablar, etc.?",
-  "6. ¿Llevaba el uniforme/ropa limpio, planchado y ordenado?",
-  "7. Si no es de uniforme, ¿cómo es su forma de vestir? ¿colores neutros, llamativos, aspecto descuidado, uso de joyas...?",
-  "8. ¿Tomo él mismo notas durante la interacción?"
+  "6. ¿Llevaba el uniforme o la ropa limpios, planchados y ordenados?",
+  "7. Si no es de uniforme, ¿cómo es su forma de vestir? ¿Colores neutros, llamativos, aspecto descuidado, uso de joyas...?",
+  "8. ¿Tomó él mismo notas durante la interacción?"
 ];
 
 const qInteractionLabels = [
-  "1. ¿Cómo calificaría el trato con él? (Exigente, cordial…).",
-  "2. Respecto al saludo, ¿cómo lo describiría? (mano tendida, fuerte, débil, abrazo…) ¿Fue distinto al realizado a otras personas de la comitiva?",
+  "1. ¿Cómo calificaría el trato con él? (Exigente, cordial...).",
+  "2. Respecto al saludo, ¿cómo lo describiría? (mano tendida, fuerte, débil, abrazo...) ¿Fue distinto al realizado a otras personas de la comitiva?",
   "3. ¿Cree que es una persona culta? ¿De qué temas solía hablar? (Política, seguridad, familia, ocio...).",
   "4. ¿Considera que era una persona a quien le gusta comer? ¿Qué tipo: picante, salado, dulce...?",
-  "5. ¿Qué intereses, costumbres, supersticiones, manías, hobbies, aficiones... mostró?",
+  "5. ¿Qué intereses, costumbres, supersticiones, manías, hobbies o aficiones mostró?",
   "6. Si se produjo la ocasión, ¿cómo describiría la relación de la Autoridad Objetivo con su mujer o pareja? ¿Y con otras mujeres?",
-  "7. Indique alguna anécdota, curiosidad, anormalidad que considere oportuno resaltar.",
+  "7. Indique alguna anécdota, curiosidad o anormalidad que considere oportuno resaltar.",
   "8. Indique cualquier otro aspecto que considere relevante destacar de la personalidad y comportamiento de la Autoridad Objetivo."
 ];
 
 const qTeamLabels = [
   "1. ¿Cómo definiría el trato en general de la Autoridad Objetivo con los miembros de su equipo? (Indique, si es posible, el nombre o empleo de algunos de ellos).",
-  "2. De entre todos los miembros del equipo de la Autoridad Objetivo, ¿con cuáles tenía la Autoridad Objetivo más afinidad/relación y con cuáles menos? Si había diferencias en el trato, indique en qué sentido o forma se veían reflejadas.",
-  "3. ¿Resaltaría la complicidad con alguna en especial? Indique qué comportamientos de complicidad ha observado.",
-  "4. ¿Alguna de estas personas se comportaba como líder? Identifíquelo e indique aspectos destacables de su comportamiento.",
-  "5. Destaque cualquier otro aspecto que considere de interés respecto a las relaciones personales de la Autoridad Objetivo con las personas de que le acompañaban."
+  "2. De entre todos los miembros del equipo de la Autoridad Objetivo, ¿con cuáles tenía la Autoridad Objetivo más afinidad o relación y con cuáles menos? Si había diferencias en el trato, indique en qué sentido o forma se veían reflejadas.",
+  "3. ¿Resaltaría la complicidad con alguna persona en especial? Indique qué comportamientos de complicidad ha observado.",
+  "4. ¿Alguna de estas personas se comportaba como líder? Identifíquela e indique aspectos destacables de su comportamiento.",
+  "5. Destaque cualquier otro aspecto que considere de interés respecto a las relaciones personales de la Autoridad Objetivo con las personas que le acompañaban."
 ];
 
 function averageInteractionEvaluation(evaluation: AuthorityEvaluation) {
@@ -314,6 +314,7 @@ export default function AuthorityEvaluations() {
   const [dossierForm, setDossierForm] = useState({
     objectiveId: objectives[0]?.id ?? '',
     date: '',
+    location: '',
     profileUsefulness: 5 as InteractionRating,
     structureClarity: 5 as InteractionRating,
     psychologicalAdvantage: 5 as InteractionRating,
@@ -424,6 +425,7 @@ export default function AuthorityEvaluations() {
       id: `dossier-eval-${Date.now()}`,
       objectiveId: dossierForm.objectiveId,
       date: dossierForm.date,
+      location: dossierForm.location,
       profileUsefulness: dossierForm.profileUsefulness,
       structureClarity: dossierForm.structureClarity,
       psychologicalAdvantage: dossierForm.psychologicalAdvantage,
@@ -447,6 +449,7 @@ export default function AuthorityEvaluations() {
     setDossierForm({
       objectiveId: objectives[0]?.id ?? '',
       date: '',
+      location: '',
       profileUsefulness: 5,
       structureClarity: 5,
       psychologicalAdvantage: 5,
@@ -528,7 +531,7 @@ export default function AuthorityEvaluations() {
         <div className="authority-panel-header">
           <div>
             <h2>Valoraciones</h2>
-            <p>Selecciona el apartado en el que quieres trabajar dentro de la cuenta de autoridad.</p>
+            <p>Seleccione el apartado en el que desea trabajar dentro de su cuenta de autoridad.</p>
           </div>
         </div>
 
@@ -552,8 +555,8 @@ export default function AuthorityEvaluations() {
           <form className="authority-panel" onSubmit={handleInteractionSubmit}>
             <div className="authority-panel-header">
               <div>
-                <h2>Valoracion de la interaccion</h2>
-                <p>Registra la evaluacion de cada reunion y deja trazabilidad para siguientes contactos.</p>
+                <h2>Valoración de la interacción</h2>
+                <p>Registre la evaluación de cada reunión y deje trazabilidad para futuros contactos.</p>
               </div>
             </div>
 
@@ -588,13 +591,13 @@ export default function AuthorityEvaluations() {
                 className="form-input"
                 value={interactionForm.location}
                 onChange={(e) => setInteractionForm((prev) => ({ ...prev, location: e.target.value }))}
-                placeholder="Lugar de la interaccion"
+                placeholder="Lugar de la interacción"
                 required
               />
             </div>
 
             <div className="authority-rich-content" style={{ marginBottom: 'var(--space-5)' }}>
-              <h3>1. En relacion al KLE realizado, valore las siguientes afirmaciones en una escala del 1 al 10, donde 1 es la puntuacion mas baja y 10 es la puntuacion mas alta.</h3>
+              <h3>1. En relación al KLE realizado, valore las siguientes afirmaciones en una escala del 1 al 10, donde 1 es la puntuación más baja y 10 es la puntuación más alta.</h3>
               {likertQuestions.map((question) => (
                 <ScoreSlider
                   key={question.key}
@@ -609,7 +612,7 @@ export default function AuthorityEvaluations() {
               <h3>2. De forma general, indique</h3>
 
               <div className="form-group">
-                <label className="form-label">Que dificultades o barreras surgieron durante la interaccion?</label>
+                <label className="form-label">¿Qué dificultades o barreras surgieron durante la interacción?</label>
                 <textarea
                   className="form-textarea"
                   rows={4}
@@ -620,7 +623,7 @@ export default function AuthorityEvaluations() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Que oportunidades, intereses comunes u otros indicadores ha identificado como relevantes y considera deberian ser tenidos en cuenta en futuras interacciones?</label>
+                <label className="form-label">¿Qué oportunidades, intereses comunes u otros indicadores ha identificado como relevantes y considera que deberían ser tenidos en cuenta en futuras interacciones?</label>
                 <textarea
                   className="form-textarea"
                   rows={4}
@@ -631,7 +634,7 @@ export default function AuthorityEvaluations() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Que cambios introduciria en futuras interacciones para aumentar las probabilidades de exito y consecucion de sus objetivos?</label>
+                <label className="form-label">¿Qué cambios introduciría en futuras interacciones para aumentar las probabilidades de éxito y consecución de sus objetivos?</label>
                 <textarea
                   className="form-textarea"
                   rows={4}
@@ -642,7 +645,7 @@ export default function AuthorityEvaluations() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Senale cualquier otro aspecto acaecido durante la interaccion que considere deba ser tenido en cuenta en futuras interacciones.</label>
+                <label className="form-label">Señale cualquier otro aspecto acaecido durante la interacción que considere deba ser tenido en cuenta en futuras interacciones.</label>
                 <textarea
                   className="form-textarea"
                   rows={4}
@@ -653,13 +656,13 @@ export default function AuthorityEvaluations() {
               </div>
             </div>
 
-            <button className="btn btn-primary" type="submit">Guardar valoracion</button>
+            <button className="btn btn-primary" type="submit">Guardar valoración</button>
           </form>
 
           <div className="authority-panel">
             <div className="authority-panel-header">
               <div>
-                <h2>Historico de interacciones valoradas</h2>
+                <h2>Histórico de interacciones valoradas</h2>
                 <p>Consulta el seguimiento de reuniones ya evaluadas por la autoridad.</p>
               </div>
             </div>
@@ -674,9 +677,9 @@ export default function AuthorityEvaluations() {
                     </div>
                     <p><strong>Fecha:</strong> {evaluation.date} · <strong>Lugar:</strong> {evaluation.location}</p>
                     <p><strong>1.1 Estrategia adecuada:</strong> {evaluation.strategyFit}/10</p>
-                    <p><strong>1.2 Confianza y comunicacion:</strong> {evaluation.trustAndCommunication}/10</p>
+                    <p><strong>1.2 Confianza y comunicación:</strong> {evaluation.trustAndCommunication}/10</p>
                     <p><strong>1.3 Avance hacia objetivos:</strong> {evaluation.objectiveProgress}/10</p>
-                    <p><strong>1.4 Gestion de objeciones:</strong> {evaluation.objectionHandling}/10</p>
+                    <p><strong>1.4 Gestión de objeciones:</strong> {evaluation.objectionHandling}/10</p>
                     <p><strong>1.5 Pasos concretos:</strong> {evaluation.nextStepsClarity}/10</p>
                     <p><strong>Dificultades:</strong> {evaluation.difficulties}</p>
                     <p><strong>Oportunidades:</strong> {evaluation.opportunities}</p>
@@ -695,8 +698,8 @@ export default function AuthorityEvaluations() {
           <form className="authority-panel" onSubmit={handleDossierSubmit}>
             <div className="authority-panel-header">
               <div>
-                <h2>Evaluacion del dosier KLE</h2>
-                <p>Valora de forma clara la utilidad del dosier para preparar la interaccion.</p>
+                <h2>Evaluación del dosier KLE</h2>
+                <p>Valore de forma clara la utilidad del Dosier KLE.</p>
               </div>
             </div>
 
@@ -725,12 +728,23 @@ export default function AuthorityEvaluations() {
               </div>
             </div>
 
+            <div className="form-group">
+              <label className="form-label">Lugar</label>
+              <input
+                className="form-input"
+                value={dossierForm.location}
+                onChange={(e) => setDossierForm((prev) => ({ ...prev, location: e.target.value }))}
+                placeholder="Lugar del encuentro o contexto del dosier"
+                required
+              />
+            </div>
+
             <div className="authority-rich-content" style={{ marginBottom: 'var(--space-5)' }}>
               <div className="authority-intro-card">
                 <span className="authority-intro-eyebrow">Bloque 1</span>
-                <h3>Valoracion de la informacion recibida</h3>
+                <h3>Valoración de la información recibida</h3>
                 <p>
-                  Con el fin de valorar la efectividad de la informacion proporcionada en el Dosier KLE elaborado para su encuentro, valore las siguientes afirmaciones en una escala del 1 al 10, donde 1 significa "Totalmente en desacuerdo / Muy insatisfecho" y 10 significa "Totalmente de acuerdo / Muy satisfecho".
+                  Con el fin de valorar la efectividad de la información proporcionada en el Dosier KLE elaborado para su encuentro, valore las siguientes afirmaciones en una escala del 1 al 10, donde 1 significa "Totalmente en desacuerdo / Muy insatisfecho" y 10 significa "Totalmente de acuerdo / Muy satisfecho".
                 </p>
               </div>
               {dossierQuestions.map((question) => (
@@ -746,12 +760,12 @@ export default function AuthorityEvaluations() {
             <div className="authority-rich-content" style={{ marginBottom: 'var(--space-5)' }}>
               <div className="authority-intro-card authority-intro-card-compact">
                 <span className="authority-intro-eyebrow">Bloque 2</span>
-                <h3>Valoracion general</h3>
+                <h3>Valoración general</h3>
               </div>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Si tuviera que preparar una nueva interaccion con una autoridad similar, que informacion adicional, habilidades o conocimientos concretos le habria resultado util recibir y que no estaba incluida en este dosier?</label>
+              <label className="form-label">Si tuviera que preparar una nueva interacción con una autoridad similar, ¿qué información adicional, habilidades o conocimientos concretos le habría resultado útil recibir y que no estaba incluida en este dosier?</label>
               <textarea
                 className="form-textarea"
                 rows={4}
@@ -762,7 +776,7 @@ export default function AuthorityEvaluations() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Indique que contenidos del dosier eliminaria, modificaria o presentaria de otra forma para aumentar su utilidad.</label>
+              <label className="form-label">Indique qué contenidos del dosier eliminaría, modificaría o presentaría de otra forma para aumentar su utilidad.</label>
               <textarea
                 className="form-textarea"
                 rows={4}
@@ -773,7 +787,7 @@ export default function AuthorityEvaluations() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Senale cualquier otro aspecto que considere de interes y debamos tener en cuenta para la preparacion de futuros encuentros.</label>
+              <label className="form-label">Señale cualquier otro aspecto que considere de interés y debamos tener en cuenta para la preparación de futuros encuentros.</label>
               <textarea
                 className="form-textarea"
                 rows={4}
@@ -784,7 +798,7 @@ export default function AuthorityEvaluations() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Valoracion global del dosier en cuanto a su contribucion a alcanzar los objetivos previstos en la interaccion.</label>
+              <label className="form-label">Valoración global del dosier en cuanto a su contribución a alcanzar los objetivos previstos en la interacción.</label>
               <select
                 className="form-select"
                 value={dossierForm.globalContribution}
@@ -797,13 +811,13 @@ export default function AuthorityEvaluations() {
               </select>
             </div>
 
-            <button className="btn btn-primary" type="submit">Guardar valoracion del dosier</button>
+            <button className="btn btn-primary" type="submit">Guardar valoración del dosier</button>
           </form>
 
           <div className="authority-panel">
             <div className="authority-panel-header">
               <div>
-                <h2>Historico de valoraciones de dosier</h2>
+                <h2>Histórico de valoraciones de dosier</h2>
                 <p>Revisa el feedback ya registrado sobre los dosieres KLE preparados.</p>
               </div>
             </div>
@@ -816,19 +830,19 @@ export default function AuthorityEvaluations() {
                       <strong>{objective?.fullName ?? '-'}</strong>
                       <span className="authority-status-pill">Media {averageDossierEvaluation(evaluation)}/10</span>
                     </div>
-                    <p><strong>Fecha:</strong> {evaluation.date}</p>
-                    <p><strong>Valoracion global final:</strong> {evaluation.globalContribution}</p>
+                    <p><strong>Fecha:</strong> {evaluation.date} · <strong>Lugar:</strong> {evaluation.location}</p>
+                    <p><strong>Valoración global final:</strong> {evaluation.globalContribution}</p>
                     <p><strong>1.1 Perfil y preparacion:</strong> {evaluation.profileUsefulness}/10</p>
                     <p><strong>1.2 Estructura:</strong> {evaluation.structureClarity}/10</p>
-                    <p><strong>1.3 Perfil psicologico:</strong> {evaluation.psychologicalAdvantage}/10</p>
-                    <p><strong>1.4 Profundidad biografica:</strong> {evaluation.biographyDepth}/10</p>
+                    <p><strong>1.3 Perfil psicológico:</strong> {evaluation.psychologicalAdvantage}/10</p>
+                    <p><strong>1.4 Profundidad biográfica:</strong> {evaluation.biographyDepth}/10</p>
                     <p><strong>1.5 Orientaciones de comportamiento:</strong> {evaluation.behaviorGuidance}/10</p>
                     <p><strong>1.6 Temas de conversacion:</strong> {evaluation.conversationTopics}/10</p>
                     <p><strong>1.7 Aspectos socioculturales:</strong> {evaluation.socioculturalFramework}/10</p>
-                    <p><strong>1.8 Aspectos geopoliticos:</strong> {evaluation.geopoliticalAccuracy}/10</p>
-                    <p><strong>1.9 Precision y fiabilidad:</strong> {evaluation.precisionAndReliability}/10</p>
+                    <p><strong>1.8 Aspectos geopolíticos:</strong> {evaluation.geopoliticalAccuracy}/10</p>
+                    <p><strong>1.9 Precisión y fiabilidad:</strong> {evaluation.precisionAndReliability}/10</p>
                     <p><strong>1.10 Nivel de detalle:</strong> {evaluation.detailLevel}/10</p>
-                    <p><strong>Informacion adicional util:</strong> {evaluation.additionalInformationNeeded}</p>
+                    <p><strong>Información adicional útil:</strong> {evaluation.additionalInformationNeeded}</p>
                     <p><strong>Cambios de contenido o formato:</strong> {evaluation.contentChanges}</p>
                     <p><strong>Otros aspectos:</strong> {evaluation.otherRelevantAspects}</p>
                   </div>
@@ -845,7 +859,7 @@ export default function AuthorityEvaluations() {
             <div className="authority-panel-header">
               <div>
                 <h2>Cuestionarios del observador</h2>
-                <p>Registra lo observado durante o despues de la interaccion para alimentar el seguimiento.</p>
+                <p>Registre lo observado durante o después de la interacción para facilitar el seguimiento posterior.</p>
               </div>
             </div>
 
@@ -872,6 +886,17 @@ export default function AuthorityEvaluations() {
                   required
                 />
               </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Lugar</label>
+              <input
+                className="form-input"
+                value={observationForm.cityLocation}
+                onChange={(e) => setObservationForm((prev) => ({ ...prev, cityLocation: e.target.value }))}
+                placeholder="Lugar de la observación o del encuentro"
+                required
+              />
             </div>
 
             {/* Sub-tabs selector */}
@@ -1354,8 +1379,8 @@ export default function AuthorityEvaluations() {
           <div className="authority-panel">
             <div className="authority-panel-header">
               <div>
-                <h2>Historico de cuestionarios</h2>
-                <p>Consulta rapidamente los cuestionarios de observacion ya completados.</p>
+                <h2>Histórico de cuestionarios</h2>
+                <p>Consulta rápidamente los cuestionarios de observación ya completados.</p>
               </div>
             </div>
             <div className="authority-status-stack">

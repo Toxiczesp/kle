@@ -22,25 +22,25 @@ const quickLinks = [
   },
   {
     title: 'Interacciones',
-    description: 'Filtra reuniones por rango de fechas, pais, lugar y organismo.',
+    description: 'Filtra reuniones por rango de fechas, país, lugar y organismo.',
     icon: ClipboardList,
     to: '/authority/interactions',
   },
   {
     title: 'Valoraciones',
-    description: 'Valora el dosier KLE y registra el resultado de cada interaccion.',
+    description: 'Valora el dosier KLE y registra el resultado de cada interacción.',
     icon: ClipboardCheck,
     to: '/authority/evaluations',
   },
   {
     title: 'Solicitud de informes',
-    description: 'Encarga nuevos trabajos al equipo de analisis y sigue su estado.',
+    description: 'Encarga nuevos trabajos al equipo de análisis y sigue su estado.',
     icon: FilePlus2,
     to: '/authority/requests',
   },
   {
     title: 'Asistente IA',
-    description: 'Consulta informes, historicos y valoraciones desde una unica interfaz conversacional.',
+    description: 'Consulta informes, históricos y valoraciones desde una única interfaz conversacional.',
     icon: BrainCircuit,
     to: '/authority/ai',
   },
@@ -62,9 +62,9 @@ export default function AuthorityDashboard() {
           <div className="authority-kicker">
             <ShieldCheck size={16} /> Portal Autoridad
           </div>
-          <h2 className="authority-hero-title">Panel de consulta, solicitud y explotacion de informacion KLE</h2>
+          <h2 className="authority-hero-title">Panel de consulta, solicitud y explotación de información KLE</h2>
           <p className="authority-hero-text">
-            Accede a dosieres KLE, revisa interacciones, solicita nuevos informes y apoya tus decisiones con IA.
+            Acceda a dosieres KLE, revise interacciones, solicite nuevos informes y apoye sus decisiones con IA.
           </p>
         </div>
         <div className="authority-hero-metrics">
@@ -101,7 +101,7 @@ export default function AuthorityDashboard() {
           <div className="authority-panel-header">
             <div>
               <h3>Solicitudes en seguimiento</h3>
-              <p>Trabajos pendientes del equipo de analisis.</p>
+              <p>Trabajos pendientes del equipo de análisis.</p>
             </div>
           </div>
           <div className="authority-status-stack">
@@ -126,7 +126,7 @@ export default function AuthorityDashboard() {
           <div className="authority-panel-header">
             <div>
               <h3>Actividad reciente</h3>
-              <p>Ultimas reuniones registradas en el sistema.</p>
+              <p>Últimas reuniones registradas en el sistema.</p>
             </div>
             <Link className="authority-inline-link" to="/authority/interactions">
               Ver interacciones <ArrowRight size={15} />

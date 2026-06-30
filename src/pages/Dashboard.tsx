@@ -21,40 +21,40 @@ const analystAreas = [
     id: 'personality',
     title: 'Info Autoridad Objetivo',
     description:
-      'Espacio de trabajo para consolidar rasgos de personalidad, evaluacion individual y soporte documental de la autoridad objetivo.',
+      'Espacio de trabajo para consolidar rasgos de personalidad, evaluación individual y soporte documental de la autoridad objetivo.',
     icon: BrainCircuit,
     accentClass: 'personality',
-    cta: { label: 'Ir a analisis', to: '/analysis' },
+    cta: { label: 'Ir a análisis', to: '/analysis' },
     items: [
-      { label: 'Documentacion / Doc', description: 'Base documental inicial del perfil.', icon: FileSearch, to: '/repository' },
-      { label: 'Resumen Doc', description: 'Version sintetica para consulta rapida.', icon: FileText, to: '/analysis' },
-      { label: 'Completo Doc', description: 'Analisis integral extendido de la autoridad objetivo.', icon: FileStack, to: '/analysis' },
+      { label: 'Documentación / Doc', description: 'Base documental inicial del perfil.', icon: FileSearch, to: '/repository' },
+      { label: 'Resumen Doc', description: 'Versión sintética para consulta rápida.', icon: FileText, to: '/analysis' },
+      { label: 'Completo Doc', description: 'Análisis integral extendido de la autoridad objetivo.', icon: FileStack, to: '/analysis' },
     ],
   },
   {
     id: 'psychological-profile',
     title: 'Perfilado Personalidad',
     description:
-      'Seccion especifica para soporte visual y desarrollo completo del perfil psicologico de la autoridad objetivo.',
+      'Sección específica para soporte visual y desarrollo completo del perfil psicológico de la autoridad objetivo.',
     icon: Camera,
     accentClass: 'psychological',
     cta: { label: 'Ir a repositorio', to: '/repository' },
     items: [
-      { label: 'Doc Imagenes', description: 'Material visual asociado a la autoridad objetivo.', icon: FileImage, to: '/repository' },
-      { label: 'Doc Videos', description: 'Clips, entrevistas y contenido audiovisual.', icon: PlaySquare, to: '/repository' },
-      { label: 'Doc Completo', description: 'Documento psicologico extendido y estructurado.', icon: FileStack, to: '/analysis' },
+      { label: 'Doc Imágenes', description: 'Material visual asociado a la autoridad objetivo.', icon: FileImage, to: '/repository' },
+      { label: 'Doc Vídeos', description: 'Clips, entrevistas y contenido audiovisual.', icon: PlaySquare, to: '/repository' },
+      { label: 'Doc Completo', description: 'Documento psicológico extendido y estructurado.', icon: FileStack, to: '/analysis' },
     ],
   },
   {
     id: 'sociocultural',
-    title: 'Area Sociocultural',
+    title: 'Área sociocultural',
     description:
-      'Zona dedicada a contexto social, afinidades, intereses culturales y puntos de conexion operativos.',
+      'Zona dedicada a contexto social, afinidades, intereses culturales y puntos de conexión operativos.',
     icon: Globe2,
     accentClass: 'sociocultural',
     cta: { label: 'Ver informes', to: '/reports' },
     items: [
-      { label: 'Documentacion / Doc', description: 'Base documental de contexto social y cultural.', icon: FileSearch, to: '/repository' },
+      { label: 'Documentación / Doc', description: 'Base documental de contexto social y cultural.', icon: FileSearch, to: '/repository' },
       { label: 'Doc Resumen', description: 'Resumen sociocultural de acceso inmediato.', icon: BookOpenText, to: '/reports' },
       { label: 'Doc Completo', description: 'Documento ampliado con contexto y recomendaciones.', icon: FileStack, to: '/reports' },
     ],
@@ -93,7 +93,7 @@ export default function Dashboard() {
         <div>
           <h2 className="section-title">Centro de trabajo del analista</h2>
           <p className="section-subtitle">
-            Estructura operativa por areas de info, perfilado y sociocultural.
+            Estructura operativa por áreas de información, perfilado y sociocultural.
           </p>
         </div>
       </div>
@@ -132,7 +132,7 @@ export default function Dashboard() {
               onClick={handleCreateObjective}
               disabled={!personName.trim() || Boolean(exactObjective)}
             >
-              <Plus size={16} /> Anadir autoridad
+              <Plus size={16} /> Añadir autoridad
             </button>
           </div>
         </div>
@@ -172,7 +172,7 @@ export default function Dashboard() {
           <div>
             <h3 className="section-title" style={{ marginBottom: 4 }}>Solicitudes recibidas de autoridad</h3>
             <p className="section-subtitle">
-              Las peticiones registradas por la autoridad aparecen aqui para que el analista las gestione y las devuelva.
+              Las peticiones registradas por la autoridad aparecen aquí para que el analista las gestione y las devuelva.
             </p>
           </div>
           <Link to="/analyst/requests" className="btn btn-secondary btn-sm">
@@ -201,7 +201,7 @@ export default function Dashboard() {
       </div>
 
       <div className="analyst-tabs-shell">
-        <div className="analyst-tabs" role="tablist" aria-label="Areas del analista">
+        <div className="analyst-tabs" role="tablist" aria-label="Áreas del analista">
           {analystAreas.map((area) => {
             const TabIcon = area.icon;
             const isActive = area.id === selectedArea.id;

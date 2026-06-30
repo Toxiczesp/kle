@@ -19,14 +19,14 @@ const typeLabels: Record<string, string> = {
   note: 'Nota',
   report: 'Informe',
   questionnaire: 'Cuestionario',
-  evaluation: 'Evaluacion',
+  evaluation: 'Evaluación',
   file: 'Archivo',
 };
 
 const areaLabels: Record<string, string> = {
   personality: 'Info Autoridad Objetivo',
   'psychological-profile': 'Perfilado Personalidad',
-  sociocultural: 'Area Sociocultural',
+  sociocultural: 'Área sociocultural',
 };
 
 export default function Repository() {
@@ -52,12 +52,12 @@ export default function Repository() {
       <BackButton />
       <div className="section-header">
         <div>
-          <h2 className="section-title">Repositorio de Informacion</h2>
+          <h2 className="section-title">Repositorio de información</h2>
         </div>
         <div className="section-header-side">
           <div className={`area-context-badge ${activeArea}`}>
             <span className="area-context-dot" />
-            <span className="area-context-label">Area actual</span>
+            <span className="area-context-label">Área actual</span>
             <strong>{areaLabels[activeArea] ?? areaLabels.personality}</strong>
           </div>
           <button className="btn btn-primary" onClick={() => setShowUploadModal(true)}>
@@ -162,8 +162,8 @@ export default function Repository() {
               </div>
             </div>
             <div className="form-group">
-              <label className="form-label">Descripcion</label>
-              <textarea className="form-textarea" placeholder="Descripcion del documento..." />
+              <label className="form-label">Descripción</label>
+              <textarea className="form-textarea" placeholder="Descripción del documento..." />
             </div>
             <div className="form-group">
               <label className="form-label">Archivo</label>
@@ -179,7 +179,7 @@ export default function Repository() {
               >
                 <Upload size={32} style={{ color: 'var(--color-text-muted)', marginBottom: 8 }} />
                 <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
-                  Arrastra un archivo aqui o haz clic para seleccionar
+                  Arrastra un archivo aquí o haz clic para seleccionar
                 </p>
                 <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
                   PDF, DOC, XLS, PPT, IMG - Max. 50 MB
@@ -188,7 +188,7 @@ export default function Repository() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
               <button className="btn btn-secondary" onClick={() => setShowUploadModal(false)}>Cancelar</button>
-              <button className="btn btn-primary" onClick={() => { setShowUploadModal(false); alert('Documento subido (simulacion)'); }}>Subir Documento</button>
+              <button className="btn btn-primary" onClick={() => { setShowUploadModal(false); alert('Documento subido (simulación)'); }}>Subir Documento</button>
             </div>
           </div>
         </div>

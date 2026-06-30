@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import {
   authorityRequestStatusLabels,
   authorityRequestTypeLabels,
@@ -118,7 +118,7 @@ export default function AnalystRequests() {
                 <div>
                   <h3 className="section-title" style={{ marginBottom: 4 }}>{selectedRequest.title}</h3>
                   <p className="section-subtitle">
-                    Lo que actualices aqui quedara visible para la autoridad en su seguimiento.
+                    Lo que actualices aquí quedará visible para la autoridad en su seguimiento.
                   </p>
                 </div>
               </div>
@@ -145,7 +145,7 @@ export default function AnalystRequests() {
 
                   <div className="form-row">
                     <div className="form-group">
-                      <label className="form-label">Interaccion: fecha</label>
+                      <label className="form-label">Interacción: fecha</label>
                       <input className="form-input" value={selectedRequest.interactionDate ?? ''} readOnly />
                     </div>
                     <div className="form-group">
@@ -155,24 +155,24 @@ export default function AnalystRequests() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Duracion prevista</label>
+                    <label className="form-label">Duración prevista</label>
                     <input className="form-input" value={selectedRequest.interactionDuration ?? ''} readOnly />
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Objetivos de la interaccion</label>
+                    <label className="form-label">Objetivos de la interacción</label>
                     <textarea className="form-textarea" value={selectedRequest.interactionObjectives ?? ''} readOnly rows={4} />
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Otra informacion relevante</label>
+                    <label className="form-label">Otra información relevante</label>
                     <textarea className="form-textarea" value={selectedRequest.relevantInformation ?? ''} readOnly rows={4} />
                   </div>
                 </>
               )}
 
               <div className="form-group">
-                <label className="form-label">Descripcion del encargo</label>
+                <label className="form-label">Descripción del encargo</label>
                 <textarea
                   className="form-textarea"
                   value={selectedRequest.description}
@@ -220,7 +220,7 @@ export default function AnalystRequests() {
                   Guardar progreso
                 </button>
                 <button className="btn btn-secondary" type="button" onClick={() => handleSave('review')}>
-                  Enviar a revision
+                  Enviar a revisión
                 </button>
                 <button className="btn btn-primary" type="button" onClick={() => handleSave('done')}>
                   Marcar como finalizado
@@ -229,14 +229,14 @@ export default function AnalystRequests() {
 
               <div style={{ marginTop: 'var(--space-4)', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
                 {selectedRequest.updatedAt
-                  ? `Ultima actualizacion visible para autoridad: ${new Date(selectedRequest.updatedAt).toLocaleString('es-ES')}`
-                  : 'Esta solicitud todavia no ha sido actualizada por el analista.'}
+                  ? `Última actualización visible para autoridad: ${new Date(selectedRequest.updatedAt).toLocaleString('es-ES')}`
+                  : 'Esta solicitud todavía no ha sido actualizada por el analista.'}
               </div>
             </>
           ) : (
             <div className="empty-state">
               <div className="empty-state-title">No hay solicitudes seleccionadas</div>
-              <p className="empty-state-text">Cuando la autoridad registre encargos, podras gestionarlos desde aqui.</p>
+              <p className="empty-state-text">Cuando la autoridad registre encargos, podrás gestionarlos desde aquí.</p>
             </div>
           )}
         </section>
@@ -244,3 +244,6 @@ export default function AnalystRequests() {
     </div>
   );
 }
+
+
+

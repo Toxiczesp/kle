@@ -7,7 +7,7 @@ import type { UserRole } from '../types';
 type AuthMode = 'login' | 'register';
 
 const roleDescriptions: Record<UserRole, string> = {
-  analista: 'Acceso completo a objetivos, interacciones, analisis y generacion de informes.',
+  analista: 'Acceso completo a objetivos, interacciones, análisis y generación de informes.',
   autoridad: 'Acceso al portal de consulta KLE, interacciones, solicitudes, IA y valoraciones.',
 };
 
@@ -47,12 +47,12 @@ export default function AuthPage() {
     setError('');
 
     if (registerData.password.length < 6) {
-      setError('La contrasena debe tener al menos 6 caracteres.');
+      setError('La contraseña debe tener al menos 6 caracteres.');
       return;
     }
 
     if (registerData.password !== registerData.confirmPassword) {
-      setError('Las contrasenas no coinciden.');
+      setError('Las contraseñas no coinciden.');
       return;
     }
 
@@ -84,7 +84,7 @@ export default function AuthPage() {
         <div className="auth-hero-copy">
           <h1>Acceso seguro a la plataforma de seguimiento e informes.</h1>
           <p>
-            Los analistas gestionan objetivos, interacciones y analisis. Las autoridades acceden
+            Los analistas gestionan objetivos, interacciones y análisis. Las autoridades acceden
             a un portal propio para consultar KLE, revisar interacciones, solicitar informes y registrar valoraciones.
           </p>
         </div>
@@ -129,7 +129,7 @@ export default function AuthPage() {
         {mode === 'login' ? (
           <form className="auth-form" onSubmit={handleLoginSubmit}>
             <div>
-              <h2 className="auth-form-title">Iniciar sesion</h2>
+              <h2 className="auth-form-title">Iniciar sesión</h2>
               <p className="auth-form-text">Introduce tus credenciales para acceder.</p>
             </div>
 
@@ -146,13 +146,13 @@ export default function AuthPage() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Contrasena</label>
+              <label className="form-label">Contraseña</label>
               <input
                 className="form-input"
                 type="password"
                 value={loginData.password}
                 onChange={(e) => setLoginData((prev) => ({ ...prev, password: e.target.value }))}
-                placeholder="Introduce tu contrasena"
+                placeholder="Introduce tu contraseña"
                 required
               />
             </div>
@@ -211,7 +211,7 @@ export default function AuthPage() {
 
             <div className="form-row">
               <div className="form-group">
-                <label className="form-label">Contrasena</label>
+                <label className="form-label">Contraseña</label>
                 <input
                   className="form-input"
                   type="password"
@@ -219,13 +219,13 @@ export default function AuthPage() {
                   onChange={(e) =>
                     setRegisterData((prev) => ({ ...prev, password: e.target.value }))
                   }
-                  placeholder="Minimo 6 caracteres"
+                  placeholder="Mínimo 6 caracteres"
                   required
                 />
               </div>
 
               <div className="form-group">
-                <label className="form-label">Confirmar contrasena</label>
+                <label className="form-label">Confirmar contraseña</label>
                 <input
                   className="form-input"
                   type="password"
@@ -233,7 +233,7 @@ export default function AuthPage() {
                   onChange={(e) =>
                     setRegisterData((prev) => ({ ...prev, confirmPassword: e.target.value }))
                   }
-                  placeholder="Repite la contrasena"
+                  placeholder="Repite la contraseña"
                   required
                 />
               </div>

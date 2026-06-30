@@ -126,13 +126,13 @@ export default function AuthorityKLE() {
 
         <div className="authority-grid authority-grid-3 authority-filter-grid">
           <div className="form-group">
-            <label className="form-label">Pais</label>
+            <label className="form-label">País</label>
             <select
               className="form-select"
               value={filters.country}
               onChange={(e) => setFilters((prev) => ({ ...prev, country: e.target.value }))}
             >
-              <option value="all">Todos los paises</option>
+              <option value="all">Todos los países</option>
               {countries.map((country) => (
                 <option key={country} value={country}>{country}</option>
               ))}
@@ -166,7 +166,7 @@ export default function AuthorityKLE() {
               <div className="authority-objective-meta">
                 <span>{objective.organization}</span>
                 <span>{objective.country}</span>
-                <span>{lastInteraction ? `Ultima interaccion: ${lastInteraction.date}` : 'Sin interacciones registradas'}</span>
+                <span>{lastInteraction ? `Última interacción: ${lastInteraction.date}` : 'Sin interacciones registradas'}</span>
               </div>
               <div className="authority-objective-footer">
                 <span className={`badge badge-${objective.priority}`}>{objective.priority}</span>

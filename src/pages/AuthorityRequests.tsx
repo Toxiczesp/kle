@@ -88,7 +88,7 @@ export default function AuthorityRequests() {
             <div className="authority-panel-header">
               <div>
                 <h2>Solicitud Dosier KLE</h2>
-                <p>Encarga un dosier completo con los datos necesarios para preparar la interaccion.</p>
+                <p>Encarga un dosier completo con los datos necesarios para preparar la interacción.</p>
               </div>
             </div>
 
@@ -131,7 +131,7 @@ export default function AuthorityRequests() {
 
             <div className="form-row">
               <div className="form-group">
-                <label className="form-label">Interaccion: fecha</label>
+                <label className="form-label">Interacción: fecha</label>
                 <input
                   className="form-input"
                   type="date"
@@ -166,7 +166,7 @@ export default function AuthorityRequests() {
                 </select>
               </div>
               <div className="form-group">
-                <label className="form-label">Fecha limite</label>
+                <label className="form-label">Fecha límite</label>
                 <input
                   className="form-input"
                   type="date"
@@ -178,12 +178,12 @@ export default function AuthorityRequests() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Duracion prevista (horas / dias)</label>
+              <label className="form-label">Duración prevista (horas / días)</label>
               <input
                 className="form-input"
                 value={dossierForm.interactionDuration}
                 onChange={(e) => setDossierForm((prev) => ({ ...prev, interactionDuration: e.target.value }))}
-                placeholder="Ej. 2 horas, 3 dias..."
+                placeholder="Ej. 2 horas, 3 días..."
                 required
               />
             </div>
@@ -203,7 +203,7 @@ export default function AuthorityRequests() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Descripcion breve para el analista</label>
+              <label className="form-label">Descripción breve para el analista</label>
               <textarea
                 className="form-textarea"
                 value={dossierForm.description}
@@ -213,18 +213,18 @@ export default function AuthorityRequests() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Objetivos de la interaccion</label>
+              <label className="form-label">Objetivos de la interacción</label>
               <textarea
                 className="form-textarea"
                 value={dossierForm.interactionObjectives}
                 onChange={(e) => setDossierForm((prev) => ({ ...prev, interactionObjectives: e.target.value }))}
-                placeholder="Objetivos previstos para la interaccion"
+                placeholder="Objetivos previstos para la interacción"
                 required
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Otra informacion relevante para la elaboracion del Dosier KLE</label>
+              <label className="form-label">Otra información relevante para la elaboración del dosier KLE</label>
               <textarea
                 className="form-textarea"
                 value={dossierForm.relevantInformation}
@@ -263,7 +263,7 @@ export default function AuthorityRequests() {
                       <p><strong>Solicitante:</strong> {request.requesterName ?? '-'} · {request.requesterRole ?? '-'}</p>
                       <p><strong>Interaccion:</strong> {request.interactionDate ?? '-'} · {request.interactionLocation ?? '-'} · {request.interactionDuration ?? '-'}</p>
                       <p><strong>Objetivos:</strong> {request.interactionObjectives ?? '-'}</p>
-                      <p><strong>Informacion relevante:</strong> {request.relevantInformation ?? '-'}</p>
+                      <p><strong>Información relevante:</strong> {request.relevantInformation ?? '-'}</p>
                     </>
                   )}
                   <div className="authority-request-meta">

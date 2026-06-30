@@ -44,7 +44,7 @@ export default function AuthorityInteractions() {
         <div className="authority-panel-header">
           <div>
             <h2>Interacciones</h2>
-            <p>Consulta reuniones e interacciones registradas por rango de fechas, pais, lugar u organismo.</p>
+            <p>Consulta reuniones e interacciones registradas por rango de fechas, país, lugar u organismo.</p>
           </div>
         </div>
 
@@ -57,13 +57,13 @@ export default function AuthorityInteractions() {
             }
           />
           <div className="form-group">
-            <label className="form-label">Pais</label>
+            <label className="form-label">País</label>
             <select
               className="form-select"
               value={filters.country}
               onChange={(e) => setFilters((prev) => ({ ...prev, country: e.target.value }))}
             >
-              <option value="all">Todos los paises</option>
+              <option value="all">Todos los países</option>
               {countries.map((country) => <option key={country} value={country}>{country}</option>)}
             </select>
           </div>
@@ -96,11 +96,11 @@ export default function AuthorityInteractions() {
           <strong>{results.length}</strong>
         </div>
         <div className="authority-info-card">
-          <span>Ultima interaccion</span>
+          <span>Última interacción</span>
           <strong>{latest ? latest.date : 'Sin resultados'}</strong>
         </div>
         <div className="authority-info-card">
-          <span>Ultimo lugar registrado</span>
+          <span>Último lugar registrado</span>
           <strong>{latest ? latest.location : 'Sin resultados'}</strong>
         </div>
       </section>
@@ -112,7 +112,7 @@ export default function AuthorityInteractions() {
               <tr>
                 <th>Fecha</th>
                 <th>Autoridad</th>
-                <th>Pais</th>
+                <th>País</th>
                 <th>Lugar</th>
                 <th>Organismo</th>
                 <th>Objetivo / resultado</th>

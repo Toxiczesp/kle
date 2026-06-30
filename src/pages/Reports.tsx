@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   FileText,
@@ -305,11 +305,11 @@ export default function Reports() {
                 </>
               )}
 
-              <h2>{analysis ? '3' : '2'}. Estado de la Relacion</h2>
+              <h2>{analysis ? '3' : '2'}. Estado de la relación</h2>
               <p>
                 Se han registrado <strong>{interactions.length}</strong> interacciones con esta autoridad objetivo.
                 {interactions.length > 0 && (
-                  <> La ultima interaccion fue el {interactions[0]?.date} en {interactions[0]?.location}.</>
+                  <> La última interacción fue el {interactions[0]?.date} en {interactions[0]?.location}.</>
                 )}
               </p>
 
@@ -324,7 +324,7 @@ export default function Reports() {
 
           {selectedTemplate === 'rpt-complete' && (
             <>
-              <h2>1. Datos Biograficos</h2>
+              <h2>1. Datos biográficos</h2>
               <p>{objective.biography}</p>
 
               {analysis && (
@@ -335,10 +335,10 @@ export default function Reports() {
                   <h2>3. Motivaciones</h2>
                   <p>{analysis.motivations}</p>
 
-                  <h2>4. Puntos de Conexion</h2>
+                  <h2>4. Puntos de conexión</h2>
                   <p>{analysis.connectionPoints}</p>
 
-                  <h2>5. Riesgos de Comunicacion</h2>
+                  <h2>5. Riesgos de comunicación</h2>
                   <p>{analysis.communicationRisks}</p>
 
                   <h2>6. Recomendaciones</h2>
@@ -379,7 +379,7 @@ export default function Reports() {
                   <h2>3. Contexto Sociocultural</h2>
                   <p>{analysis.socioculturalInterests}</p>
 
-                  <h2>4. Puntos de Conexion</h2>
+                  <h2>4. Puntos de conexión</h2>
                   <p>{analysis.connectionPoints}</p>
 
                   <h2>5. Recomendaciones Culturales</h2>
@@ -395,7 +395,7 @@ export default function Reports() {
                 interactions.map((inter, idx) => (
                   <div key={inter.id}>
                     <h2>{idx + 1}. {interactionTypeLabels[inter.type]} - {inter.date}</h2>
-                    <h3>Datos de la Interaccion</h3>
+                    <h3>Datos de la interacción</h3>
                     <p><strong>Fecha:</strong> {inter.date}</p>
                     <p><strong>Lugar:</strong> {inter.location}</p>
                     <p><strong>Analista:</strong> {inter.analyst}</p>
@@ -406,7 +406,7 @@ export default function Reports() {
                       {inter.topicsDiscussed.map((t, i) => <li key={i}>{t}</li>)}
                     </ul>
 
-                    <h3>Evaluacion</h3>
+                    <h3>Evaluación</h3>
                     <p><strong>Actitud:</strong> {inter.attitude}</p>
                     <p><strong>Receptividad:</strong> {inter.receptivity}</p>
 
@@ -420,7 +420,7 @@ export default function Reports() {
                       {inter.risksAlerts.map((r, i) => <li key={i}>{r}</li>)}
                     </ul>
 
-                    <h3>Proximos Pasos</h3>
+                    <h3>Próximos pasos</h3>
                     <ul>
                       {inter.nextSteps.map((s, i) => <li key={i}>{s}</li>)}
                     </ul>
@@ -456,7 +456,7 @@ export default function Reports() {
               <h2>7. Motivaciones</h2>
               <p>{analysis.motivations}</p>
 
-              <h2>8. Evaluacion de Riesgos</h2>
+              <h2>8. Evaluación de riesgos</h2>
               <p>{analysis.communicationRisks}</p>
 
               <h2>9. Historial de Interacciones</h2>
@@ -488,10 +488,10 @@ export default function Reports() {
                 letterSpacing: 1,
               }}
             >
-              Documento generado automaticamente por KLE Platform - {now}
+              Documento generado automáticamente por KLE Platform - {now}
             </p>
             <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
-              Este documento contiene informacion clasificada. Distribucion restringida.
+              Este documento contiene información clasificada. Distribución restringida.
             </p>
           </div>
         </div>
@@ -520,12 +520,12 @@ export default function Reports() {
       <BackButton />
       <div className="section-header">
         <div>
-          <h2 className="section-title">Generacion de Informes</h2>
+          <h2 className="section-title">Generación de informes</h2>
         </div>
         <div className="section-header-side">
           <div className={`area-context-badge ${activeArea}`}>
             <span className="area-context-dot" />
-            <span className="area-context-label">Area actual</span>
+            <span className="area-context-label">Área actual</span>
             <strong>{areaLabels[activeArea] ?? areaLabels.personality}</strong>
           </div>
         </div>
@@ -576,7 +576,7 @@ export default function Reports() {
           <div>
             <h3 className="section-title" style={{ marginBottom: 4 }}>Contenido para portal de autoridad</h3>
             <p className="section-subtitle">
-              El analista rellena este contenido y la autoridad lo vera en su ficha cuando quede publicado.
+              El analista rellena este contenido y la autoridad lo verá en su ficha cuando quede publicado.
             </p>
           </div>
           <div className="section-header-side" style={{ textAlign: 'right' }}>
@@ -585,20 +585,20 @@ export default function Reports() {
             </div>
             {publishedProfile && (
               <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
-                Ultima actualizacion: {new Date(publishedProfile.updatedAt).toLocaleString('es-ES')}
+                Última actualización: {new Date(publishedProfile.updatedAt).toLocaleString('es-ES')}
               </div>
             )}
           </div>
         </div>
 
         <div className="form-group">
-          <label className="form-label">Informacion general</label>
+          <label className="form-label">Información general</label>
           <textarea
             className="form-textarea"
             rows={4}
             value={authorityDraft.generalInfo}
             onChange={(e) => setAuthorityDraft((prev) => ({ ...prev, generalInfo: e.target.value }))}
-            placeholder="Contexto general que podra consultar la autoridad..."
+            placeholder="Contexto general que podrá consultar la autoridad..."
             required
           />
         </div>
@@ -616,19 +616,19 @@ export default function Reports() {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Analisis de comportamiento</label>
+          <label className="form-label">Análisis de comportamiento</label>
           <textarea
             className="form-textarea"
             rows={4}
             value={authorityDraft.behaviorAnalysis}
             onChange={(e) => setAuthorityDraft((prev) => ({ ...prev, behaviorAnalysis: e.target.value }))}
-            placeholder="Patrones, forma de comunicacion, riesgos y oportunidades..."
+            placeholder="Patrones, forma de comunicación, riesgos y oportunidades..."
             required
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label">Analisis sociocultural</label>
+          <label className="form-label">Análisis sociocultural</label>
           <textarea
             className="form-textarea"
             rows={4}
@@ -646,7 +646,7 @@ export default function Reports() {
             rows={8}
             value={authorityDraft.fullReport}
             onChange={(e) => setAuthorityDraft((prev) => ({ ...prev, fullReport: e.target.value }))}
-            placeholder="Version completa que se mostrara en el portal de autoridad..."
+            placeholder="Versión completa que se mostrará en el portal de autoridad..."
             required
           />
         </div>
@@ -655,7 +655,7 @@ export default function Reports() {
           <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
             {publishedProfile
               ? `Publicado por ${publishedProfile.analystName}.`
-              : 'Todavia no hay contenido publicado para esta autoridad.'}
+              : 'Todavía no hay contenido publicado para esta autoridad.'}
           </div>
           <button className="btn btn-primary" type="submit">
             Publicar para autoridad
@@ -672,7 +672,7 @@ export default function Reports() {
           <div>
             <h3 className="section-title" style={{ marginBottom: 4 }}>Documentos para autoridad</h3>
             <p className="section-subtitle">
-              Los PDFs y documentos que suba el analista apareceran en la ficha de la autoridad.
+              Los PDF y documentos que suba el analista aparecerán en la ficha de la autoridad.
             </p>
           </div>
         </div>
@@ -688,7 +688,7 @@ export default function Reports() {
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Categoria</label>
+            <label className="form-label">Categoría</label>
             <input
               className="form-input"
               value={documentDraft.category}
@@ -699,13 +699,13 @@ export default function Reports() {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Descripcion</label>
+          <label className="form-label">Descripción</label>
           <textarea
             className="form-textarea"
             rows={3}
             value={documentDraft.description}
             onChange={(e) => setDocumentDraft((prev) => ({ ...prev, description: e.target.value }))}
-            placeholder="Indica que contiene el documento y por que es relevante para la autoridad"
+            placeholder="Indica qué contiene el documento y por qué es relevante para la autoridad"
             required
           />
         </div>
@@ -776,3 +776,7 @@ export default function Reports() {
     </div>
   );
 }
+
+
+
+

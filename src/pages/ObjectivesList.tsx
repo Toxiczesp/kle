@@ -51,7 +51,7 @@ export default function ObjectivesList() {
         <Search size={18} />
         <input
           type="text"
-          placeholder="Buscar por nombre, organizacion o pais..."
+          placeholder="Buscar por nombre, organización o país..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

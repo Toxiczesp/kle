@@ -347,7 +347,7 @@ export default function Header() {
                     }}
                   >
                     <LogOut size={16} />
-                    Cerrar sesion
+                    Cerrar sesión
                   </button>
                 </div>
               )}
@@ -364,7 +364,7 @@ export default function Header() {
               <input
                 ref={searchInputRef}
                 className="search-modal-input"
-                placeholder="Buscar paginas y modulos..."
+                placeholder="Buscar páginas y módulos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />

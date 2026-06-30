@@ -68,7 +68,8 @@ const initialRequests: AuthorityRequest[] = [
     createdAt: '2026-06-14T08:00:00Z',
     updatedAt: '2026-06-15T10:30:00Z',
     analystName: 'Analista Demo',
-    analystResponse: 'Se ha revisado el perfil conductual y se han actualizado los riesgos de comunicación pendientes de validación final.',
+    analystResponse:
+      'Se ha revisado el perfil conductual y se han actualizado los riesgos de comunicación pendientes de validación final.',
   },
   {
     id: 'req-002',
@@ -110,7 +111,8 @@ const initialEvaluations: AuthorityEvaluation[] = [
     nextStepsClarity: 8,
     difficulties: 'La principal barrera fue el tiempo limitado disponible durante la reunión.',
     opportunities: 'Alta receptividad a una visita técnica y buena disposición a la cooperación bilateral.',
-    futureChanges: 'Preparar con mayor antelación documentación técnica resumida y reforzar el seguimiento previo.',
+    futureChanges:
+      'Preparar con mayor antelación documentación técnica resumida y reforzar el seguimiento previo.',
     otherRelevantAspects: 'Buena sintonía personal y conveniencia de mantener seguimiento trimestral.',
     createdAt: '2026-05-15T19:10:00Z',
   },
@@ -125,8 +127,10 @@ const initialEvaluations: AuthorityEvaluation[] = [
     objectionHandling: 8,
     nextStepsClarity: 9,
     difficulties: 'No surgieron resistencias relevantes, aunque hubo que concretar mejor el alcance temporal.',
-    opportunities: 'Interés claro en energías renovables y desarrollo portuario; oportunidad de seguimiento económico.',
-    futureChanges: 'Llevar propuestas aún más ejecutivas y coordinadas con actores económicos institucionales.',
+    opportunities:
+      'Interés claro en energías renovables y desarrollo portuario; oportunidad de seguimiento económico.',
+    futureChanges:
+      'Llevar propuestas aún más ejecutivas y coordinadas con actores económicos institucionales.',
     otherRelevantAspects: 'Solicita dossier adicional y conviene coordinar con ICEX.',
     createdAt: '2026-06-01T13:30:00Z',
   },
@@ -148,9 +152,12 @@ const initialDossierEvaluations: AuthorityDossierEvaluation[] = [
     geopoliticalAccuracy: 7,
     precisionAndReliability: 8,
     detailLevel: 8,
-    additionalInformationNeeded: 'Habría sido útil contar con escenarios de reacción probables ante objeciones técnicas y una guía de prioridades de cierre.',
-    contentChanges: 'Reduciría algo la parte descriptiva inicial y pondría antes los mensajes clave, riesgos y recomendaciones accionables.',
-    otherRelevantAspects: 'El dosier fue especialmente útil para preparar la aproximación y orientar bien el tono del encuentro.',
+    additionalInformationNeeded:
+      'Habría sido útil contar con escenarios de reacción probables ante objeciones técnicas y una guía de prioridades de cierre.',
+    contentChanges:
+      'Reduciría algo la parte descriptiva inicial y pondría antes los mensajes clave, riesgos y recomendaciones accionables.',
+    otherRelevantAspects:
+      'El dosier fue especialmente útil para preparar la aproximación y orientar bien el tono del encuentro.',
     globalContribution: 'Buena',
     createdAt: '2026-05-16T08:15:00Z',
   },
@@ -170,15 +177,15 @@ const initialObservationQuestionnaires: AuthorityObservationQuestionnaire[] = [
     observerRankRole: 'Agregado de Defensa, Ejército de Tierra',
     startTimeDuration: '10:00 - 11:30 (90 min)',
     cityLocation: 'Embajada de España, Maravia',
-    interactionReason: 'Reunion Bilateral de Seguimiento',
+    interactionReason: 'Reunión bilateral de seguimiento',
     interactionLanguage: 'Español',
-    targetOtherLanguages: 'Inglés (Alto), Francés (Medio)',
+    targetOtherLanguages: 'Inglés (alto), Francés (medio)',
     usedInterpreters: 'no',
     companions: [
-      { name: 'Tte. Coronel Martínez', rankArmy: 'Jefe de Sección, Ejército del Aire' }
+      { name: 'Tte. Coronel Martínez', rankArmy: 'Jefe de Sección, Ejército del Aire' },
     ],
     previousInteractions: [
-      { date: '2026-03-12', location: 'Ministerio de Defensa', reason: 'Presentación de credenciales' }
+      { date: '2026-03-12', location: 'Ministerio de Defensa', reason: 'Presentación de credenciales' },
     ],
     qGeneral: [
       'Persona muy expresiva y abierta, mantiene contacto físico natural.',
@@ -188,7 +195,7 @@ const initialObservationQuestionnaires: AuthorityObservationQuestionnaire[] = [
       'No se percibió ninguna dificultad física.',
       'Uniforme de gala impecable, limpio y ordenado.',
       'Traje formal en reuniones no oficiales.',
-      'No tomó notas él mismo; delegó en sus asesores.'
+      'No tomó notas él mismo; delegó en sus asesores.',
     ],
     qInteraction: [
       'Trato muy cordial y respetuoso, pero exigente en los detalles técnicos.',
@@ -198,27 +205,27 @@ const initialObservationQuestionnaires: AuthorityObservationQuestionnaire[] = [
       'Aficionado a la equitación y la lectura histórica militar.',
       'Relación formal y respetuosa con su cónyuge; trato profesional con otras mujeres.',
       'Mencionó de forma anecdótica su paso por la academia militar en España.',
-      'Muestra gran respeto por las tradiciones españolas y conoce bien el idioma.'
+      'Muestra gran respeto por las tradiciones españolas y conoce bien el idioma.',
     ],
     qTeam: [
       'Trato correcto y jerárquico pero cercano. Se dirigió por su empleo al Capitán López.',
       'Mayor afinidad con el Tte. Coronel Benítez (asesor jurídico). Menor interacción con el secretario.',
-      'Complicidad tecnica alta en la validacion de plazos con su asesor economico.',
+      'Complicidad técnica alta en la validación de plazos con su asesor económico.',
       'El Tte. Coronel Benítez actúa como líder de staff en su ausencia.',
-      'Equipo muy cohesionado y de alta preparacion profesional.'
+      'Equipo muy cohesionado y de alta preparación profesional.',
     ],
     qPersonality: [
       true, false, true, true, false, false, false, false, false, false,
       false, false, false, false, true, false, true, false, false, true,
-      false, false, true, true, false, false, true, false, true, false
+      false, false, true, true, false, false, true, false, true, false,
     ],
     qBehaviors: [
       true, false, true, true, false, false, false, false, false, true,
       false, false, false, false, false, false, false, false, false, false,
       false, false, false, false, false, false, false, false, false, false,
       true, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false
-    ]
+      false, false, false, false, false, false,
+    ],
   },
 ];
 
@@ -437,21 +444,26 @@ export function buildAuthorityAiAnswer(params: {
     return `Riesgos a vigilar para una próxima interacción con ${objective.fullName}: ${recommendations ?? personalityProfile ?? 'Conviene mantener un enfoque gradual, protocolario y basado en resultados verificables.'}`;
   }
 
-  if (normalized.includes('reunion') || normalized.includes('ultimas') || normalized.includes('hablado')) {
+  if (normalized.includes('reunion') || normalized.includes('últimas') || normalized.includes('ultimas') || normalized.includes('hablado')) {
     return interactionsSummary.length > 0
       ? `En las últimas interacciones con ${objective.fullName} se ha tratado lo siguiente: ${interactionsSummary.join(' ')}`
       : `No hay interacciones recientes registradas para ${objective.fullName}.`;
   }
 
-  if (normalized.includes('resume') || normalized.includes('resumen') || normalized.includes('toda la informacion')) {
+  if (
+    normalized.includes('resume') ||
+    normalized.includes('resumen') ||
+    normalized.includes('toda la información') ||
+    normalized.includes('toda la informacion')
+  ) {
     return `Resumen operativo sobre ${objective.fullName}: ${executiveSummary ?? objective.biography} ${recommendations ?? ''}`.trim();
   }
 
-  if (normalized.includes('evolucion') || normalized.includes('relacion')) {
+  if (normalized.includes('evolución') || normalized.includes('evolucion') || normalized.includes('relación') || normalized.includes('relacion')) {
     return interactionsSummary.length > 1
-      ? `La relacion con ${objective.fullName} muestra una evolucion progresiva. ${interactionsSummary.join(' ')} ${recommendations ?? ''}`.trim()
+      ? `La relación con ${objective.fullName} muestra una evolución progresiva. ${interactionsSummary.join(' ')} ${recommendations ?? ''}`.trim()
       : `La relación con ${objective.fullName} aún dispone de pocas interacciones registradas. Conviene consolidar más historial antes de extraer una tendencia robusta.`;
   }
 
-  return `Con la informacion disponible sobre ${objective.fullName}, la recomendacion general es esta: ${recommendations ?? executiveSummary ?? objective.biography}`;
+  return `Con la información disponible sobre ${objective.fullName}, la recomendación general es esta: ${recommendations ?? executiveSummary ?? objective.biography}`;
 }

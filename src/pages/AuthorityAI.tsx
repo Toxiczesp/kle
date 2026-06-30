@@ -12,11 +12,11 @@ interface Message {
 }
 
 const suggestedQuestions = [
-  '¿Cuales son los intereses principales de esta autoridad?',
-  '¿De que ha hablado en las ultimas reuniones?',
-  '¿Cual ha sido la evolucion de nuestra relacion con esta autoridad?',
-  '¿Que riesgos existen para una proxima interaccion?',
-  'Resume toda la informacion disponible sobre esta persona.',
+  '¿Cuáles son los intereses principales de esta autoridad?',
+  '¿De qué ha hablado en las últimas reuniones?',
+  '¿Cuál ha sido la evolución de nuestra relación con esta autoridad?',
+  '¿Qué riesgos existen para una próxima interacción?',
+  'Resume toda la información disponible sobre esta persona.',
 ];
 
 export default function AuthorityAI() {
@@ -27,7 +27,8 @@ export default function AuthorityAI() {
     {
       id: 'm1',
       role: 'assistant',
-      content: 'Selecciona una autoridad y formula una pregunta. El asistente respondera con base en informes, interacciones y valoraciones disponibles.',
+      content:
+        'Selecciona una autoridad y formula una pregunta. El asistente responderá con base en informes, interacciones y valoraciones disponibles.',
     },
   ]);
 
@@ -73,7 +74,7 @@ export default function AuthorityAI() {
         <div className="authority-panel-header">
           <div>
             <h2>Asistente IA</h2>
-            <p>Asistente conversacional alimentado por informes, historicos e interacciones registradas.</p>
+            <p>Asistente conversacional alimentado por informes, históricos e interacciones registradas.</p>
           </div>
         </div>
 
@@ -85,14 +86,20 @@ export default function AuthorityAI() {
             onChange={(e) => setSelectedObjectiveId(e.target.value)}
           >
             {objectives.map((objectiveItem) => (
-              <option key={objectiveItem.id} value={objectiveItem.id}>{objectiveItem.fullName}</option>
+              <option key={objectiveItem.id} value={objectiveItem.id}>
+                {objectiveItem.fullName}
+              </option>
             ))}
           </select>
         </div>
 
         <div className="authority-ai-suggestions">
           {suggestedQuestions.map((question) => (
-            <button key={question} className="authority-suggestion-chip" onClick={() => submitQuestion(question)}>
+            <button
+              key={question}
+              className="authority-suggestion-chip"
+              onClick={() => submitQuestion(question)}
+            >
               {question}
             </button>
           ))}

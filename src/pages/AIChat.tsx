@@ -7,17 +7,17 @@ import BackButton from '../components/BackButton';
 import { useObjectives } from '../context/ObjectivesContext';
 
 const suggestedQuestions = [
-  'Como deberia preparar una reunion con esta persona?',
-  'Que temas pueden generar confianza?',
-  'Que riesgos debo evitar?',
-  'Cuales son sus principales intereses?',
-  'Resume toda la informacion disponible.',
+  'Cómo debería preparar una reunión con esta persona?',
+  'Qué temas pueden generar confianza?',
+  'Qué riesgos debo evitar?',
+  'Cuáles son sus principales intereses?',
+  'Resume toda la información disponible.',
 ];
 
 const areaLabels: Record<string, string> = {
   personality: 'Info Autoridad Objetivo',
   'psychological-profile': 'Perfilado Personalidad',
-  sociocultural: 'Area Sociocultural',
+  sociocultural: 'Área sociocultural',
 };
 
 export default function AIChat() {
@@ -96,7 +96,14 @@ export default function AIChat() {
   return (
     <div>
       <BackButton />
-      <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-end', marginBottom: 'var(--space-6)' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 'var(--space-4)',
+          alignItems: 'flex-end',
+          marginBottom: 'var(--space-6)',
+        }}
+      >
         <div className="form-group" style={{ margin: 0, flex: 1, maxWidth: 400 }}>
           <label className="form-label">Autoridad objetivo seleccionada</label>
           <select
@@ -138,14 +145,24 @@ export default function AIChat() {
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Asistente IA - KLE</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-              Analisis de {objective?.fullName ?? 'autoridad objetivo'}
+              Análisis de {objective?.fullName ?? 'autoridad objetivo'}
             </div>
           </div>
         </div>
 
         <div className="chat-messages">
           {messages.length === 0 && (
-            <div style={{ textAlign: 'center', padding: 'var(--space-8)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            <div
+              style={{
+                textAlign: 'center',
+                padding: 'var(--space-8)',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
               <div
                 style={{
                   width: 64,
@@ -163,12 +180,35 @@ export default function AIChat() {
               <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 'var(--space-2)' }}>
                 Asistente de Inteligencia KLE
               </h3>
-              <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', maxWidth: 400, marginBottom: 'var(--space-6)' }}>
+              <p
+                style={{
+                  fontSize: '0.8125rem',
+                  color: 'var(--color-text-muted)',
+                  maxWidth: 400,
+                  marginBottom: 'var(--space-6)',
+                }}
+              >
                 Haz preguntas sobre {objective?.fullName ?? 'la autoridad objetivo seleccionada'}.
-                El asistente analizara toda la informacion disponible para generar respuestas relevantes.
+                El asistente analizará toda la información disponible para generar respuestas relevantes.
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', width: '100%', maxWidth: 450 }}>
-                <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 'var(--space-2)',
+                  width: '100%',
+                  maxWidth: 450,
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: '0.7rem',
+                    color: 'var(--color-text-muted)',
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                    marginBottom: 4,
+                  }}
+                >
                   Preguntas sugeridas
                 </p>
                 {suggestedQuestions.map((q) => (
@@ -194,15 +234,16 @@ export default function AIChat() {
                   height: 32,
                   fontSize: '0.75rem',
                   ...(msg.role === 'assistant'
-                    ? { background: 'linear-gradient(135deg, var(--color-accent-500), var(--color-primary-400))' }
+                    ? {
+                        background:
+                          'linear-gradient(135deg, var(--color-accent-500), var(--color-primary-400))',
+                      }
                     : {}),
                 }}
               >
                 {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
               </div>
-              <div className="chat-message-bubble">
-                {renderMessageContent(msg.content)}
-              </div>
+              <div className="chat-message-bubble">{renderMessageContent(msg.content)}</div>
             </div>
           ))}
 
@@ -239,11 +280,7 @@ export default function AIChat() {
             onChange={(e) => setInput(e.target.value)}
             disabled={isTyping}
           />
-          <button
-            type="submit"
-            className="chat-send-btn"
-            disabled={!input.trim() || isTyping}
-          >
+          <button type="submit" className="chat-send-btn" disabled={!input.trim() || isTyping}>
             <Send size={18} />
           </button>
         </form>

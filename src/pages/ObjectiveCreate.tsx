@@ -36,7 +36,7 @@ export default function ObjectiveCreate() {
         <div>
           <h2 className="section-title">{pageTitle}</h2>
           <p className="section-subtitle">
-            Completa los datos minimos, guarda el objetivo en la plataforma y abre su informe inicial.
+            Completa los datos mínimos, guarda el objetivo en la plataforma y abre su informe inicial.
           </p>
         </div>
       </div>
@@ -59,28 +59,28 @@ export default function ObjectiveCreate() {
               className="form-input"
               value={form.title}
               onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
-              placeholder="Cargo o funcion"
+              placeholder="Cargo o función"
             />
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Organizacion</label>
+            <label className="form-label">Organización</label>
             <input
               className="form-input"
               value={form.organization}
               onChange={(e) => setForm((prev) => ({ ...prev, organization: e.target.value }))}
-              placeholder="Institucion u organismo"
+              placeholder="Institución u organismo"
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Pais</label>
+            <label className="form-label">País</label>
             <input
               className="form-input"
               value={form.country}
               onChange={(e) => setForm((prev) => ({ ...prev, country: e.target.value }))}
-              placeholder="Pais de referencia"
+              placeholder="País de referencia"
             />
           </div>
         </div>
@@ -96,12 +96,12 @@ export default function ObjectiveCreate() {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Biografia inicial</label>
+          <label className="form-label">Biografía inicial</label>
           <textarea
             className="form-textarea"
             value={form.biography}
             onChange={(e) => setForm((prev) => ({ ...prev, biography: e.target.value }))}
-            placeholder="Informacion biografica inicial"
+            placeholder="Información biográfica inicial"
           />
         </div>
 
@@ -117,7 +117,7 @@ export default function ObjectiveCreate() {
 
         <div className="btn-group">
           <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginBottom: 0 }}>
-            Al crear el objetivo, se guarda en la base local de la aplicacion y se abre directamente
+            Al crear el objetivo, se guarda en la base local de la aplicación y se abre directamente
             la vista de informes de esa persona.
           </p>
           <button className="btn btn-primary" type="submit">

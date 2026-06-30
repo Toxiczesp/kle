@@ -29,15 +29,15 @@ const analysisTitles: Record<string, string> = {
   personalityProfile: 'Perfilado Personalidad',
   socioculturalInterests: 'Intereses Socioculturales',
   motivations: 'Motivaciones',
-  connectionPoints: 'Puntos de Conexion',
-  communicationRisks: 'Riesgos de Comunicacion',
+  connectionPoints: 'Puntos de conexión',
+  communicationRisks: 'Riesgos de comunicación',
   recommendations: 'Recomendaciones',
 };
 
 const areaLabels: Record<string, string> = {
   personality: 'Info Autoridad Objetivo',
   'psychological-profile': 'Perfilado Personalidad',
-  sociocultural: 'Area Sociocultural',
+  sociocultural: 'Área sociocultural',
 };
 
 export default function Analysis() {
@@ -66,7 +66,7 @@ export default function Analysis() {
         <div className="section-header-side">
           <div className={`area-context-badge ${activeArea}`}>
             <span className="area-context-dot" />
-            <span className="area-context-label">Area actual</span>
+            <span className="area-context-label">Área actual</span>
             <strong>{areaLabels[activeArea] ?? areaLabels.personality}</strong>
           </div>
         </div>
@@ -103,7 +103,9 @@ export default function Analysis() {
         >
           <div
             className="avatar avatar-lg"
-            style={{ background: 'linear-gradient(135deg, var(--color-accent-500), var(--color-primary-400))' }}
+            style={{
+              background: 'linear-gradient(135deg, var(--color-accent-500), var(--color-primary-400))',
+            }}
           >
             <Target size={28} />
           </div>
@@ -113,7 +115,7 @@ export default function Analysis() {
               {objective.title} - {objective.organization}
             </div>
             <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
-              {objective.country} • {objective.project}
+              {objective.country} · {objective.project}
             </div>
           </div>
         </div>
@@ -140,10 +142,10 @@ export default function Analysis() {
           <div className="empty-state-icon">
             <BrainCircuit size={28} />
           </div>
-          <h3 className="empty-state-title">Analisis no disponible</h3>
+          <h3 className="empty-state-title">Análisis no disponible</h3>
           <p className="empty-state-text">
-            No se ha generado un analisis para esta autoridad objetivo. En un entorno real, este analisis
-            seria generado por IA a partir de la informacion recopilada.
+            No se ha generado un análisis para esta autoridad objetivo. En un entorno real, este análisis
+            sería generado por IA a partir de la información recopilada.
           </p>
         </div>
       )}

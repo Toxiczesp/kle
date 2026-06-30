@@ -1,20 +1,47 @@
 {
+  "routes": [
+    {
+      "route": "/.auth/*",
+      "allowedRoles": [
+        "anonymous",
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/403.html",
+      "allowedRoles": [
+        "anonymous",
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/*",
+      "allowedRoles": [
+        "autorizado"
+      ]
+    }
+  ],
+  "responseOverrides": {
+    "401": {
+      "statusCode": 302,
+      "redirect": "/.auth/login/aad?post_login_redirect_uri=/"
+    },
+    "403": {
+      "rewrite": "/403.html",
+      "statusCode": 403
+    }
+  },
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [
-      "/assets/*",
-      "/favicon.svg",
-      "/icons.svg"
+      "/.auth/*",
+      "/403.html",
+      "/*.{css,js,png,jpg,jpeg,gif,svg,ico,webp,woff,woff2,ttf,map,json}"
     ]
   },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
-    "Referrer-Policy": "strict-origin-when-cross-origin",
-    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
-    "Cross-Origin-Opener-Policy": "same-origin"
-  },
-  "mimeTypes": {
-    ".json": "application/json"
+    "Referrer-Policy": "strict-origin-when-cross-origin"
   }
 }

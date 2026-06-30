@@ -261,7 +261,7 @@ export default function AuthorityRequests() {
                   {request.type === 'full-dossier' && (
                     <>
                       <p><strong>Solicitante:</strong> {request.requesterName ?? '-'} · {request.requesterRole ?? '-'}</p>
-                      <p><strong>Interaccion:</strong> {request.interactionDate ?? '-'} · {request.interactionLocation ?? '-'} · {request.interactionDuration ?? '-'}</p>
+                      <p><strong>Interacción:</strong> {request.interactionDate ?? '-'} · {request.interactionLocation ?? '-'} · {request.interactionDuration ?? '-'}</p>
                       <p><strong>Objetivos:</strong> {request.interactionObjectives ?? '-'}</p>
                       <p><strong>Información relevante:</strong> {request.relevantInformation ?? '-'}</p>
                     </>

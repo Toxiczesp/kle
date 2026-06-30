@@ -70,7 +70,7 @@ export default function Sidebar() {
               </NavLink>
             ))}
 
-            <div className="sidebar-section-label">Analisis</div>
+            <div className="sidebar-section-label">Análisis</div>
             {visibleItems.slice(4).map((item) => (
               <NavLink
                 key={item.to}

@@ -107,7 +107,7 @@ export default function AuthorityProfile() {
           <strong>{objective.organization}</strong>
         </div>
         <div className="authority-info-card">
-          <span>Pais</span>
+          <span>País</span>
           <strong>{objective.country}</strong>
         </div>
       </section>
@@ -145,7 +145,7 @@ export default function AuthorityProfile() {
 
         {activeTab === 'documents' && (
           <div className="authority-rich-content">
-            <h3>Documentacion sincronizada entre analista y autoridad</h3>
+            <h3>Documentación sincronizada entre analista y autoridad</h3>
             <div className="authority-doc-list">
               {sharedDocuments.length > 0 ? (
                 sharedDocuments.map((document) => (

@@ -62,7 +62,7 @@ export function ObjectivesProvider({ children }: { children: React.ReactNode }) 
           id: `obj-${Date.now()}`,
           fullName: input.fullName.trim(),
           title: input.title?.trim() || 'Pendiente de clasificar',
-          organization: input.organization?.trim() || 'Organizacion no especificada',
+          organization: input.organization?.trim() || 'Organización no especificada',
           country: input.country?.trim() || 'No definido',
           project: input.project?.trim() || 'Sin proyecto asignado',
           priority: input.priority ?? 'medium',

@@ -930,7 +930,7 @@ export default function AuthorityEvaluations() {
             {subTab === 'q1' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                 <div style={{ marginBottom: 'var(--space-2)', padding: 'var(--space-4)', border: '1px solid rgba(242, 194, 48, 0.25)', borderRadius: '12px', background: 'rgba(242, 194, 48, 0.05)' }}>
-                  <h3 style={{ margin: 0, fontSize: '0.95rem', color: '#f6cf58', fontWeight: 800 }}>CUESTIONARIO 1: CUESTIONARIO GENERAL DE INTERACCION CON LA AUTORIDAD OBJETIVO.</h3>
+                  <h3 style={{ margin: 0, fontSize: '0.95rem', color: '#f6cf58', fontWeight: 800 }}>CUESTIONARIO 1: CUESTIONARIO GENERAL DE INTERACCIÓN CON LA AUTORIDAD OBJETIVO.</h3>
                   <p style={{ margin: '8px 0 0 0', fontSize: '0.82rem', color: 'rgba(222, 231, 245, 0.8)', lineHeight: '1.4' }}>
                     Este cuestionario tiene como objetivo complementar la información necesaria para mejorar el proceso de interacción personal KLE con la Autoridad Objetivo. Esta información será recogida por personas presentes en el encuentro, recomendándose su cumplimentación a la mayor brevedad posible para evitar la posible pérdida de información ocasionada por el olvido. Si en alguno de los ítems necesitase un mayor espacio para su respuesta, continúe en otro lugar indicando el número del ítem. Si en alguno de ellos no tiene la información o no sabe cómo responder, simplemente déjelo en blanco.
                   </p>
@@ -1504,7 +1504,7 @@ export default function AuthorityEvaluations() {
               {modalTab === 'q1' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                   <div style={{ padding: 'var(--space-4)', border: '1px solid rgba(242, 194, 48, 0.25)', borderRadius: '12px', background: 'rgba(242, 194, 48, 0.05)' }}>
-                    <h3 style={{ margin: 0, fontSize: '0.95rem', color: '#f6cf58', fontWeight: 800 }}>CUESTIONARIO 1: CUESTIONARIO GENERAL DE INTERACCION CON LA AUTORIDAD OBJETIVO.</h3>
+                    <h3 style={{ margin: 0, fontSize: '0.95rem', color: '#f6cf58', fontWeight: 800 }}>CUESTIONARIO 1: CUESTIONARIO GENERAL DE INTERACCIÓN CON LA AUTORIDAD OBJETIVO.</h3>
                     <p style={{ margin: '8px 0 0 0', fontSize: '0.82rem', color: 'rgba(222, 231, 245, 0.8)', lineHeight: '1.4' }}>
                       Este cuestionario tiene como objetivo complementar la información necesaria para mejorar el proceso de interacción personal KLE con la Autoridad Objetivo. Esta información será recogida por personas presentes en el encuentro, recomendándose su cumplimentación a la mayor brevedad posible para evitar la posible pérdida de información ocasionada por el olvido. Si en alguno de los ítems necesitase un mayor espacio para su respuesta, continúe en otro lugar indicando el número del ítem. Si en alguno de ellos no tiene la información o no sabe cómo responder, simplemente déjelo en blanco.
                     </p>

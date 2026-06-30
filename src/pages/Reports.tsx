@@ -285,13 +285,13 @@ export default function Reports() {
 
           {(selectedTemplate === 'rpt-summary' || selectedTemplate === 'rpt-consolidated') && (
             <>
-              <h2>1. Datos Basicos</h2>
+              <h2>1. Datos Básicos</h2>
               <table className="table" style={{ marginBottom: 'var(--space-4)' }}>
                 <tbody>
                   <tr><td style={{ fontWeight: 600, width: 200 }}>Nombre completo</td><td>{objective.fullName}</td></tr>
                   <tr><td style={{ fontWeight: 600 }}>Cargo</td><td>{objective.title}</td></tr>
-                  <tr><td style={{ fontWeight: 600 }}>Organizacion</td><td>{objective.organization}</td></tr>
-                  <tr><td style={{ fontWeight: 600 }}>Pais</td><td>{objective.country}</td></tr>
+                  <tr><td style={{ fontWeight: 600 }}>Organización</td><td>{objective.organization}</td></tr>
+                  <tr><td style={{ fontWeight: 600 }}>País</td><td>{objective.country}</td></tr>
                   <tr><td style={{ fontWeight: 600 }}>Proyecto</td><td>{objective.project}</td></tr>
                   <tr><td style={{ fontWeight: 600 }}>Prioridad</td><td style={{ textTransform: 'uppercase' }}>{objective.priority}</td></tr>
                   <tr><td style={{ fontWeight: 600 }}>Estado</td><td style={{ textTransform: 'uppercase' }}>{objective.status}</td></tr>

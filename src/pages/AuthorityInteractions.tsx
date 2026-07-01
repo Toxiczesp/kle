@@ -44,7 +44,7 @@ export default function AuthorityInteractions() {
         <div className="authority-panel-header">
           <div>
             <h2>Interacciones</h2>
-            <p>Consulta reuniones e interacciones registradas por rango de fechas, país, lugar u organismo.</p>
+            <p>Consulte reuniones e interacciones registradas por rango de fechas, país, lugar u organismo.</p>
           </div>
         </div>
 

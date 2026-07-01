@@ -1,0 +1,16 @@
+[
+  {
+    "id": "usr-001",
+    "name": "Cap. J. Rodriguez",
+    "email": "analista@kle.local",
+    "passwordHash": "0ead2060b65992dca4769af601a1b3a35ef38cfad2c2c465bb160ea764157c5d",
+    "role": "analista"
+  },
+  {
+    "id": "usr-002",
+    "name": "Autoridad Apoyada",
+    "email": "autoridad@kle.local",
+    "passwordHash": "0ead2060b65992dca4769af601a1b3a35ef38cfad2c2c465bb160ea764157c5d",
+    "role": "autoridad"
+  }
+]

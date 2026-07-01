@@ -1,10 +1,9 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useAuthorityData } from '../context/AuthorityDataContext';
 import {
   authorityRequestStatusLabels,
   authorityRequestTypeLabels,
   priorityLabels,
-  readAuthorityRequests,
-  writeAuthorityRequests,
 } from '../data/authorityPortal';
 import { useObjectives } from '../context/ObjectivesContext';
 import { useAuth } from '../context/AuthContext';
@@ -13,26 +12,27 @@ import type { AuthorityRequest, AuthorityRequestStatus } from '../types';
 export default function AnalystRequests() {
   const { user } = useAuth();
   const { objectives } = useObjectives();
-  const [requests, setRequests] = useState<AuthorityRequest[]>([]);
+  const { requests, saveRequests } = useAuthorityData();
   const [selectedRequestId, setSelectedRequestId] = useState('');
   const [draft, setDraft] = useState({
     status: 'pending' as AuthorityRequestStatus,
     analystResponse: '',
   });
 
+  const sortedRequests = useMemo(
+    () => [...requests].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [requests]
+  );
+
   useEffect(() => {
-    const nextRequests = readAuthorityRequests().sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    setRequests(nextRequests);
-    if (!selectedRequestId && nextRequests[0]?.id) {
-      setSelectedRequestId(nextRequests[0].id);
+    if (!selectedRequestId && sortedRequests[0]?.id) {
+      setSelectedRequestId(sortedRequests[0].id);
     }
-  }, [selectedRequestId]);
+  }, [selectedRequestId, sortedRequests]);
 
   const selectedRequest = useMemo(
-    () => requests.find((request) => request.id === selectedRequestId),
-    [requests, selectedRequestId]
+    () => sortedRequests.find((request) => request.id === selectedRequestId),
+    [sortedRequests, selectedRequestId]
   );
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function AnalystRequests() {
     });
   }, [selectedRequest]);
 
-  const handleSave = (nextStatus?: AuthorityRequestStatus) => {
+  const handleSave = async (nextStatus?: AuthorityRequestStatus) => {
     if (!selectedRequest || !user) return;
 
     const resolvedStatus = nextStatus ?? draft.status;
@@ -57,11 +57,10 @@ export default function AnalystRequests() {
       completedAt: resolvedStatus === 'done' ? now : selectedRequest.completedAt,
     };
 
-    const nextRequests = requests.map((request) =>
+    const nextRequests = sortedRequests.map((request) =>
       request.id === selectedRequest.id ? updatedRequest : request
     );
-    setRequests(nextRequests);
-    writeAuthorityRequests(nextRequests);
+    await saveRequests(nextRequests);
   };
 
   return (
@@ -80,12 +79,12 @@ export default function AnalystRequests() {
           <div className="section-header" style={{ marginBottom: 'var(--space-4)' }}>
             <div>
               <h3 className="section-title" style={{ marginBottom: 4 }}>Bandeja de entrada</h3>
-              <p className="section-subtitle">{requests.length} solicitud(es) compartidas con el analista.</p>
+              <p className="section-subtitle">{sortedRequests.length} solicitud(es) compartidas con el analista.</p>
             </div>
           </div>
 
           <div className="authority-status-stack">
-            {requests.map((request) => {
+            {sortedRequests.map((request) => {
               const objective = objectives.find((item) => item.id === request.objectiveId);
               return (
                 <button
@@ -173,12 +172,7 @@ export default function AnalystRequests() {
 
               <div className="form-group">
                 <label className="form-label">Descripción del encargo</label>
-                <textarea
-                  className="form-textarea"
-                  value={selectedRequest.description}
-                  readOnly
-                  rows={4}
-                />
+                <textarea className="form-textarea" value={selectedRequest.description} readOnly rows={4} />
               </div>
 
               <div className="form-group">
@@ -216,13 +210,13 @@ export default function AnalystRequests() {
               </div>
 
               <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-                <button className="btn btn-secondary" type="button" onClick={() => handleSave()}>
+                <button className="btn btn-secondary" type="button" onClick={() => void handleSave()}>
                   Guardar progreso
                 </button>
-                <button className="btn btn-secondary" type="button" onClick={() => handleSave('review')}>
+                <button className="btn btn-secondary" type="button" onClick={() => void handleSave('review')}>
                   Enviar a revisión
                 </button>
-                <button className="btn btn-primary" type="button" onClick={() => handleSave('done')}>
+                <button className="btn btn-primary" type="button" onClick={() => void handleSave('done')}>
                   Marcar como finalizado
                 </button>
               </div>
@@ -236,7 +230,7 @@ export default function AnalystRequests() {
           ) : (
             <div className="empty-state">
               <div className="empty-state-title">No hay solicitudes seleccionadas</div>
-              <p className="empty-state-text">Cuando la autoridad registre encargos, podrás gestionarlos desde aquí.</p>
+              <p className="empty-state-text">Cuando la autoridad registre encargos, podrá gestionarlos desde aquí.</p>
             </div>
           )}
         </section>
@@ -244,6 +238,3 @@ export default function AnalystRequests() {
     </div>
   );
 }
-
-
-

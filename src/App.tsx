@@ -20,6 +20,7 @@ import AuthorityKLE from './pages/AuthorityKLE';
 import AuthorityProfile from './pages/AuthorityProfile';
 import AuthorityRequests from './pages/AuthorityRequests';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthorityDataProvider } from './context/AuthorityDataContext';
 import { ObjectivesProvider } from './context/ObjectivesContext';
 import type { UserRole } from './types';
 
@@ -210,7 +211,9 @@ export default function App() {
   return (
     <AuthProvider>
       <ObjectivesProvider>
-        <AppRoutes />
+        <AuthorityDataProvider>
+          <AppRoutes />
+        </AuthorityDataProvider>
       </ObjectivesProvider>
     </AuthProvider>
   );

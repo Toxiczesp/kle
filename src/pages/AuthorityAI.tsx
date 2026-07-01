@@ -12,11 +12,11 @@ interface Message {
 }
 
 const suggestedQuestions = [
-  '¿Cuáles son los intereses principales de esta autoridad?',
-  '¿De qué ha hablado en las últimas reuniones?',
-  '¿Cuál ha sido la evolución de nuestra relación con esta autoridad?',
-  '¿Qué riesgos existen para una próxima interacción?',
-  'Resume toda la información disponible sobre esta persona.',
+  '¿Cuáles son los principales intereses de esta autoridad?',
+  '¿Sobre qué asuntos ha tratado en las últimas reuniones?',
+  '¿Cuál ha sido la evolución de la relación con esta autoridad?',
+  '¿Qué riesgos existen de cara a una próxima interacción?',
+  'Resuma toda la información disponible sobre esta persona.',
 ];
 
 export default function AuthorityAI() {
@@ -28,7 +28,7 @@ export default function AuthorityAI() {
       id: 'm1',
       role: 'assistant',
       content:
-        'Selecciona una autoridad y formula una pregunta. El asistente responderá con base en informes, interacciones y valoraciones disponibles.',
+        'Seleccione una autoridad y formule una pregunta. El asistente responderá con base en informes, interacciones y valoraciones disponibles.',
     },
   ]);
 

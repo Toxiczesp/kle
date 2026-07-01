@@ -14,7 +14,8 @@ import {
   PlaySquare,
 } from 'lucide-react';
 import { useObjectives } from '../context/ObjectivesContext';
-import { authorityRequestStatusLabels, readAuthorityRequests } from '../data/authorityPortal';
+import { useAuthorityData } from '../context/AuthorityDataContext';
+import { authorityRequestStatusLabels } from '../data/authorityPortal';
 
 const analystAreas = [
   {
@@ -64,14 +65,14 @@ const analystAreas = [
 export default function Dashboard() {
   const navigate = useNavigate();
   const { objectives, findObjectiveByName } = useObjectives();
+  const { requests } = useAuthorityData();
   const [selectedAreaId, setSelectedAreaId] = useState(analystAreas[0].id);
   const [personName, setPersonName] = useState('');
   const selectedArea = analystAreas.find((area) => area.id === selectedAreaId) ?? analystAreas[0];
   const SelectedAreaIcon = selectedArea.icon;
   const normalizedName = personName.trim().toLowerCase();
   const exactObjective = normalizedName ? findObjectiveByName(personName) : undefined;
-  const analystRequests = readAuthorityRequests();
-  const pendingRequests = analystRequests.filter((request) => request.status !== 'done').slice(0, 3);
+  const pendingRequests = requests.filter((request) => request.status !== 'done').slice(0, 3);
   const matchingObjectives = normalizedName
     ? objectives
         .filter((objective) => objective.fullName.toLowerCase().includes(normalizedName))

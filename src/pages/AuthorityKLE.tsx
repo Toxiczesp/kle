@@ -53,7 +53,7 @@ export default function AuthorityKLE() {
         <div className="authority-panel-header">
           <div>
             <h2>Buscador KLE</h2>
-            <p>Localiza autoridades por nombre, cargo u organismo y filtra por un rango de fechas.</p>
+            <p>Localice autoridades por nombre, cargo u organismo y filtre por un rango de fechas.</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
             {(

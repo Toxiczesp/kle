@@ -15,17 +15,10 @@ import {
 } from 'lucide-react';
 import { mockInteractions } from '../data/interactions';
 import { mockAnalyses, mockReportTemplates } from '../data/misc';
-import {
-  getPublishedProfileForObjective,
-  readAuthorityPublishedProfiles,
-  readAuthoritySharedDocuments,
-  getSharedDocumentsForObjective,
-  writeAuthorityPublishedProfiles,
-  writeAuthoritySharedDocuments,
-} from '../data/authorityPortal';
 import type { AuthorityPublishedProfile, AuthoritySharedDocument, InteractionType } from '../types';
 import BackButton from '../components/BackButton';
 import { useAuth } from '../context/AuthContext';
+import { useAuthorityData } from '../context/AuthorityDataContext';
 import { useObjectives } from '../context/ObjectivesContext';
 
 const templateIcons: Record<string, React.ReactNode> = {
@@ -50,9 +43,40 @@ const areaLabels: Record<string, string> = {
   sociocultural: 'Area Sociocultural',
 };
 
+const MAX_SHARED_DOCUMENT_SIZE_BYTES = 5 * 1024 * 1024;
+
+function sanitizeReportNode(reportElement: HTMLElement) {
+  const clone = reportElement.cloneNode(true) as HTMLElement;
+
+  clone.querySelectorAll('script, iframe, object, embed, link[rel="import"], meta[http-equiv="refresh"]').forEach((node) => {
+    node.remove();
+  });
+
+  clone.querySelectorAll<HTMLElement>('*').forEach((element) => {
+    Array.from(element.attributes).forEach((attribute) => {
+      const attributeName = attribute.name.toLowerCase();
+      const attributeValue = attribute.value.trim().toLowerCase();
+
+      if (attributeName.startsWith('on')) {
+        element.removeAttribute(attribute.name);
+      }
+
+      if (
+        ['href', 'src', 'xlink:href'].includes(attributeName) &&
+        attributeValue.startsWith('javascript:')
+      ) {
+        element.removeAttribute(attribute.name);
+      }
+    });
+  });
+
+  return clone;
+}
+
 export default function Reports() {
   const { user } = useAuth();
   const { objectives } = useObjectives();
+  const { publishedProfiles, sharedDocuments: allSharedDocuments, savePublishedProfiles, saveSharedDocuments } = useAuthorityData();
   const [searchParams] = useSearchParams();
   const preselected = searchParams.get('obj') || '';
   const activeArea = searchParams.get('area') || 'personality';
@@ -88,8 +112,12 @@ export default function Reports() {
   useEffect(() => {
     if (!selectedObjective) return;
 
-    const existingProfile = getPublishedProfileForObjective(selectedObjective) ?? null;
-    setSharedDocuments(getSharedDocumentsForObjective(selectedObjective));
+    const existingProfile = publishedProfiles.find((profile) => profile.objectiveId === selectedObjective) ?? null;
+    setSharedDocuments(
+      allSharedDocuments
+        .filter((document) => document.objectiveId === selectedObjective)
+        .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())
+    );
     setPublishedProfile(existingProfile);
     setAuthorityDraft({
       generalInfo: existingProfile?.generalInfo ?? objective?.biography ?? '',
@@ -102,7 +130,7 @@ export default function Reports() {
           .filter(Boolean)
           .join('\n\n'),
     });
-  }, [analysis, objective, selectedObjective]);
+  }, [allSharedDocuments, analysis, objective, publishedProfiles, selectedObjective]);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -117,7 +145,7 @@ export default function Reports() {
       reader.readAsDataURL(file);
     });
 
-  const handlePublishAuthorityProfile = (e: React.FormEvent) => {
+  const handlePublishAuthorityProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedObjective || !user) return;
 
@@ -134,9 +162,9 @@ export default function Reports() {
       analystName: user.name,
     };
 
-    const others = readAuthorityPublishedProfiles().filter((profile) => profile.objectiveId !== selectedObjective);
+    const others = publishedProfiles.filter((profile) => profile.objectiveId !== selectedObjective);
     const nextProfiles = [nextProfile, ...others];
-    writeAuthorityPublishedProfiles(nextProfiles);
+    await savePublishedProfiles(nextProfiles);
     setPublishedProfile(nextProfile);
     showToast('Contenido publicado para el portal de autoridad.');
   };
@@ -145,6 +173,16 @@ export default function Reports() {
     e.preventDefault();
     if (!selectedObjective || !user || !selectedFile) {
       showToast('Selecciona un PDF antes de subirlo al portal de autoridad.');
+      return;
+    }
+
+    if (selectedFile.type !== 'application/pdf') {
+      showToast('Solo se permiten documentos PDF.');
+      return;
+    }
+
+    if (selectedFile.size > MAX_SHARED_DOCUMENT_SIZE_BYTES) {
+      showToast('El documento supera el límite de 5 MB permitido.');
       return;
     }
 
@@ -162,12 +200,13 @@ export default function Reports() {
         analystName: user.name,
       };
 
-      const nextDocuments = [
-        created,
-        ...readAuthoritySharedDocuments(),
-      ];
-      writeAuthoritySharedDocuments(nextDocuments);
-      setSharedDocuments(getSharedDocumentsForObjective(selectedObjective));
+      const nextDocuments = [created, ...allSharedDocuments];
+      await saveSharedDocuments(nextDocuments);
+      setSharedDocuments(
+        nextDocuments
+          .filter((document) => document.objectiveId === selectedObjective)
+          .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())
+      );
       setDocumentDraft({
         name: '',
         description: '',
@@ -197,13 +236,15 @@ export default function Reports() {
       return;
     }
 
-    const popup = window.open('', '_blank', 'width=920,height=1200');
+    const popup = window.open('', '_blank', 'noopener,noreferrer,width=920,height=1200');
     if (!popup) {
       showToast('El navegador bloqueo la ventana de exportacion.');
       return;
     }
 
     const title = `${getCurrentTemplateName()} - ${objective.fullName}`;
+    const safeReportNode = sanitizeReportNode(reportElement);
+
     popup.document.write(`
       <!doctype html>
       <html lang="es">
@@ -220,11 +261,10 @@ export default function Reports() {
             @media print { body { margin: 18px; } }
           </style>
         </head>
-        <body>
-          ${reportElement.innerHTML}
-        </body>
+        <body></body>
       </html>
     `);
+    popup.document.body.appendChild(popup.document.importNode(safeReportNode, true));
     popup.document.close();
     popup.focus();
     popup.print();

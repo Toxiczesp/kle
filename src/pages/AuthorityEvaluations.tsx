@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  readAuthorityDossierEvaluations,
-  readAuthorityEvaluations,
-  readAuthorityObservationQuestionnaires,
-  writeAuthorityDossierEvaluations,
-  writeAuthorityEvaluations,
-  writeAuthorityObservationQuestionnaires,
-} from '../data/authorityPortal';
+import { useAuthorityData } from '../context/AuthorityDataContext';
 import { useObjectives } from '../context/ObjectivesContext';
 import type {
   AuthorityDossierEvaluation,
@@ -286,10 +279,15 @@ function ScoreSlider({
 
 export default function AuthorityEvaluations() {
   const { objectives } = useObjectives();
+  const {
+    evaluations,
+    dossierEvaluations,
+    observationQuestionnaires,
+    saveEvaluations,
+    saveDossierEvaluations,
+    saveObservationQuestionnaires,
+  } = useAuthorityData();
   const [activeSection, setActiveSection] = useState<EvaluationSection>('interaction');
-  const [evaluations, setEvaluations] = useState<AuthorityEvaluation[]>([]);
-  const [dossierEvaluations, setDossierEvaluations] = useState<AuthorityDossierEvaluation[]>([]);
-  const [observationQuestionnaires, setObservationQuestionnaires] = useState<AuthorityObservationQuestionnaire[]>([]);
 
   const [subTab, setSubTab] = useState<'q1' | 'q2' | 'q3'>('q1');
   const [expandedSec, setExpandedSec] = useState<'general' | 'interaction' | 'team' | null>('general');
@@ -360,12 +358,6 @@ export default function AuthorityEvaluations() {
   });
 
   useEffect(() => {
-    setEvaluations(readAuthorityEvaluations());
-    setDossierEvaluations(readAuthorityDossierEvaluations());
-    setObservationQuestionnaires(readAuthorityObservationQuestionnaires());
-  }, []);
-
-  useEffect(() => {
     if (!objectives[0]?.id) return;
 
     setInteractionForm((prev) => (
@@ -379,7 +371,7 @@ export default function AuthorityEvaluations() {
     ));
   }, [objectives]);
 
-  const handleInteractionSubmit = (e: React.FormEvent) => {
+  const handleInteractionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const created: AuthorityEvaluation = {
@@ -400,8 +392,7 @@ export default function AuthorityEvaluations() {
     };
 
     const next = [created, ...evaluations];
-    setEvaluations(next);
-    writeAuthorityEvaluations(next);
+    await saveEvaluations(next);
     setInteractionForm({
       objectiveId: objectives[0]?.id ?? '',
       date: '',
@@ -418,7 +409,7 @@ export default function AuthorityEvaluations() {
     });
   };
 
-  const handleDossierSubmit = (e: React.FormEvent) => {
+  const handleDossierSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const created: AuthorityDossierEvaluation = {
@@ -444,8 +435,7 @@ export default function AuthorityEvaluations() {
     };
 
     const next = [created, ...dossierEvaluations];
-    setDossierEvaluations(next);
-    writeAuthorityDossierEvaluations(next);
+    await saveDossierEvaluations(next);
     setDossierForm({
       objectiveId: objectives[0]?.id ?? '',
       date: '',
@@ -467,7 +457,7 @@ export default function AuthorityEvaluations() {
     });
   };
 
-  const handleObservationSubmit = (e: React.FormEvent) => {
+  const handleObservationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const created: AuthorityObservationQuestionnaire = {
@@ -497,8 +487,7 @@ export default function AuthorityEvaluations() {
     };
 
     const next = [created, ...observationQuestionnaires];
-    setObservationQuestionnaires(next);
-    writeAuthorityObservationQuestionnaires(next);
+    await saveObservationQuestionnaires(next);
     setObservationForm({
       objectiveId: objectives[0]?.id ?? '',
       date: '',

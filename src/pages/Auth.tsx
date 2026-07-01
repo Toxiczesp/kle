@@ -33,16 +33,16 @@ export default function AuthPage() {
     return <Navigate to={redirectTo} replace />;
   }
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    const result = login(loginData.email, loginData.password);
+    const result = await login(loginData.email, loginData.password);
     if (!result.ok) {
       setError(result.error);
     }
   };
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -56,7 +56,7 @@ export default function AuthPage() {
       return;
     }
 
-    const result = register({
+    const result = await register({
       name: registerData.name,
       email: registerData.email,
       password: registerData.password,

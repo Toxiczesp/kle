@@ -2,14 +2,10 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, FileBadge2, FileText, FolderOpen, ScrollText } from 'lucide-react';
 import { useObjectives } from '../context/ObjectivesContext';
+import { useAuthorityData } from '../context/AuthorityDataContext';
 import { mockDocuments } from '../data/misc';
 import { mockInteractions } from '../data/interactions';
-import {
-  getLastInteractionForObjective,
-  getPublishedProfileForObjective,
-  getSharedDocumentsForObjective,
-  readAuthorityEvaluations,
-} from '../data/authorityPortal';
+import { getLastInteractionForObjective } from '../data/authorityPortal';
 
 const tabs = [
   { id: 'dossier', label: 'Dosier KLE', icon: FileText },
@@ -23,11 +19,16 @@ export default function AuthorityProfile() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { objectives } = useObjectives();
+  const { publishedProfiles, sharedDocuments, evaluations } = useAuthorityData();
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['id']>('dossier');
 
   const objective = objectives.find((item) => item.id === id);
-  const publishedProfile = id ? getPublishedProfileForObjective(id) : undefined;
-  const sharedDocuments = id ? getSharedDocumentsForObjective(id) : [];
+  const publishedProfile = id ? publishedProfiles.find((profile) => profile.objectiveId === id) : undefined;
+  const objectiveSharedDocuments = id
+    ? sharedDocuments
+        .filter((document) => document.objectiveId === id)
+        .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())
+    : [];
   const lastInteraction = id ? getLastInteractionForObjective(id) : undefined;
   const documents = mockDocuments.filter((document) => document.objectiveId === id);
   const interactions = useMemo(
@@ -37,9 +38,9 @@ export default function AuthorityProfile() {
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
     [id]
   );
-  const evaluations = readAuthorityEvaluations().filter((evaluation) => evaluation.objectiveId === id);
+  const objectiveEvaluations = evaluations.filter((evaluation) => evaluation.objectiveId === id);
 
-  const averageEvaluation = (evaluation: (typeof evaluations)[number]) => {
+  const averageEvaluation = (evaluation: (typeof objectiveEvaluations)[number]) => {
     const values = [
       evaluation.strategyFit,
       evaluation.trustAndCommunication,
@@ -147,8 +148,8 @@ export default function AuthorityProfile() {
           <div className="authority-rich-content">
             <h3>Documentación sincronizada entre analista y autoridad</h3>
             <div className="authority-doc-list">
-              {sharedDocuments.length > 0 ? (
-                sharedDocuments.map((document) => (
+              {objectiveSharedDocuments.length > 0 ? (
+                objectiveSharedDocuments.map((document) => (
                   <div key={document.id} className="authority-doc-card">
                     <strong>{document.name}</strong>
                     <span>{document.description}</span>
@@ -203,7 +204,7 @@ export default function AuthorityProfile() {
             <h3>Historial cronológico</h3>
             <div className="authority-history-list">
               {interactions.map((interaction) => {
-                const evaluation = evaluations.find((item) => item.date === interaction.date && item.location === interaction.location);
+                const evaluation = objectiveEvaluations.find((item) => item.date === interaction.date && item.location === interaction.location);
                 return (
                   <div key={interaction.id} className="authority-history-card">
                     <div className="authority-history-card-head">
@@ -224,8 +225,8 @@ export default function AuthorityProfile() {
           <div className="authority-rich-content">
             <h3>Valoraciones de interacciones</h3>
             <div className="authority-history-list">
-              {evaluations.length > 0 ? (
-                evaluations.map((evaluation) => (
+              {objectiveEvaluations.length > 0 ? (
+                objectiveEvaluations.map((evaluation) => (
                   <div key={evaluation.id} className="authority-history-card">
                     <div className="authority-history-card-head">
                       <strong>{evaluation.date}</strong>

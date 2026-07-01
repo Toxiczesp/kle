@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react';
+import { useAuthorityData } from '../context/AuthorityDataContext';
 import { useObjectives } from '../context/ObjectivesContext';
 import {
   authorityRequestStatusLabels,
   authorityRequestTypeLabels,
   priorityLabels,
-  readAuthorityRequests,
-  writeAuthorityRequests,
 } from '../data/authorityPortal';
 import type { AuthorityRequest, AuthorityRequestType, PriorityLevel } from '../types';
 
 export default function AuthorityRequests() {
   const { objectives } = useObjectives();
-  const [requests, setRequests] = useState<AuthorityRequest[]>([]);
+  const { requests, saveRequests } = useAuthorityData();
   const [dossierForm, setDossierForm] = useState({
     objectiveId: objectives[0]?.id ?? '',
     priority: 'medium' as PriorityLevel,
@@ -28,16 +27,12 @@ export default function AuthorityRequests() {
   });
 
   useEffect(() => {
-    setRequests(readAuthorityRequests());
-  }, []);
-
-  useEffect(() => {
     if (!dossierForm.objectiveId && objectives[0]?.id) {
       setDossierForm((prev) => ({ ...prev, objectiveId: objectives[0].id }));
     }
   }, [dossierForm.objectiveId, objectives]);
 
-  const handleDossierSubmit = (e: React.FormEvent) => {
+  const handleDossierSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const typeLabel = authorityRequestTypeLabels[dossierForm.type];
     const targetObjective = objectives.find((objective) => objective.id === dossierForm.objectiveId);
@@ -61,9 +56,7 @@ export default function AuthorityRequests() {
       relevantInformation: dossierForm.relevantInformation,
     };
 
-    const next = [created, ...requests];
-    setRequests(next);
-    writeAuthorityRequests(next);
+    await saveRequests([created, ...requests]);
     setDossierForm({
       objectiveId: objectives[0]?.id ?? '',
       priority: 'medium',
@@ -88,7 +81,7 @@ export default function AuthorityRequests() {
             <div className="authority-panel-header">
               <div>
                 <h2>Solicitud Dosier KLE</h2>
-                <p>Encarga un dosier completo con los datos necesarios para preparar la interacción.</p>
+                <p>Solicite un dosier completo con los datos necesarios para preparar la interacción.</p>
               </div>
             </div>
 
@@ -109,57 +102,29 @@ export default function AuthorityRequests() {
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Persona que lo solicita</label>
-                <input
-                  className="form-input"
-                  value={dossierForm.requesterName}
-                  onChange={(e) => setDossierForm((prev) => ({ ...prev, requesterName: e.target.value }))}
-                  placeholder="Nombre y apellidos"
-                  required
-                />
+                <input className="form-input" value={dossierForm.requesterName} onChange={(e) => setDossierForm((prev) => ({ ...prev, requesterName: e.target.value }))} placeholder="Nombre y apellidos" required />
               </div>
               <div className="form-group">
                 <label className="form-label">Empleo / puesto</label>
-                <input
-                  className="form-input"
-                  value={dossierForm.requesterRole}
-                  onChange={(e) => setDossierForm((prev) => ({ ...prev, requesterRole: e.target.value }))}
-                  placeholder="Cargo o puesto"
-                  required
-                />
+                <input className="form-input" value={dossierForm.requesterRole} onChange={(e) => setDossierForm((prev) => ({ ...prev, requesterRole: e.target.value }))} placeholder="Cargo o puesto" required />
               </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Interacción: fecha</label>
-                <input
-                  className="form-input"
-                  type="date"
-                  value={dossierForm.interactionDate}
-                  onChange={(e) => setDossierForm((prev) => ({ ...prev, interactionDate: e.target.value }))}
-                  required
-                />
+                <input className="form-input" type="date" value={dossierForm.interactionDate} onChange={(e) => setDossierForm((prev) => ({ ...prev, interactionDate: e.target.value }))} required />
               </div>
               <div className="form-group">
                 <label className="form-label">Lugar</label>
-                <input
-                  className="form-input"
-                  value={dossierForm.interactionLocation}
-                  onChange={(e) => setDossierForm((prev) => ({ ...prev, interactionLocation: e.target.value }))}
-                  placeholder="Lugar previsto"
-                  required
-                />
+                <input className="form-input" value={dossierForm.interactionLocation} onChange={(e) => setDossierForm((prev) => ({ ...prev, interactionLocation: e.target.value }))} placeholder="Lugar previsto" required />
               </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Prioridad</label>
-                <select
-                  className="form-select"
-                  value={dossierForm.priority}
-                  onChange={(e) => setDossierForm((prev) => ({ ...prev, priority: e.target.value as PriorityLevel }))}
-                >
+                <select className="form-select" value={dossierForm.priority} onChange={(e) => setDossierForm((prev) => ({ ...prev, priority: e.target.value as PriorityLevel }))}>
                   {Object.entries(priorityLabels).map(([value, label]) => (
                     <option key={value} value={value}>{label}</option>
                   ))}
@@ -167,35 +132,18 @@ export default function AuthorityRequests() {
               </div>
               <div className="form-group">
                 <label className="form-label">Fecha límite</label>
-                <input
-                  className="form-input"
-                  type="date"
-                  value={dossierForm.dueDate}
-                  onChange={(e) => setDossierForm((prev) => ({ ...prev, dueDate: e.target.value }))}
-                  required
-                />
+                <input className="form-input" type="date" value={dossierForm.dueDate} onChange={(e) => setDossierForm((prev) => ({ ...prev, dueDate: e.target.value }))} required />
               </div>
             </div>
 
             <div className="form-group">
               <label className="form-label">Duración prevista (horas / días)</label>
-              <input
-                className="form-input"
-                value={dossierForm.interactionDuration}
-                onChange={(e) => setDossierForm((prev) => ({ ...prev, interactionDuration: e.target.value }))}
-                placeholder="Ej. 2 horas, 3 días..."
-                required
-              />
+              <input className="form-input" value={dossierForm.interactionDuration} onChange={(e) => setDossierForm((prev) => ({ ...prev, interactionDuration: e.target.value }))} placeholder="Ej. 2 horas, 3 días..." required />
             </div>
 
             <div className="form-group">
               <label className="form-label">Tipo de solicitud</label>
-              <select
-                className="form-select"
-                value={dossierForm.type}
-                onChange={(e) => setDossierForm((prev) => ({ ...prev, type: e.target.value as AuthorityRequestType }))}
-                required
-              >
+              <select className="form-select" value={dossierForm.type} onChange={(e) => setDossierForm((prev) => ({ ...prev, type: e.target.value as AuthorityRequestType }))} required>
                 {Object.entries(authorityRequestTypeLabels).map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
                 ))}
@@ -204,47 +152,31 @@ export default function AuthorityRequests() {
 
             <div className="form-group">
               <label className="form-label">Descripción breve para el analista</label>
-              <textarea
-                className="form-textarea"
-                value={dossierForm.description}
-                onChange={(e) => setDossierForm((prev) => ({ ...prev, description: e.target.value }))}
-                placeholder="Opcional"
-              />
+              <textarea className="form-textarea" value={dossierForm.description} onChange={(e) => setDossierForm((prev) => ({ ...prev, description: e.target.value }))} placeholder="Opcional" />
             </div>
 
             <div className="form-group">
               <label className="form-label">Objetivos de la interacción</label>
-              <textarea
-                className="form-textarea"
-                value={dossierForm.interactionObjectives}
-                onChange={(e) => setDossierForm((prev) => ({ ...prev, interactionObjectives: e.target.value }))}
-                placeholder="Objetivos previstos para la interacción"
-                required
-              />
+              <textarea className="form-textarea" value={dossierForm.interactionObjectives} onChange={(e) => setDossierForm((prev) => ({ ...prev, interactionObjectives: e.target.value }))} rows={4} required />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Otra información relevante para la elaboración del dosier KLE</label>
-              <textarea
-                className="form-textarea"
-                value={dossierForm.relevantInformation}
-                onChange={(e) => setDossierForm((prev) => ({ ...prev, relevantInformation: e.target.value }))}
-                placeholder="Contexto adicional, sensibilidades, enfoque deseado..."
-                required
-              />
+              <label className="form-label">Otra información relevante</label>
+              <textarea className="form-textarea" value={dossierForm.relevantInformation} onChange={(e) => setDossierForm((prev) => ({ ...prev, relevantInformation: e.target.value }))} rows={5} required />
             </div>
 
-            <button className="btn btn-primary" type="submit">Registrar solicitud dosier</button>
+            <button className="btn btn-primary" type="submit">Registrar solicitud</button>
           </form>
         </div>
 
         <div className="authority-panel">
           <div className="authority-panel-header">
             <div>
-              <h2>Seguimiento</h2>
-              <p>Consulta el estado de los trabajos en curso.</p>
+              <h2>Seguimiento de solicitudes</h2>
+              <p>Estado de los trabajos solicitados al equipo de análisis.</p>
             </div>
           </div>
+
           <div className="authority-status-stack">
             {requests.map((request) => {
               const objective = objectives.find((item) => item.id === request.objectiveId);
@@ -270,13 +202,8 @@ export default function AuthorityRequests() {
                     <span>{objective?.fullName ?? '-'}</span>
                     <span>{authorityRequestTypeLabels[request.type]}</span>
                     <span>{priorityLabels[request.priority]}</span>
-                    <span>Limite {request.dueDate}</span>
+                    <span>{request.updatedAt ? `Actualizado por ${request.analystName}` : 'Pendiente de revisión'} · {new Date(request.updatedAt ?? request.createdAt).toLocaleString('es-ES')}</span>
                   </div>
-                  {request.updatedAt && (
-                    <div style={{ marginTop: 'var(--space-2)', fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-                      {request.analystName ? `Actualizado por ${request.analystName}` : 'Actualizado por analista'} · {new Date(request.updatedAt).toLocaleString('es-ES')}
-                    </div>
-                  )}
                 </div>
               );
             })}

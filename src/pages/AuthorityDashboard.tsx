@@ -10,8 +10,8 @@ import {
 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useObjectives } from '../context/ObjectivesContext';
+import { useAuthorityData } from '../context/AuthorityDataContext';
 import { mockInteractions } from '../data/interactions';
-import { readAuthorityRequests, readAuthorityEvaluations } from '../data/authorityPortal';
 
 const quickLinks = [
   {
@@ -49,9 +49,7 @@ const quickLinks = [
 export default function AuthorityDashboard() {
   const navigate = useNavigate();
   const { objectives } = useObjectives();
-
-  const requests = readAuthorityRequests();
-  const evaluations = readAuthorityEvaluations();
+  const { requests, evaluations } = useAuthorityData();
 
   const highlightedInteractions = useMemo(() => mockInteractions.slice(0, 4), []);
 

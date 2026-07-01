@@ -107,7 +107,7 @@ export const mockReportTemplates: ReportTemplate[] = [
   },
 ];
 
-export const mockProjects: Project[] = [
+export const mockProjects: Array<Project> = [
   { id: 'proj-001', name: 'Operación Puente Diplomático', description: 'Establecimiento de relaciones bilaterales de defensa con Maravia.', status: 'active', objectiveCount: 2 },
   { id: 'proj-002', name: 'Proyecto Atlas', description: 'Red de cooperación en seguridad interior con países de África Occidental.', status: 'active', objectiveCount: 2 },
   { id: 'proj-003', name: 'Proyecto Escudo Oriental', description: 'Seguimiento de agregados militares de Europa del Este.', status: 'active', objectiveCount: 1 },

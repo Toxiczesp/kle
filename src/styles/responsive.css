@@ -26,16 +26,16 @@
 
 @media (max-width: 1180px) {
   .header-top {
-    padding-right: 190px;
+    padding-right: 340px;
   }
 
   .header-brand-gobierno-image {
-    width: 235px;
+    width: 180px;
     height: 68px;
   }
 
   .header-brand-emad-image {
-    width: 330px;
+    width: 240px;
     height: 68px;
   }
 
@@ -64,20 +64,24 @@
 
 @media (max-width: 980px) {
   .header-top {
-    padding-right: 120px;
+    padding-right: 240px;
   }
 
   .header-brand-gobierno-image {
-    width: 200px;
+    width: 150px;
     height: 62px;
   }
 
   .header-brand-emad-image {
-    width: 260px;
+    width: 200px;
     height: 62px;
   }
 
   .header-title {
+    display: none;
+  }
+
+  .role-pill {
     display: none;
   }
 }

@@ -1,37 +1,35 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Send, Bot, User, Sparkles } from 'lucide-react';
+import { Bot, Send, Sparkles, User, WandSparkles } from 'lucide-react';
 import { getAIResponse } from '../data/aiResponses';
 import type { AIMessage } from '../types';
-import BackButton from '../components/BackButton';
 import { useObjectives } from '../context/ObjectivesContext';
 
 const suggestedQuestions = [
-  'Cómo debería preparar una reunión con esta persona?',
-  'Qué temas pueden generar confianza?',
-  'Qué riesgos debo evitar?',
-  'Cuáles son sus principales intereses?',
-  'Resume toda la información disponible.',
+  'Como deberia preparar una reunion con esta persona?',
+  'Que temas pueden generar confianza?',
+  'Que riesgos debo evitar?',
+  'Cuales son sus principales intereses?',
+  'Resume toda la informacion disponible.',
 ];
 
-const areaLabels: Record<string, string> = {
-  personality: 'Info Autoridad Objetivo',
-  'psychological-profile': 'Perfilado Personalidad',
-  sociocultural: 'Área sociocultural',
-};
+const workflowHighlights = [
+  'Cruza preguntas con el contexto de la autoridad objetivo seleccionada.',
+  'Sirve como apoyo para preparar reuniones, informes y seguimiento.',
+  'Mantiene la experiencia integrada dentro del portal del analista.',
+];
 
 export default function AIChat() {
   const { objectives } = useObjectives();
   const [searchParams] = useSearchParams();
   const preselected = searchParams.get('obj') || '';
-  const activeArea = searchParams.get('area') || 'personality';
   const [selectedObjective, setSelectedObjective] = useState(preselected || '');
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const objective = objectives.find((o) => o.id === selectedObjective);
+  const objective = objectives.find((item) => item.id === selectedObjective);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -46,7 +44,7 @@ export default function AIChat() {
   const sendMessage = (text: string) => {
     if (!text.trim() || !objective) return;
 
-    const userMsg: AIMessage = {
+    const userMessage: AIMessage = {
       id: `msg-${Date.now()}`,
       role: 'user',
       content: text.trim(),
@@ -54,39 +52,39 @@ export default function AIChat() {
       objectiveId: selectedObjective,
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
 
     setTimeout(() => {
       const response = getAIResponse(text, objective.fullName);
-      const aiMsg: AIMessage = {
+      const assistantMessage: AIMessage = {
         id: `msg-${Date.now() + 1}`,
         role: 'assistant',
         content: response,
         timestamp: new Date().toISOString(),
         objectiveId: selectedObjective,
       };
-      setMessages((prev) => [...prev, aiMsg]);
+      setMessages((prev) => [...prev, assistantMessage]);
       setIsTyping(false);
     }, 1500 + Math.random() * 1000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     sendMessage(input);
   };
 
   const renderMessageContent = (content: string) => {
     const parts = content.split(/(\*\*[^*]+\*\*)/g);
-    return parts.map((part, i) => {
+    return parts.map((part, index) => {
       if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i}>{part.slice(2, -2)}</strong>;
+        return <strong key={index}>{part.slice(2, -2)}</strong>;
       }
 
-      return part.split('\n').map((line, j) => (
-        <span key={`${i}-${j}`}>
-          {j > 0 && <br />}
+      return part.split('\n').map((line, lineIndex) => (
+        <span key={`${index}-${lineIndex}`}>
+          {lineIndex > 0 && <br />}
           {line}
         </span>
       ));
@@ -94,38 +92,74 @@ export default function AIChat() {
   };
 
   return (
-    <div>
-      <BackButton />
+    <div className="analyst-ai-page">
+      <div className="section-header">
+        <div>
+          <h2 className="section-title">Asistente IA</h2>
+          <p className="section-subtitle">
+            Asistente integrado en el flujo del analista para preparar interacciones y consolidar
+            informacion.
+          </p>
+        </div>
+      </div>
+
+      <section className="analyst-ai-hero">
+        <div className="analyst-ai-hero-copy">
+          <span className="analyst-empty-pill">
+            <WandSparkles size={14} />
+            Flujo asistido
+          </span>
+          <h3>Apoyo conversacional dentro del portal analista</h3>
+          <p>
+            Usa la IA como capa de apoyo para explorar contexto, preparar reuniones, resumir
+            informacion y orientar el trabajo sobre cada autoridad objetivo.
+          </p>
+        </div>
+        <div className="analyst-ai-highlight-list">
+          {workflowHighlights.map((highlight) => (
+            <div className="analyst-ai-highlight" key={highlight}>
+              <Sparkles size={16} />
+              <span>{highlight}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <div
         style={{
           display: 'flex',
           gap: 'var(--space-4)',
           alignItems: 'flex-end',
           marginBottom: 'var(--space-6)',
+          flexWrap: 'wrap',
         }}
       >
-        <div className="form-group" style={{ margin: 0, flex: 1, maxWidth: 400 }}>
+        <div className="form-group" style={{ margin: 0, flex: 1, minWidth: 280 }}>
           <label className="form-label">Autoridad objetivo seleccionada</label>
           <select
             className="form-select"
             value={selectedObjective}
-            onChange={(e) => {
-              setSelectedObjective(e.target.value);
+            onChange={(event) => {
+              setSelectedObjective(event.target.value);
               setMessages([]);
             }}
           >
             {objectives
-              .filter((o) => o.status !== 'closed')
-              .map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.fullName}
+              .filter((item) => item.status !== 'closed')
+              .map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.fullName}
                 </option>
               ))}
           </select>
         </div>
+
         {objective && (
-          <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', paddingBottom: 8 }}>
-            {objective.title} - {objective.organization} · {areaLabels[activeArea] ?? areaLabels.personality}
+          <div className="analyst-ai-context">
+            <strong>{objective.fullName}</strong>
+            <span>
+              {objective.title} · {objective.organization}
+            </span>
           </div>
         )}
       </div>
@@ -145,24 +179,14 @@ export default function AIChat() {
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Asistente IA - KLE</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-              Análisis de {objective?.fullName ?? 'autoridad objetivo'}
+              Analisis de {objective?.fullName ?? 'autoridad objetivo'}
             </div>
           </div>
         </div>
 
         <div className="chat-messages">
           {messages.length === 0 && (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: 'var(--space-8)',
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
+            <div className="analyst-ai-empty">
               <div
                 style={{
                   width: 64,
@@ -184,56 +208,37 @@ export default function AIChat() {
                 style={{
                   fontSize: '0.8125rem',
                   color: 'var(--color-text-muted)',
-                  maxWidth: 400,
+                  maxWidth: 480,
                   marginBottom: 'var(--space-6)',
                 }}
               >
-                Haz preguntas sobre {objective?.fullName ?? 'la autoridad objetivo seleccionada'}.
-                El asistente analizará toda la información disponible para generar respuestas relevantes.
+                Formula preguntas sobre {objective?.fullName ?? 'la autoridad objetivo seleccionada'}.
+                El asistente te ayudara a sintetizar informacion y a preparar proximos pasos.
               </p>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 'var(--space-2)',
-                  width: '100%',
-                  maxWidth: 450,
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: '0.7rem',
-                    color: 'var(--color-text-muted)',
-                    textTransform: 'uppercase',
-                    letterSpacing: 1,
-                    marginBottom: 4,
-                  }}
-                >
-                  Preguntas sugeridas
-                </p>
-                {suggestedQuestions.map((q) => (
+              <div className="analyst-ai-suggestions">
+                {suggestedQuestions.map((question) => (
                   <button
-                    key={q}
+                    key={question}
                     className="btn btn-secondary btn-sm"
                     style={{ textAlign: 'left', justifyContent: 'flex-start', fontSize: '0.8rem' }}
-                    onClick={() => sendMessage(q)}
+                    onClick={() => sendMessage(question)}
                   >
-                    {q}
+                    {question}
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          {messages.map((msg) => (
-            <div key={msg.id} className={`chat-message ${msg.role}`}>
+          {messages.map((message) => (
+            <div key={message.id} className={`chat-message ${message.role}`}>
               <div
                 className="avatar"
                 style={{
                   width: 32,
                   height: 32,
                   fontSize: '0.75rem',
-                  ...(msg.role === 'assistant'
+                  ...(message.role === 'assistant'
                     ? {
                         background:
                           'linear-gradient(135deg, var(--color-accent-500), var(--color-primary-400))',
@@ -241,9 +246,9 @@ export default function AIChat() {
                     : {}),
                 }}
               >
-                {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
+                {message.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
               </div>
-              <div className="chat-message-bubble">{renderMessageContent(msg.content)}</div>
+              <div className="chat-message-bubble">{renderMessageContent(message.content)}</div>
             </div>
           ))}
 
@@ -277,7 +282,7 @@ export default function AIChat() {
             type="text"
             placeholder={`Pregunta sobre ${objective?.fullName ?? 'la autoridad objetivo'}...`}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(event) => setInput(event.target.value)}
             disabled={isTyping}
           />
           <button type="submit" className="chat-send-btn" disabled={!input.trim() || isTyping}>

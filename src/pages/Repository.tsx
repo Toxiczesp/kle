@@ -1,198 +1,313 @@
-import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Search, FileText, File, ClipboardCheck, ScrollText, Paperclip, Upload } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  BookOpenText,
+  ClipboardCheck,
+  FileText,
+  Search,
+  ShieldCheck,
+} from 'lucide-react';
 import { mockDocuments } from '../data/misc';
-import BackButton from '../components/BackButton';
 import { useObjectives } from '../context/ObjectivesContext';
+import { useAuthorityData } from '../context/AuthorityDataContext';
 
-const typeIcons: Record<string, React.ReactNode> = {
-  document: <FileText size={18} />,
-  note: <ScrollText size={18} />,
-  report: <File size={18} />,
-  questionnaire: <ClipboardCheck size={18} />,
-  evaluation: <ClipboardCheck size={18} />,
-  file: <Paperclip size={18} />,
-};
-
-const typeLabels: Record<string, string> = {
-  document: 'Documento',
-  note: 'Nota',
-  report: 'Informe',
-  questionnaire: 'Cuestionario',
-  evaluation: 'Evaluación',
-  file: 'Archivo',
-};
-
-const areaLabels: Record<string, string> = {
-  personality: 'Info Autoridad Objetivo',
-  'psychological-profile': 'Perfilado Personalidad',
-  sociocultural: 'Área sociocultural',
-};
+const repositorySections = [
+  {
+    key: 'reports',
+    title: 'Informes KLE',
+    description: 'Todos los informes y materiales documentales disponibles sobre la autoridad.',
+    icon: FileText,
+  },
+  {
+    key: 'evaluations',
+    title: 'Valoracion de la autoridad',
+    description: 'Valoraciones creadas desde la cuenta autoridad y reflejadas aqui.',
+    icon: ShieldCheck,
+  },
+  {
+    key: 'summary',
+    title: 'Resumen ejecutivo',
+    description: 'Resumenes publicados por el analista para consulta rapida.',
+    icon: BookOpenText,
+  },
+  {
+    key: 'questionnaires',
+    title: 'Cuestionarios del observador',
+    description: 'Cuestionarios y observaciones registrados tras las interacciones.',
+    icon: ClipboardCheck,
+  },
+];
 
 export default function Repository() {
   const { objectives } = useObjectives();
-  const [searchParams] = useSearchParams();
-  const activeArea = searchParams.get('area') || 'personality';
+  const {
+    dossierEvaluations,
+    evaluations,
+    observationQuestionnaires,
+    publishedProfiles,
+  } = useAuthorityData();
   const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [objectiveFilter, setObjectiveFilter] = useState<string>('all');
-  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [objectiveFilter, setObjectiveFilter] = useState('all');
+  const ReportsIcon = repositorySections[0].icon;
+  const EvaluationsIcon = repositorySections[1].icon;
+  const SummaryIcon = repositorySections[2].icon;
+  const QuestionnairesIcon = repositorySections[3].icon;
 
-  const filtered = mockDocuments.filter((doc) => {
-    const matchesSearch =
-      doc.name.toLowerCase().includes(search.toLowerCase()) ||
-      doc.description.toLowerCase().includes(search.toLowerCase());
-    const matchesType = typeFilter === 'all' || doc.type === typeFilter;
-    const matchesObjective = objectiveFilter === 'all' || doc.objectiveId === objectiveFilter;
-    return matchesSearch && matchesType && matchesObjective;
-  });
+  const filteredDocuments = useMemo(() => {
+    return mockDocuments.filter((document) => {
+      const matchesSearch =
+        search.trim() === '' ||
+        document.name.toLowerCase().includes(search.toLowerCase()) ||
+        document.description.toLowerCase().includes(search.toLowerCase());
+      const matchesObjective =
+        objectiveFilter === 'all' || document.objectiveId === objectiveFilter;
+      return matchesSearch && matchesObjective;
+    });
+  }, [objectiveFilter, search]);
+
+  const filteredPublishedProfiles = useMemo(() => {
+    return publishedProfiles.filter((profile) => {
+      const matchesSearch =
+        search.trim() === '' ||
+        profile.executiveSummary.toLowerCase().includes(search.toLowerCase()) ||
+        profile.generalInfo.toLowerCase().includes(search.toLowerCase());
+      const matchesObjective =
+        objectiveFilter === 'all' || profile.objectiveId === objectiveFilter;
+      return matchesSearch && matchesObjective;
+    });
+  }, [objectiveFilter, publishedProfiles, search]);
+
+  const filteredEvaluations = useMemo(() => {
+    const allEvaluations = [
+      ...evaluations.map((evaluation) => ({
+        id: `eval-${evaluation.id}`,
+        objectiveId: evaluation.objectiveId,
+        title: 'Valoracion de interaccion',
+        date: evaluation.date,
+        summary: evaluation.opportunities || evaluation.otherRelevantAspects || 'Sin comentarios ampliados.',
+      })),
+      ...dossierEvaluations.map((evaluation) => ({
+        id: `dossier-${evaluation.id}`,
+        objectiveId: evaluation.objectiveId,
+        title: 'Valoracion de dosier',
+        date: evaluation.date,
+        summary:
+          evaluation.contentChanges ||
+          evaluation.additionalInformationNeeded ||
+          'Sin comentarios ampliados.',
+      })),
+    ];
+
+    return allEvaluations.filter((evaluation) => {
+      const objective = objectives.find((item) => item.id === evaluation.objectiveId);
+      const matchesSearch =
+        search.trim() === '' ||
+        evaluation.title.toLowerCase().includes(search.toLowerCase()) ||
+        evaluation.summary.toLowerCase().includes(search.toLowerCase()) ||
+        (objective?.fullName ?? '').toLowerCase().includes(search.toLowerCase());
+      const matchesObjective =
+        objectiveFilter === 'all' || evaluation.objectiveId === objectiveFilter;
+      return matchesSearch && matchesObjective;
+    });
+  }, [dossierEvaluations, evaluations, objectiveFilter, objectives, search]);
+
+  const filteredQuestionnaires = useMemo(() => {
+    return observationQuestionnaires.filter((questionnaire) => {
+      const matchesSearch =
+        search.trim() === '' ||
+        questionnaire.context.toLowerCase().includes(search.toLowerCase()) ||
+        questionnaire.recommendations.toLowerCase().includes(search.toLowerCase());
+      const matchesObjective =
+        objectiveFilter === 'all' || questionnaire.objectiveId === objectiveFilter;
+      return matchesSearch && matchesObjective;
+    });
+  }, [objectiveFilter, observationQuestionnaires, search]);
 
   return (
-    <div>
-      <BackButton />
+    <div className="analyst-repository-page">
       <div className="section-header">
         <div>
-          <h2 className="section-title">Repositorio de información</h2>
-        </div>
-        <div className="section-header-side">
-          <div className={`area-context-badge ${activeArea}`}>
-            <span className="area-context-dot" />
-            <span className="area-context-label">Área actual</span>
-            <strong>{areaLabels[activeArea] ?? areaLabels.personality}</strong>
-          </div>
-          <button className="btn btn-primary" onClick={() => setShowUploadModal(true)}>
-            <Upload size={16} /> Subir Documento
-          </button>
+          <h2 className="section-title">Repositorio</h2>
+          <p className="section-subtitle">
+            Consulta el contenido documental existente organizado en cuatro bloques de trabajo.
+          </p>
         </div>
       </div>
 
-      <div className="search-bar">
-        <Search size={18} />
-        <input
-          type="text"
-          placeholder="Buscar documentos..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
-      <div style={{ display: 'flex', gap: 'var(--space-4)', marginBottom: 'var(--space-6)', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <label className="form-label">Tipo de documento</label>
-          <select
-            className="form-select"
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-          >
-            <option value="all">Todos los tipos</option>
-            {Object.entries(typeLabels).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
-            ))}
-          </select>
-        </div>
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <label className="form-label">Autoridad objetivo asociada</label>
-          <select
-            className="form-select"
-            value={objectiveFilter}
-            onChange={(e) => setObjectiveFilter(e.target.value)}
-          >
-            <option value="all">Todas las autoridades objetivo</option>
-            {objectives.map((obj) => (
-              <option key={obj.id} value={obj.id}>{obj.fullName}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {filtered.map((doc) => {
-        const obj = objectives.find((o) => o.id === doc.objectiveId);
-        return (
-          <div className="doc-item" key={doc.id}>
-            <div className="doc-icon">{typeIcons[doc.type]}</div>
-            <div className="doc-info">
-              <div className="doc-name">{doc.name}</div>
-              <div className="doc-desc">{doc.description}</div>
-            </div>
-            <div className="doc-meta" style={{ gap: 'var(--space-6)' }}>
-              <span className="doc-meta-item" style={{ minWidth: 120 }}>{obj?.fullName ?? '-'}</span>
-              <span className="badge badge-medium" style={{ fontSize: '0.65rem' }}>{typeLabels[doc.type]}</span>
-              <span className="doc-meta-item">{doc.size}</span>
-              <span className="doc-meta-item">{doc.dateUploaded}</span>
+      <section className="analyst-filter-panel">
+        <div className="analyst-filter-grid analyst-filter-grid-compact">
+          <div className="form-group">
+            <label className="form-label">Buscar contenido</label>
+            <div className="search-bar">
+              <Search size={18} />
+              <input
+                type="text"
+                placeholder="Informes, valoraciones o cuestionarios"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+              />
             </div>
           </div>
-        );
-      })}
 
-      {filtered.length === 0 && (
-        <div className="empty-state">
-          <div className="empty-state-icon"><Search size={28} /></div>
-          <h3 className="empty-state-title">Sin resultados</h3>
-          <p className="empty-state-text">No se encontraron documentos con los criterios seleccionados.</p>
-        </div>
-      )}
-
-      {showUploadModal && (
-        <div className="modal-overlay" onClick={() => setShowUploadModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Subir Documento</h3>
-              <button className="modal-close" onClick={() => setShowUploadModal(false)}>x</button>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Nombre del documento</label>
-              <input className="form-input" type="text" placeholder="Nombre descriptivo..." />
-            </div>
-            <div className="form-row">
-              <div className="form-group">
-                <label className="form-label">Tipo</label>
-                <select className="form-select">
-                  {Object.entries(typeLabels).map(([key, label]) => (
-                    <option key={key} value={key}>{label}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Autoridad objetivo asociada</label>
-                <select className="form-select">
-                  {objectives.map((obj) => (
-                    <option key={obj.id} value={obj.id}>{obj.fullName}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Descripción</label>
-              <textarea className="form-textarea" placeholder="Descripción del documento..." />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Archivo</label>
-              <div
-                style={{
-                  border: '2px dashed var(--color-border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: 'var(--space-8)',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'border-color var(--transition-fast)',
-                }}
-              >
-                <Upload size={32} style={{ color: 'var(--color-text-muted)', marginBottom: 8 }} />
-                <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
-                  Arrastra un archivo aquí o haz clic para seleccionar
-                </p>
-                <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
-                  PDF, DOC, XLS, PPT, IMG - Max. 50 MB
-                </p>
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
-              <button className="btn btn-secondary" onClick={() => setShowUploadModal(false)}>Cancelar</button>
-              <button className="btn btn-primary" onClick={() => { setShowUploadModal(false); alert('Documento subido (simulación)'); }}>Subir Documento</button>
-            </div>
+          <div className="form-group">
+            <label className="form-label">Autoridad objetivo</label>
+            <select
+              className="form-select"
+              value={objectiveFilter}
+              onChange={(event) => setObjectiveFilter(event.target.value)}
+            >
+              <option value="all">Todas las autoridades objetivo</option>
+              {objectives.map((objective) => (
+                <option key={objective.id} value={objective.id}>
+                  {objective.fullName}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-      )}
+      </section>
+
+      <div className="analyst-repository-grid">
+        <section className="analyst-repository-section">
+          <div className="analyst-repository-section-header">
+            <div className="analyst-repository-section-title-wrap">
+              <div className="analyst-repository-icon">
+                <ReportsIcon size={18} />
+              </div>
+              <div>
+                <h3>{repositorySections[0].title}</h3>
+                <p>{repositorySections[0].description}</p>
+              </div>
+            </div>
+            <span className="badge badge-medium">{filteredDocuments.length}</span>
+          </div>
+
+          <div className="analyst-repository-list">
+            {filteredDocuments.map((document) => {
+              const objective = objectives.find((item) => item.id === document.objectiveId);
+              return (
+                <article className="analyst-repository-item" key={document.id}>
+                  <strong>{document.name}</strong>
+                  <p>{document.description}</p>
+                  <div className="analyst-repository-meta">
+                    <span>{objective?.fullName ?? 'Sin autoridad'}</span>
+                    <span>{document.category}</span>
+                    <span>{document.dateUploaded}</span>
+                  </div>
+                </article>
+              );
+            })}
+            {filteredDocuments.length === 0 && (
+              <p className="analyst-repository-empty">No hay informes KLE con los filtros actuales.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="analyst-repository-section">
+          <div className="analyst-repository-section-header">
+            <div className="analyst-repository-section-title-wrap">
+              <div className="analyst-repository-icon">
+                <EvaluationsIcon size={18} />
+              </div>
+              <div>
+                <h3>{repositorySections[1].title}</h3>
+                <p>{repositorySections[1].description}</p>
+              </div>
+            </div>
+            <span className="badge badge-medium">{filteredEvaluations.length}</span>
+          </div>
+
+          <div className="analyst-repository-list">
+            {filteredEvaluations.map((evaluation) => {
+              const objective = objectives.find((item) => item.id === evaluation.objectiveId);
+              return (
+                <article className="analyst-repository-item" key={evaluation.id}>
+                  <strong>{evaluation.title}</strong>
+                  <p>{evaluation.summary}</p>
+                  <div className="analyst-repository-meta">
+                    <span>{objective?.fullName ?? 'Sin autoridad'}</span>
+                    <span>{evaluation.date}</span>
+                  </div>
+                </article>
+              );
+            })}
+            {filteredEvaluations.length === 0 && (
+              <p className="analyst-repository-empty">Aun no hay valoraciones disponibles.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="analyst-repository-section">
+          <div className="analyst-repository-section-header">
+            <div className="analyst-repository-section-title-wrap">
+              <div className="analyst-repository-icon">
+                <SummaryIcon size={18} />
+              </div>
+              <div>
+                <h3>{repositorySections[2].title}</h3>
+                <p>{repositorySections[2].description}</p>
+              </div>
+            </div>
+            <span className="badge badge-medium">{filteredPublishedProfiles.length}</span>
+          </div>
+
+          <div className="analyst-repository-list">
+            {filteredPublishedProfiles.map((profile) => {
+              const objective = objectives.find((item) => item.id === profile.objectiveId);
+              return (
+                <article className="analyst-repository-item" key={profile.objectiveId}>
+                  <strong>{objective?.fullName ?? 'Sin autoridad'}</strong>
+                  <p>{profile.executiveSummary || 'Resumen pendiente de contenido.'}</p>
+                  <div className="analyst-repository-meta">
+                    <span>{profile.analystName}</span>
+                    <span>{new Date(profile.updatedAt).toLocaleDateString('es-ES')}</span>
+                  </div>
+                </article>
+              );
+            })}
+            {filteredPublishedProfiles.length === 0 && (
+              <p className="analyst-repository-empty">
+                Todavia no hay resumenes ejecutivos publicados.
+              </p>
+            )}
+          </div>
+        </section>
+
+        <section className="analyst-repository-section">
+          <div className="analyst-repository-section-header">
+            <div className="analyst-repository-section-title-wrap">
+              <div className="analyst-repository-icon">
+                <QuestionnairesIcon size={18} />
+              </div>
+              <div>
+                <h3>{repositorySections[3].title}</h3>
+                <p>{repositorySections[3].description}</p>
+              </div>
+            </div>
+            <span className="badge badge-medium">{filteredQuestionnaires.length}</span>
+          </div>
+
+          <div className="analyst-repository-list">
+            {filteredQuestionnaires.map((questionnaire) => {
+              const objective = objectives.find((item) => item.id === questionnaire.objectiveId);
+              return (
+                <article className="analyst-repository-item" key={questionnaire.id}>
+                  <strong>{objective?.fullName ?? 'Sin autoridad'}</strong>
+                  <p>{questionnaire.context || questionnaire.recommendations || 'Cuestionario sin resumen.'}</p>
+                  <div className="analyst-repository-meta">
+                    <span>{questionnaire.observerName || 'Observador no indicado'}</span>
+                    <span>{questionnaire.date}</span>
+                  </div>
+                </article>
+              );
+            })}
+            {filteredQuestionnaires.length === 0 && (
+              <p className="analyst-repository-empty">
+                Aun no hay cuestionarios del observador disponibles.
+              </p>
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

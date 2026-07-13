@@ -9,18 +9,34 @@ import { useObjectives } from '../context/ObjectivesContext';
 import { useAuth } from '../context/AuthContext';
 import type { AuthorityRequest, AuthorityRequestStatus } from '../types';
 
+const statusGroups: Array<{
+  id: 'new' | 'in-progress' | 'done';
+  title: string;
+  statuses: AuthorityRequestStatus[];
+}> = [
+  { id: 'new', title: 'Nuevas', statuses: ['pending'] },
+  { id: 'in-progress', title: 'En proceso', statuses: ['drafting', 'review'] },
+  { id: 'done', title: 'Finalizadas', statuses: ['done'] },
+];
+
 export default function AnalystRequests() {
   const { user } = useAuth();
   const { objectives } = useObjectives();
   const { requests, saveRequests } = useAuthorityData();
   const [selectedRequestId, setSelectedRequestId] = useState('');
+  const [activeGroup, setActiveGroup] = useState<'all' | 'new' | 'in-progress' | 'done'>('all');
   const [draft, setDraft] = useState({
     status: 'pending' as AuthorityRequestStatus,
     analystResponse: '',
   });
 
   const sortedRequests = useMemo(
-    () => [...requests].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    () =>
+      [...requests].sort(
+        (a, b) =>
+          new Date(b.updatedAt ?? b.createdAt).getTime() -
+          new Date(a.updatedAt ?? a.createdAt).getTime()
+      ),
     [requests]
   );
 
@@ -30,9 +46,26 @@ export default function AnalystRequests() {
     }
   }, [selectedRequestId, sortedRequests]);
 
+  const groupedRequests = useMemo(() => {
+    return statusGroups.map((group) => ({
+      ...group,
+      items: sortedRequests.filter((request) => group.statuses.includes(request.status)),
+    }));
+  }, [sortedRequests]);
+
+  const visibleGroups =
+    activeGroup === 'all'
+      ? groupedRequests
+      : groupedRequests.filter((group) => group.id === activeGroup);
+
   const selectedRequest = useMemo(
     () => sortedRequests.find((request) => request.id === selectedRequestId),
     [sortedRequests, selectedRequestId]
+  );
+  const selectedObjective = useMemo(
+    () =>
+      objectives.find((item) => item.id === selectedRequest?.objectiveId),
+    [objectives, selectedRequest]
   );
 
   useEffect(() => {
@@ -60,177 +93,252 @@ export default function AnalystRequests() {
     const nextRequests = sortedRequests.map((request) =>
       request.id === selectedRequest.id ? updatedRequest : request
     );
+
     await saveRequests(nextRequests);
   };
 
   return (
-    <div>
+    <div className="analyst-requests-page">
       <div className="section-header">
         <div>
-          <h2 className="section-title">Solicitudes de autoridad</h2>
+          <h2 className="section-title">Solicitudes</h2>
           <p className="section-subtitle">
-            Gestiona los encargos recibidos desde la cuenta autoridad y devuelve el resultado al seguimiento.
+            Organiza el trabajo del analista por solicitudes nuevas, en proceso y finalizadas.
           </p>
         </div>
       </div>
 
-      <div className="grid-2">
-        <section className="card">
-          <div className="section-header" style={{ marginBottom: 'var(--space-4)' }}>
+      <div className="analyst-request-summary">
+        <button
+          type="button"
+          className={`analyst-summary-card ${activeGroup === 'all' ? 'active' : ''}`}
+          onClick={() => setActiveGroup('all')}
+        >
+          <span>Total</span>
+          <strong>{sortedRequests.length}</strong>
+        </button>
+        {groupedRequests.map((group) => (
+          <button
+            key={group.id}
+            type="button"
+            className={`analyst-summary-card ${activeGroup === group.id ? 'active' : ''}`}
+            onClick={() => setActiveGroup(group.id)}
+          >
+            <span>{group.title}</span>
+            <strong>{group.items.length}</strong>
+          </button>
+        ))}
+      </div>
+
+      <div className="grid-2 analyst-requests-layout">
+        <section className="card analyst-requests-board">
+          <div className="analyst-requests-panel-head">
             <div>
-              <h3 className="section-title" style={{ marginBottom: 4 }}>Bandeja de entrada</h3>
-              <p className="section-subtitle">{sortedRequests.length} solicitud(es) compartidas con el analista.</p>
+              <h3 className="section-title" style={{ marginBottom: 4 }}>Bandeja</h3>
+              <p className="section-subtitle">
+                Selecciona una solicitud para ver su ficha y continuar el trabajo.
+              </p>
             </div>
           </div>
 
-          <div className="authority-status-stack">
-            {sortedRequests.map((request) => {
-              const objective = objectives.find((item) => item.id === request.objectiveId);
-              return (
-                <button
-                  key={request.id}
-                  type="button"
-                  className={`authority-request-card${selectedRequestId === request.id ? ' selected' : ''}`}
-                  onClick={() => setSelectedRequestId(request.id)}
-                >
-                  <div className="authority-request-top">
-                    <strong>{request.title}</strong>
-                    <span className="authority-status-pill">{authorityRequestStatusLabels[request.status]}</span>
-                  </div>
-                  <p>{request.description}</p>
-                  <div className="authority-request-meta">
-                    <span>{objective?.fullName ?? '-'}</span>
-                    <span>{authorityRequestTypeLabels[request.type]}</span>
-                    <span>{priorityLabels[request.priority]}</span>
-                    <span>Limite {request.dueDate}</span>
-                  </div>
-                </button>
-              );
-            })}
+          <div className="analyst-request-groups">
+            {visibleGroups.map((group) => (
+              <div className="analyst-request-group" key={group.id}>
+                <div className="analyst-request-group-header">
+                  <h3>{group.title}</h3>
+                  <span>{group.items.length}</span>
+                </div>
+
+                <div className="authority-status-stack">
+                  {group.items.map((request) => {
+                    const objective = objectives.find(
+                      (item) => item.id === request.objectiveId
+                    );
+                    return (
+                      <button
+                        key={request.id}
+                        type="button"
+                        className={`authority-request-card analyst-request-list-card${
+                          selectedRequestId === request.id ? ' selected' : ''
+                        }`}
+                        onClick={() => setSelectedRequestId(request.id)}
+                      >
+                        <div className="authority-request-top">
+                          <strong className="analyst-request-list-title">{request.title}</strong>
+                          <span className="authority-status-pill">
+                            {authorityRequestStatusLabels[request.status]}
+                          </span>
+                        </div>
+                        <p className="analyst-request-list-description">{request.description}</p>
+                        <div className="authority-request-meta analyst-request-list-meta">
+                          <span>{objective?.fullName ?? '-'}</span>
+                          <span>{request.requesterName ?? 'Solicitante no indicado'}</span>
+                          <span>{priorityLabels[request.priority]}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+
+                  {group.items.length === 0 && (
+                    <div className="analyst-repository-empty">
+                      No hay solicitudes en este estado.
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        <section className="card">
+        <section className="card analyst-request-detail-panel">
           {selectedRequest ? (
             <>
-              <div className="section-header" style={{ marginBottom: 'var(--space-4)' }}>
-                <div>
-                  <h3 className="section-title" style={{ marginBottom: 4 }}>{selectedRequest.title}</h3>
+              <div className="analyst-request-detail-hero">
+                <div className="analyst-request-detail-copy">
+                  <span className="analyst-empty-pill" style={{ margin: 0 }}>
+                    {authorityRequestStatusLabels[selectedRequest.status]}
+                  </span>
+                  <h3 className="analyst-request-detail-title">{selectedRequest.title}</h3>
                   <p className="section-subtitle">
-                    Lo que actualices aquí quedará visible para la autoridad en su seguimiento.
+                    Los cambios guardados aqui quedan visibles para la cuenta de autoridad.
                   </p>
+                </div>
+                <div className="analyst-request-detail-side">
+                  <div className="analyst-request-detail-key">Prioridad</div>
+                  <strong>{priorityLabels[selectedRequest.priority]}</strong>
                 </div>
               </div>
 
-              <div className="authority-request-meta" style={{ marginBottom: 'var(--space-5)' }}>
-                <span>{authorityRequestTypeLabels[selectedRequest.type]}</span>
-                <span>{priorityLabels[selectedRequest.priority]}</span>
-                <span>{objectives.find((item) => item.id === selectedRequest.objectiveId)?.fullName ?? '-'}</span>
-                <span>Limite {selectedRequest.dueDate}</span>
+              <div className="analyst-request-detail-meta">
+                <div className="analyst-request-detail-meta-card">
+                  <span>Tipo</span>
+                  <strong>{authorityRequestTypeLabels[selectedRequest.type]}</strong>
+                </div>
+                <div className="analyst-request-detail-meta-card">
+                  <span>Autoridad objetivo</span>
+                  <strong>{selectedObjective?.fullName ?? '-'}</strong>
+                </div>
+                <div className="analyst-request-detail-meta-card">
+                  <span>Fecha limite</span>
+                  <strong>{selectedRequest.dueDate}</strong>
+                </div>
+                <div className="analyst-request-detail-meta-card">
+                  <span>Solicitante</span>
+                  <strong>{selectedRequest.requesterName ?? 'No indicado'}</strong>
+                </div>
               </div>
 
-              {selectedRequest.type === 'full-dossier' && (
-                <>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label className="form-label">Persona que lo solicita</label>
-                      <input className="form-input" value={selectedRequest.requesterName ?? ''} readOnly />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Empleo / puesto</label>
-                      <input className="form-input" value={selectedRequest.requesterRole ?? ''} readOnly />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label className="form-label">Interacción: fecha</label>
-                      <input className="form-input" value={selectedRequest.interactionDate ?? ''} readOnly />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Lugar</label>
-                      <input className="form-input" value={selectedRequest.interactionLocation ?? ''} readOnly />
-                    </div>
-                  </div>
-
+              <div className="analyst-request-detail-block">
+                <div className="analyst-request-detail-block-head">
+                  <h4>Contexto de la solicitud</h4>
+                  <span>Lectura rapida</span>
+                </div>
+                <div className="form-row">
                   <div className="form-group">
-                    <label className="form-label">Duración prevista</label>
-                    <input className="form-input" value={selectedRequest.interactionDuration ?? ''} readOnly />
+                    <label className="form-label">Autoridad solicitante</label>
+                    <input
+                      className="form-input"
+                      value={selectedRequest.requesterName ?? ''}
+                      readOnly
+                    />
                   </div>
-
                   <div className="form-group">
-                    <label className="form-label">Objetivos de la interacción</label>
-                    <textarea className="form-textarea" value={selectedRequest.interactionObjectives ?? ''} readOnly rows={4} />
+                    <label className="form-label">Cargo o puesto</label>
+                    <input
+                      className="form-input"
+                      value={selectedRequest.requesterRole ?? ''}
+                      readOnly
+                    />
                   </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Otra información relevante</label>
-                    <textarea className="form-textarea" value={selectedRequest.relevantInformation ?? ''} readOnly rows={4} />
-                  </div>
-                </>
-              )}
-
-              <div className="form-group">
-                <label className="form-label">Descripción del encargo</label>
-                <textarea className="form-textarea" value={selectedRequest.description} readOnly rows={4} />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Estado de trabajo</label>
-                <select
-                  className="form-select"
-                  value={draft.status}
-                  onChange={(e) =>
-                    setDraft((prev) => ({
-                      ...prev,
-                      status: e.target.value as AuthorityRequestStatus,
-                    }))
-                  }
-                >
-                  {Object.entries(authorityRequestStatusLabels).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
-                  ))}
-                </select>
+              <div className="analyst-request-detail-block">
+                <div className="analyst-request-detail-block-head">
+                  <h4>Descripcion del encargo</h4>
+                  <span>Base de trabajo</span>
+                </div>
+                <div className="analyst-request-readonly">
+                  {selectedRequest.description}
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Respuesta del analista</label>
-                <textarea
-                  className="form-textarea"
-                  rows={8}
-                  value={draft.analystResponse}
-                  onChange={(e) =>
-                    setDraft((prev) => ({
-                      ...prev,
-                      analystResponse: e.target.value,
-                    }))
-                  }
-                  placeholder="Explica a la autoridad el avance, los cambios realizados o el resultado final..."
-                />
+              <div className="analyst-request-detail-block">
+                <div className="analyst-request-detail-block-head">
+                  <h4>Gestion del analista</h4>
+                  <span>Actualiza estado y respuesta</span>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Estado de trabajo</label>
+                  <select
+                    className="form-select"
+                    value={draft.status}
+                    onChange={(event) =>
+                      setDraft((prev) => ({
+                        ...prev,
+                        status: event.target.value as AuthorityRequestStatus,
+                      }))
+                    }
+                  >
+                    {Object.entries(authorityRequestStatusLabels).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Respuesta del analista</label>
+                  <textarea
+                    className="form-textarea analyst-request-response"
+                    rows={8}
+                    value={draft.analystResponse}
+                    onChange={(event) =>
+                      setDraft((prev) => ({
+                        ...prev,
+                        analystResponse: event.target.value,
+                      }))
+                    }
+                    placeholder="Explica el avance, los cambios realizados o el resultado final."
+                  />
+                </div>
+
+                <div className="analyst-request-actions">
+                  <button className="btn btn-secondary" type="button" onClick={() => void handleSave()}>
+                    Guardar progreso
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    type="button"
+                    onClick={() => void handleSave('review')}
+                  >
+                    Enviar a revision
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    type="button"
+                    onClick={() => void handleSave('done')}
+                  >
+                    Marcar como finalizada
+                  </button>
+                </div>
               </div>
 
-              <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-                <button className="btn btn-secondary" type="button" onClick={() => void handleSave()}>
-                  Guardar progreso
-                </button>
-                <button className="btn btn-secondary" type="button" onClick={() => void handleSave('review')}>
-                  Enviar a revisión
-                </button>
-                <button className="btn btn-primary" type="button" onClick={() => void handleSave('done')}>
-                  Marcar como finalizado
-                </button>
-              </div>
-
-              <div style={{ marginTop: 'var(--space-4)', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+              <div className="analyst-request-updated-at">
                 {selectedRequest.updatedAt
-                  ? `Última actualización visible para autoridad: ${new Date(selectedRequest.updatedAt).toLocaleString('es-ES')}`
-                  : 'Esta solicitud todavía no ha sido actualizada por el analista.'}
+                  ? `Ultima actualizacion visible para autoridad: ${new Date(
+                      selectedRequest.updatedAt
+                    ).toLocaleString('es-ES')}`
+                  : 'Esta solicitud todavia no ha sido actualizada por el analista.'}
               </div>
             </>
           ) : (
             <div className="empty-state">
               <div className="empty-state-title">No hay solicitudes seleccionadas</div>
-              <p className="empty-state-text">Cuando la autoridad registre encargos, podrá gestionarlos desde aquí.</p>
+              <p className="empty-state-text">
+                Cuando la autoridad registre encargos, podras gestionarlos desde aqui.
+              </p>
             </div>
           )}
         </section>

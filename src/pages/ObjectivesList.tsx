@@ -1,126 +1,326 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, MapPin, Building2 } from 'lucide-react';
-import type { PriorityLevel, ObjectiveStatus } from '../types';
-import BackButton from '../components/BackButton';
+import { CalendarRange, MessageSquareMore, Search, UserRoundSearch } from 'lucide-react';
 import { useObjectives } from '../context/ObjectivesContext';
+import { useAuthorityData } from '../context/AuthorityDataContext';
+import { mockInteractions } from '../data/interactions';
 
-const priorityLabels: Record<PriorityLevel, string> = {
-  critical: 'Critico',
-  high: 'Alto',
-  medium: 'Medio',
-  low: 'Bajo',
-};
+const requestStatusOptions = [
+  { value: 'all', label: 'Todos los estados' },
+  { value: 'new', label: 'Nuevas' },
+  { value: 'in-progress', label: 'En proceso' },
+  { value: 'done', label: 'Finalizadas' },
+];
 
-const statusLabels: Record<ObjectiveStatus, string> = {
-  active: 'Activo',
-  monitoring: 'En seguimiento',
-  closed: 'Cerrado',
-};
+const interactionOptions = [
+  { value: 'all', label: 'Todas las interacciones' },
+  { value: 'none', label: 'Sin interacciones' },
+  { value: '1-2', label: '1 a 2 interacciones' },
+  { value: '3+', label: '3 o mas interacciones' },
+];
+
+function resolveRequestStatus(status: string) {
+  if (status === 'done') return 'done';
+  if (status === 'pending') return 'new';
+  return 'in-progress';
+}
 
 export default function ObjectivesList() {
   const { objectives } = useObjectives();
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const { requests } = useAuthorityData();
+  const [authorityQuery, setAuthorityQuery] = useState('');
+  const [countryFilter, setCountryFilter] = useState('all');
+  const [requestStatusFilter, setRequestStatusFilter] = useState('all');
+  const [requesterFilter, setRequesterFilter] = useState('');
+  const [interactionFilter, setInteractionFilter] = useState('all');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
 
-  const filtered = objectives.filter((obj) => {
-    const matchesSearch =
-      obj.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      obj.organization.toLowerCase().includes(search.toLowerCase()) ||
-      obj.country.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || obj.status === statusFilter;
-    const matchesPriority = priorityFilter === 'all' || obj.priority === priorityFilter;
-    return matchesSearch && matchesStatus && matchesPriority;
-  });
+  const countries = useMemo(
+    () => Array.from(new Set(objectives.map((objective) => objective.country))).sort(),
+    [objectives]
+  );
+
+  const objectiveCards = useMemo(() => {
+    return objectives
+      .map((objective) => {
+        const relatedRequests = requests
+          .filter((request) => request.objectiveId === objective.id)
+          .sort(
+            (a, b) =>
+              new Date(b.updatedAt ?? b.createdAt).getTime() -
+              new Date(a.updatedAt ?? a.createdAt).getTime()
+          );
+        const relatedInteractions = mockInteractions.filter(
+          (interaction) => interaction.objectiveId === objective.id
+        );
+        const latestActivityDates = [
+          ...relatedRequests.map((request) => request.updatedAt ?? request.createdAt),
+          ...relatedInteractions.map((interaction) => interaction.date),
+          objective.updatedAt,
+        ]
+          .filter(Boolean)
+          .map((value) => new Date(value))
+          .filter((value) => !Number.isNaN(value.getTime()))
+          .sort((a, b) => b.getTime() - a.getTime());
+
+        return {
+          objective,
+          relatedRequests,
+          relatedInteractions,
+          latestActivity: latestActivityDates[0] ?? null,
+          lastRequester: relatedRequests[0]?.requesterName?.trim() ?? '',
+        };
+      })
+      .filter(({ objective, relatedRequests, relatedInteractions, latestActivity, lastRequester }) => {
+        const matchesAuthority =
+          authorityQuery.trim() === '' ||
+          objective.fullName.toLowerCase().includes(authorityQuery.toLowerCase()) ||
+          objective.organization.toLowerCase().includes(authorityQuery.toLowerCase());
+
+        const matchesCountry =
+          countryFilter === 'all' || objective.country === countryFilter;
+
+        const matchesStatus =
+          requestStatusFilter === 'all' ||
+          relatedRequests.some(
+            (request) => resolveRequestStatus(request.status) === requestStatusFilter
+          );
+
+        const matchesRequester =
+          requesterFilter.trim() === '' ||
+          lastRequester.toLowerCase().includes(requesterFilter.toLowerCase()) ||
+          relatedRequests.some((request) =>
+            (request.requesterName ?? '')
+              .toLowerCase()
+              .includes(requesterFilter.toLowerCase())
+          );
+
+        const interactionCount = relatedInteractions.length;
+        const matchesInteractions =
+          interactionFilter === 'all' ||
+          (interactionFilter === 'none' && interactionCount === 0) ||
+          (interactionFilter === '1-2' && interactionCount >= 1 && interactionCount <= 2) ||
+          (interactionFilter === '3+' && interactionCount >= 3);
+
+        const matchesDateFrom =
+          !dateFrom ||
+          (latestActivity !== null &&
+            latestActivity.getTime() >= new Date(dateFrom).getTime());
+
+        const matchesDateTo =
+          !dateTo ||
+          (latestActivity !== null &&
+            latestActivity.getTime() <= new Date(dateTo).getTime() + 86400000 - 1);
+
+        return (
+          matchesAuthority &&
+          matchesCountry &&
+          matchesStatus &&
+          matchesRequester &&
+          matchesInteractions &&
+          matchesDateFrom &&
+          matchesDateTo
+        );
+      })
+      .sort((a, b) => {
+        const aTime = a.latestActivity?.getTime() ?? 0;
+        const bTime = b.latestActivity?.getTime() ?? 0;
+        return bTime - aTime;
+      });
+  }, [
+    authorityQuery,
+    countryFilter,
+    dateFrom,
+    dateTo,
+    interactionFilter,
+    objectives,
+    requesterFilter,
+    requestStatusFilter,
+    requests,
+  ]);
 
   return (
-    <div>
-      <BackButton />
+    <div className="analyst-search-page">
       <div className="section-header">
         <div>
-          <h2 className="section-title">Autoridades Objetivo</h2>
-          <p className="section-subtitle">{objectives.length} personas registradas</p>
+          <h2 className="section-title">Buscador</h2>
+          <p className="section-subtitle">
+            Localiza autoridades y solicitudes por autoridad objetivo, pais, estado, autoridad
+            solicitante, interacciones o rango de fecha.
+          </p>
         </div>
         <Link to="/objectives/new" className="btn btn-primary">
-          + Nueva Autoridad Objetivo
+          + Nueva autoridad objetivo
         </Link>
       </div>
 
-      <div className="search-bar">
-        <Search size={18} />
-        <input
-          type="text"
-          placeholder="Buscar por nombre, organización o país..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
-      <div className="filters">
-        <Filter size={16} style={{ color: 'var(--color-text-muted)', marginRight: 4, alignSelf: 'center' }} />
-        {['all', 'active', 'monitoring', 'closed'].map((s) => (
-          <button
-            key={s}
-            className={`filter-btn${statusFilter === s ? ' active' : ''}`}
-            onClick={() => setStatusFilter(s)}
-          >
-            {s === 'all' ? 'Todos' : statusLabels[s as ObjectiveStatus]}
-          </button>
-        ))}
-        <span style={{ width: 1, background: 'var(--color-border)', margin: '0 4px' }} />
-        {['all', 'critical', 'high', 'medium', 'low'].map((p) => (
-          <button
-            key={p}
-            className={`filter-btn${priorityFilter === p ? ' active' : ''}`}
-            onClick={() => setPriorityFilter(p)}
-          >
-            {p === 'all' ? 'Todas prioridades' : priorityLabels[p as PriorityLevel]}
-          </button>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-        {filtered.map((obj) => (
-          <Link to={`/objectives/${obj.id}`} className="obj-card" key={obj.id}>
-            <div className="avatar avatar-lg">
-              {obj.fullName
-                .split(' ')
-                .filter((_, i) => i === 0 || i === obj.fullName.split(' ').length - 1)
-                .map((n) => n[0])
-                .join('')}
+      <section className="analyst-filter-panel">
+        <div className="analyst-filter-grid">
+          <div className="form-group">
+            <label className="form-label">Autoridad objetivo</label>
+            <div className="search-bar">
+              <Search size={18} />
+              <input
+                type="text"
+                placeholder="Nombre u organismo"
+                value={authorityQuery}
+                onChange={(event) => setAuthorityQuery(event.target.value)}
+              />
             </div>
-            <div className="obj-card-info">
-              <div className="obj-card-name">{obj.fullName}</div>
-              <div className="obj-card-role">{obj.title} - {obj.organization}</div>
-              <div className="obj-card-meta">
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                  <MapPin size={12} /> {obj.country}
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                  <Building2 size={12} /> {obj.project}
-                </span>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Pais</label>
+            <select
+              className="form-select"
+              value={countryFilter}
+              onChange={(event) => setCountryFilter(event.target.value)}
+            >
+              <option value="all">Todos los paises</option>
+              {countries.map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Estado solicitud</label>
+            <select
+              className="form-select"
+              value={requestStatusFilter}
+              onChange={(event) => setRequestStatusFilter(event.target.value)}
+            >
+              {requestStatusOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Autoridad solicitante</label>
+            <div className="search-bar">
+              <UserRoundSearch size={18} />
+              <input
+                type="text"
+                placeholder="Nombre de quien lo solicita"
+                value={requesterFilter}
+                onChange={(event) => setRequesterFilter(event.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Interacciones</label>
+            <select
+              className="form-select"
+              value={interactionFilter}
+              onChange={(event) => setInteractionFilter(event.target.value)}
+            >
+              {interactionOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Rango de fecha</label>
+            <div className="analyst-date-range">
+              <input
+                className="form-input"
+                type="date"
+                value={dateFrom}
+                onChange={(event) => setDateFrom(event.target.value)}
+              />
+              <input
+                className="form-input"
+                type="date"
+                value={dateTo}
+                onChange={(event) => setDateTo(event.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="analyst-search-results-header">
+        <div>
+          <h3 className="section-title">Resultados</h3>
+          <p className="section-subtitle">
+            {objectiveCards.length} autoridad(es) coinciden con los filtros actuales.
+          </p>
+        </div>
+      </div>
+
+      <div className="analyst-search-results">
+        {objectiveCards.map(({ objective, relatedRequests, relatedInteractions, latestActivity, lastRequester }) => (
+          <Link to={`/objectives/${objective.id}`} className="analyst-search-card" key={objective.id}>
+            <div className="analyst-search-card-top">
+              <div>
+                <div className="analyst-search-card-title">{objective.fullName}</div>
+                <div className="analyst-search-card-subtitle">
+                  {objective.title} · {objective.organization}
+                </div>
+              </div>
+              <span className="badge badge-medium">{objective.country}</span>
+            </div>
+
+            <div className="analyst-search-card-grid">
+              <div className="analyst-search-metric">
+                <span>Estado principal</span>
+                <strong>
+                  {relatedRequests[0]
+                    ? requestStatusOptions.find(
+                        (option) =>
+                          option.value === resolveRequestStatus(relatedRequests[0].status)
+                      )?.label ?? 'Sin estado'
+                    : 'Sin solicitudes'}
+                </strong>
+              </div>
+              <div className="analyst-search-metric">
+                <span>Solicitante</span>
+                <strong>{lastRequester || 'No disponible'}</strong>
+              </div>
+              <div className="analyst-search-metric">
+                <span>Interacciones</span>
+                <strong>{relatedInteractions.length}</strong>
+              </div>
+              <div className="analyst-search-metric">
+                <span>Ultima actividad</span>
+                <strong>
+                  {latestActivity ? latestActivity.toLocaleDateString('es-ES') : 'Sin registro'}
+                </strong>
               </div>
             </div>
-            <div className="obj-card-badges">
-              <span className={`badge badge-${obj.priority}`}>
-                <span className="badge-dot" />
-                {priorityLabels[obj.priority]}
+
+            <div className="analyst-search-card-footer">
+              <span className="analyst-search-chip">
+                <MessageSquareMore size={14} />
+                {relatedRequests.length} solicitudes
               </span>
-              <span className={`badge badge-${obj.status}`}>
-                {statusLabels[obj.status]}
+              <span className="analyst-search-chip">
+                <CalendarRange size={14} />
+                {objective.project}
               </span>
             </div>
           </Link>
         ))}
 
-        {filtered.length === 0 && (
+        {objectiveCards.length === 0 && (
           <div className="empty-state">
             <div className="empty-state-icon">
               <Search size={28} />
             </div>
             <h3 className="empty-state-title">Sin resultados</h3>
-            <p className="empty-state-text">No se encontraron autoridades objetivo con los filtros seleccionados.</p>
+            <p className="empty-state-text">
+              No se encontraron autoridades o solicitudes con los filtros seleccionados.
+            </p>
           </div>
         )}
       </div>

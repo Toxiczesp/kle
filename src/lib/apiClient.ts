@@ -1,7 +1,16 @@
 const SESSION_TOKEN_KEY = 'kle-session-token';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
 
 function getToken() {
   return localStorage.getItem(SESSION_TOKEN_KEY);
+}
+
+function resolveApiUrl(input: string) {
+  if (/^https?:\/\//i.test(input)) {
+    return input;
+  }
+
+  return `${API_BASE_URL}${input}`;
 }
 
 function buildHeaders(init?: HeadersInit) {
@@ -25,18 +34,27 @@ export function setSessionToken(token: string | null) {
 }
 
 export async function apiRequest<T>(input: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(input, {
-    ...init,
-    headers: buildHeaders(init?.headers),
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(resolveApiUrl(input), {
+      ...init,
+      headers: buildHeaders(init?.headers),
+    });
+  } catch {
+    throw new Error('No se pudo conectar con el servidor. Revisa la URL de la API desplegada.');
+  }
 
   if (!response.ok) {
-    let errorMessage = 'La operación no se pudo completar.';
+    let errorMessage = `La operación no se pudo completar (HTTP ${response.status}).`;
     try {
       const payload = await response.json() as { error?: string };
       errorMessage = payload.error || errorMessage;
     } catch {
-      // Ignore malformed error payload.
+      const responseText = await response.text().catch(() => '');
+      if (responseText.trim()) {
+        errorMessage = responseText;
+      }
     }
     throw new Error(errorMessage);
   }

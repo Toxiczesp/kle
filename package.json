@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start:backend": "node backend/server.mjs",
     "dev": "node scripts/dev.mjs",
     "dev:frontend": "vite",
     "dev:api": "node backend/server.mjs",

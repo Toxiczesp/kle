@@ -1,6 +1,24 @@
 {
   "requests": [
     {
+      "id": "req-1783677615150",
+      "title": "Dosier completo - Gen. Ahmed Al-Rashidi",
+      "description": "sfewq",
+      "objectiveId": "obj-001",
+      "priority": "medium",
+      "dueDate": "2222-02-22",
+      "type": "full-dossier",
+      "status": "pending",
+      "createdAt": "2026-07-10T10:00:15.150Z",
+      "requesterName": "prueba",
+      "requesterRole": "prueba",
+      "interactionDate": "2000-02-22",
+      "interactionLocation": "prueba",
+      "interactionDuration": "222",
+      "interactionObjectives": "hola",
+      "relevantInformation": "prueaba"
+    },
+    {
       "id": "req-001",
       "title": "Actualización de comportamiento de Ahmed Al-Rashidi",
       "description": "Revisar cambios observados tras las dos últimas reuniones y actualizar riesgos de comunicación.",

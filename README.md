@@ -1,73 +1,68 @@
-# React + TypeScript + Vite
+# KLE Engament
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación React + Vite con un backend Node para autenticación y datos operativos.
 
-Currently, two official plugins are available:
+## Desarrollo local
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Instala dependencias con `npm install`.
+2. Arranca frontend y backend con `npm run dev`.
+3. El frontend queda en `http://localhost:5173` y el backend en `http://127.0.0.1:3001`.
 
-## React Compiler
+En local, Vite redirige automáticamente las llamadas `/api` al backend.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Despliegue en Azure
 
-## Expanding the ESLint configuration
+La arquitectura actual está pensada así:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- `Frontend`: Azure Static Web Apps
+- `Backend`: Azure App Service con Node.js
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Variable necesaria en producción
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Durante la build del frontend, define esta variable:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+VITE_API_BASE_URL=https://TU-BACKEND.azurewebsites.net
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Ejemplo:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+VITE_API_BASE_URL=https://kle-api.azurewebsites.net
 ```
+
+El pipeline ya está preparado para leer `VITE_API_BASE_URL` desde tus variables de Azure DevOps.
+
+## Qué debes desplegar
+
+### Frontend
+
+Se publica desde `dist` en Azure Static Web Apps.
+
+### Backend
+
+Debes desplegar `backend/server.mjs` en un servicio Node aparte, por ejemplo Azure App Service.
+
+Ese backend expone:
+
+- `POST /api/auth/login`
+- `POST /api/auth/register`
+- `GET /api/auth/session`
+- `POST /api/auth/logout`
+- `GET /api/authority-data`
+- `PUT /api/authority-data/:section`
+
+## Variables del backend
+
+En App Service configura, como mínimo:
+
+```bash
+KLE_API_PORT=3001
+```
+
+Si App Service te inyecta `PORT`, puedes adaptar después el backend para usarlo también.
+
+## Importante
+
+- Azure Static Web Apps ya no debe bloquear toda la web con `allowedRoles`, porque esta aplicación usa su propio login.
+- Si el frontend falla al autenticar en producción, revisa primero que `VITE_API_BASE_URL` apunte al backend correcto.

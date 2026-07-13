@@ -1,28 +1,22 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-  BrainCircuit,
   ClipboardCheck,
   ClipboardList,
-  FileBarChart,
   FilePlus2,
   FolderOpen,
   LayoutDashboard,
   MessageSquareText,
   Shield,
-  Target,
   Users,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const analystNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/objectives', icon: Target, label: 'Autoridades Objetivo' },
+  { to: '/objectives', icon: Users, label: 'Buscador' },
   { to: '/repository', icon: FolderOpen, label: 'Repositorio' },
-  { to: '/interactions', icon: ClipboardList, label: 'Interacciones' },
-  { to: '/analysis', icon: BrainCircuit, label: 'Info Autoridad Objetivo' },
   { to: '/analyst/requests', icon: FilePlus2, label: 'Solicitudes' },
-  { to: '/ai-chat', icon: MessageSquareText, label: 'Preguntas IA' },
-  { to: '/reports', icon: FileBarChart, label: 'Informes' },
+  { to: '/ai-chat', icon: MessageSquareText, label: 'Asistente IA' },
 ];
 
 const authorityNavItems = [
@@ -53,50 +47,26 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        {isAnalyst ? (
-          <>
-            <div className="sidebar-section-label">Principal</div>
-            {visibleItems.slice(0, 4).map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `sidebar-link${isActive && (item.to === '/' ? location.pathname === '/' : true) ? ' active' : ''}`
-                }
-                end={item.to === '/'}
-              >
-                <item.icon size={20} />
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
-
-            <div className="sidebar-section-label">Análisis</div>
-            {visibleItems.slice(4).map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
-              >
-                <item.icon size={20} />
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
-          </>
-        ) : (
-          <>
-            <div className="sidebar-section-label">Portal Autoridad</div>
-            {visibleItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) => `sidebar-link${isActive ? ' active' : ''}`}
-              >
-                <item.icon size={20} />
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
-          </>
-        )}
+        <div className="sidebar-section-label">
+          {isAnalyst ? 'Portal Analista' : 'Portal Autoridad'}
+        </div>
+        {visibleItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              `sidebar-link${
+                isActive && (item.to === '/' ? location.pathname === '/' : true)
+                  ? ' active'
+                  : ''
+              }`
+            }
+            end={item.to === '/'}
+          >
+            <item.icon size={20} />
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
       </nav>
 
       <div className="sidebar-footer">
@@ -110,7 +80,9 @@ export default function Sidebar() {
           </div>
           <div>
             <div className="sidebar-user-name">{user?.name ?? 'Usuario'}</div>
-            <div className="sidebar-user-role">{user?.role === 'autoridad' ? 'Autoridad' : 'Analista'}</div>
+            <div className="sidebar-user-role">
+              {user?.role === 'autoridad' ? 'Autoridad' : 'Analista'}
+            </div>
           </div>
         </div>
       </div>

@@ -111,6 +111,115 @@ export interface AuthUser {
   role: UserRole;
 }
 
+export type DashboardReportStatus = 'draft' | 'review' | 'final';
+
+export interface DashboardSourceFile {
+  name: string;
+  mimeType: string;
+  size: number;
+  lastModified: number;
+  uploadedAt: string;
+  extractionWarnings: string[];
+}
+
+export interface DashboardSourceDocument {
+  id: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  lastModified: number;
+  uploadedAt: string;
+  contentHtml: string;
+  contentText: string;
+  extractionWarnings: string[];
+}
+
+export interface DashboardReportBlock {
+  id: string;
+  html: string;
+  text: string;
+  sourceHash: string;
+  createdAt: string;
+  updatedAt: string;
+  sectionId: string;
+  order: number;
+}
+
+export interface DashboardReportSection {
+  id: string;
+  title: string;
+  required: boolean;
+  renamable: boolean;
+  collapsed: boolean;
+  order: number;
+  blocks: DashboardReportBlock[];
+}
+
+export interface DashboardTemplateSection {
+  id: string;
+  title: string;
+  required: boolean;
+  renamable: boolean;
+  collapsed: boolean;
+  order: number;
+}
+
+export interface DashboardTemplate {
+  id: string;
+  name: string;
+  description: string;
+  isSystem: boolean;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  sections: DashboardTemplateSection[];
+}
+
+export interface DashboardChangeLogEntry {
+  id: string;
+  type: string;
+  message: string;
+  at: string;
+}
+
+export interface DashboardReport {
+  id: string;
+  title: string;
+  reference: string;
+  status: DashboardReportStatus;
+  templateId: string;
+  templateName: string;
+  classification: string;
+  authorId: string;
+  authorName: string;
+  authorEmail: string;
+  createdAt: string;
+  updatedAt: string;
+  lastModifiedAt: string;
+  lastModifiedBy: string;
+  sourceDocumentHtml: string;
+  sourceDocumentText: string;
+  sourceFile: DashboardSourceFile | null;
+  sourceDocuments?: DashboardSourceDocument[];
+  activeSourceDocumentId?: string | null;
+  sections: DashboardReportSection[];
+  changeLog: DashboardChangeLogEntry[];
+}
+
+export interface DashboardReportListItem {
+  id: string;
+  title: string;
+  reference: string;
+  status: DashboardReportStatus;
+  templateId: string;
+  templateName: string;
+  authorName: string;
+  createdAt: string;
+  updatedAt: string;
+  sourceFile: DashboardSourceFile | null;
+  sectionCount: number;
+}
+
 export interface AuthorityRequest {
   id: string;
   title: string;

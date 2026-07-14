@@ -79,3 +79,9 @@ export async function putJson<T>(input: string, body: unknown) {
     body: JSON.stringify(body),
   });
 }
+
+export async function deleteRequest<T>(input: string) {
+  return apiRequest<T>(input, {
+    method: 'DELETE',
+  });
+}

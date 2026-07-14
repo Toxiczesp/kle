@@ -1,0 +1,159 @@
+[
+  {
+    "id": "tpl-standard",
+    "name": "Plantilla estándar",
+    "description": "Estructura recomendada para informes analíticos completos.",
+    "isSystem": true,
+    "createdBy": "system",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "sections": [
+      {
+        "id": "cover-title",
+        "title": "PORTADA – TÍTULO.",
+        "required": true,
+        "renamable": false,
+        "order": 0,
+        "collapsed": false
+      },
+      {
+        "id": "first-page",
+        "title": "PRIMERA PÁGINA.",
+        "required": true,
+        "renamable": false,
+        "order": 1,
+        "collapsed": false
+      },
+      {
+        "id": "objective",
+        "title": "OBJETIVO.",
+        "required": true,
+        "renamable": false,
+        "order": 2,
+        "collapsed": false
+      },
+      {
+        "id": "executive-summary",
+        "title": "RESUMEN EJECUTIVO.",
+        "required": true,
+        "renamable": false,
+        "order": 3,
+        "collapsed": false
+      },
+      {
+        "id": "country-profile",
+        "title": "PERFIL DE PAÍS U ORGANISMO: ASPECTOS SOCIOLÓGICOS.",
+        "required": true,
+        "renamable": false,
+        "order": 4,
+        "collapsed": false
+      },
+      {
+        "id": "target-authority-profile",
+        "title": "PERFIL DE LA AUTORIDAD OBJETIVO.",
+        "required": true,
+        "renamable": false,
+        "order": 5,
+        "collapsed": false
+      },
+      {
+        "id": "biography",
+        "title": "Biografía personal y profesional.",
+        "required": true,
+        "renamable": false,
+        "order": 6,
+        "collapsed": false
+      },
+      {
+        "id": "influential-people",
+        "title": "Personas influyentes.",
+        "required": true,
+        "renamable": false,
+        "order": 7,
+        "collapsed": false
+      },
+      {
+        "id": "expected-behavior",
+        "title": "Comportamiento esperado de la autoridad objetivo.",
+        "required": true,
+        "renamable": false,
+        "order": 8,
+        "collapsed": false
+      },
+      {
+        "id": "miscellaneous",
+        "title": "Miscelánea.",
+        "required": false,
+        "renamable": false,
+        "order": 9,
+        "collapsed": false
+      },
+      {
+        "id": "kle-guidance",
+        "title": "ORIENTACIONES PARA LA EJECUCIÓN DEL KLE.",
+        "required": true,
+        "renamable": false,
+        "order": 10,
+        "collapsed": false
+      },
+      {
+        "id": "supported-authority-behavior",
+        "title": "Comportamiento recomendado de la autoridad apoyada.",
+        "required": true,
+        "renamable": false,
+        "order": 11,
+        "collapsed": false
+      },
+      {
+        "id": "physical-human-environment",
+        "title": "Entorno físico y humano.",
+        "required": true,
+        "renamable": false,
+        "order": 12,
+        "collapsed": false
+      },
+      {
+        "id": "communication-deployment",
+        "title": "Despliegue de la comunicación.",
+        "required": true,
+        "renamable": false,
+        "order": 13,
+        "collapsed": false
+      },
+      {
+        "id": "social-program-protocol",
+        "title": "Programa social y protocolo.",
+        "required": true,
+        "renamable": false,
+        "order": 14,
+        "collapsed": false
+      },
+      {
+        "id": "previous-activities",
+        "title": "Descripción de actividades previas.",
+        "required": false,
+        "renamable": false,
+        "order": 15,
+        "collapsed": false
+      },
+      {
+        "id": "other-interesting-aspects",
+        "title": "Otros aspectos de interés.",
+        "required": false,
+        "renamable": false,
+        "order": 16,
+        "collapsed": false
+      }
+    ]
+  },
+  {
+    "id": "tpl-empty",
+    "name": "Plantilla vacía",
+    "description": "Empieza desde una estructura mínima y añade apartados según necesidad.",
+    "isSystem": true,
+    "createdBy": "system",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "sections": []
+  }
+]

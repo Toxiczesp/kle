@@ -82,6 +82,9 @@ export function extractDashboardDocument(payload: {
 
 export async function downloadDashboardExport(reportId: string, format: 'pdf' | 'docx') {
   const baseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+  if (import.meta.env.PROD && import.meta.env.VERCEL && !baseUrl) {
+    throw new Error('La app está desplegada en Vercel pero `VITE_API_BASE_URL` no está configurada. Debes apuntar el frontend a un backend publicado.');
+  }
   const response = await fetch(`${baseUrl}/api/dashboard/reports/${reportId}/export?format=${format}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('kle-session-token') || ''}`,

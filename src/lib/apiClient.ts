@@ -1,6 +1,10 @@
 const SESSION_TOKEN_KEY = 'kle-session-token';
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
 
+function isVercelDeploymentWithoutApiBase() {
+  return Boolean(import.meta.env.PROD && import.meta.env.VERCEL && !API_BASE_URL);
+}
+
 function getToken() {
   return localStorage.getItem(SESSION_TOKEN_KEY);
 }
@@ -34,6 +38,10 @@ export function setSessionToken(token: string | null) {
 }
 
 export async function apiRequest<T>(input: string, init?: RequestInit): Promise<T> {
+  if (isVercelDeploymentWithoutApiBase() && input.startsWith('/api/')) {
+    throw new Error('La app está desplegada en Vercel pero `VITE_API_BASE_URL` no está configurada. Debes apuntar el frontend a un backend publicado.');
+  }
+
   let response: Response;
 
   try {

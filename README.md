@@ -52,6 +52,16 @@ Ese backend expone:
 - `GET /api/authority-data`
 - `PUT /api/authority-data/:section`
 
+## Despliegue en Vercel
+
+Si publicas el frontend en Vercel, necesitas igualmente un backend desplegado aparte.
+
+- Vercel sirve el frontend, pero `backend/server.mjs` no queda activo automÃ¡ticamente como API persistente.
+- Define `VITE_API_BASE_URL` en el proyecto de Vercel con la URL completa de tu backend, por ejemplo `https://tu-backend.com`.
+- DespuÃ©s de cambiar esa variable, vuelve a desplegar para que el frontend reconstruya las rutas de la API.
+
+Sin esa variable, la app intentarÃ¡ llamar a `/api/...` en el mismo dominio de Vercel y verÃ¡s errores como `Ruta no encontrada`.
+
 ## Variables del backend
 
 En App Service configura, como mínimo:

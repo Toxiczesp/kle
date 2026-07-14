@@ -89,17 +89,6 @@ export default function AuthPage() {
           </p>
         </div>
 
-        <div className="auth-demo-box">
-          <div className="auth-demo-title">Credenciales demo</div>
-          <div className="auth-demo-row">
-            <span>Analista</span>
-            <strong>analista@kle.local / demo1234</strong>
-          </div>
-          <div className="auth-demo-row">
-            <span>Autoridad</span>
-            <strong>autoridad@kle.local / demo1234</strong>
-          </div>
-        </div>
       </div>
 
       <div className="auth-panel auth-panel-form">

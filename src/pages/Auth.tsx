@@ -130,7 +130,7 @@ export default function AuthPage() {
           <form className="auth-form" onSubmit={handleLoginSubmit}>
             <div>
               <h2 className="auth-form-title">Iniciar sesión</h2>
-              <p className="auth-form-text">Introduce tus credenciales para acceder.</p>
+              <p className="auth-form-text">Introduzca sus credenciales para acceder.</p>
             </div>
 
             <div className="form-group">
@@ -152,7 +152,7 @@ export default function AuthPage() {
                 type="password"
                 value={loginData.password}
                 onChange={(e) => setLoginData((prev) => ({ ...prev, password: e.target.value }))}
-                placeholder="Introduce tu contraseña"
+                placeholder="Introduzca su contraseña"
                 required
               />
             </div>

@@ -136,7 +136,7 @@ export default function AnalystRequests() {
             <div>
               <h3 className="section-title" style={{ marginBottom: 4 }}>Bandeja</h3>
               <p className="section-subtitle">
-                Selecciona una solicitud para ver su ficha y continuar el trabajo.
+                Seleccione una solicitud para ver su ficha y continuar el trabajo.
               </p>
             </div>
           </div>
@@ -337,7 +337,7 @@ export default function AnalystRequests() {
             <div className="empty-state">
               <div className="empty-state-title">No hay solicitudes seleccionadas</div>
               <p className="empty-state-text">
-                Cuando la autoridad registre encargos, podras gestionarlos desde aqui.
+                Cuando la autoridad registre encargos, podrá gestionarlos desde aquí.
               </p>
             </div>
           )}

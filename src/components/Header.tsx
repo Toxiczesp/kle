@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell,
@@ -16,6 +16,8 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useAuthorityData } from '../context/AuthorityDataContext';
+import { authorityRequestStatusLabels, priorityLabels } from '../data/authorityPortal';
 import headerBrandEmad from '../assets/emad.png';
 import headerBrandGobierno from '../assets/minisdef.png';
 
@@ -132,32 +134,25 @@ interface Notification {
   type: 'info' | 'warning' | 'success';
 }
 
-const initialNotifications: Notification[] = [
-  {
-    id: 'n1',
-    title: 'Nuevo documento anadido',
-    message: 'Se ha subido "Informe de interaccion - Marzo 2026" al repositorio del Gral. Al-Rashidi.',
-    time: 'Hace 12 min',
-    read: false,
-    type: 'info',
-  },
-  {
-    id: 'n2',
-    title: 'Autoridad objetivo actualizada',
-    message: 'La prioridad de Ibrahim Diouf ha sido elevada a "Alta".',
-    time: 'Hace 2 h',
-    read: false,
-    type: 'warning',
-  },
-  {
-    id: 'n3',
-    title: 'Informe generado',
-    message: 'El informe consolidado de la Dra. Benkhouya esta disponible para revision.',
-    time: 'Hace 5 h',
-    read: false,
-    type: 'success',
-  },
-];
+function formatRelativeTime(dateStr: string): string {
+  try {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    if (diffMs < 0) return 'Ahora';
+    const diffSec = Math.floor(diffMs / 1000);
+    if (diffSec < 60) return 'Hace un momento';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `Hace ${diffMin} min`;
+    const diffHr = Math.floor(diffMin / 60);
+    if (diffHr < 24) return `Hace ${diffHr} h`;
+    const diffDays = Math.floor(diffHr / 24);
+    if (diffDays === 1) return 'Ayer';
+    return `Hace ${diffDays} días`;
+  } catch (e) {
+    return 'Hace poco';
+  }
+}
 
 export default function Header() {
   const location = useLocation();
@@ -170,8 +165,73 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const { requests } = useAuthorityData();
+  const localStorageKey = user ? `kle_read_requests_user_${user.id}` : '';
+  const [readRequestIds, setReadRequestIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!localStorageKey) return;
+    try {
+      const stored = localStorage.getItem(localStorageKey);
+      if (stored) {
+        setReadRequestIds(JSON.parse(stored));
+      } else {
+        setReadRequestIds([]);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [localStorageKey]);
+
+  const saveReadRequestIds = (ids: string[]) => {
+    setReadRequestIds(ids);
+    if (localStorageKey) {
+      try {
+        localStorage.setItem(localStorageKey, JSON.stringify(ids));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
+  const notifications: Notification[] = useMemo(() => {
+    if (!user) return [];
+    
+    // Sort requests by newest first
+    const sorted = [...requests].sort(
+      (a, b) => new Date(b.updatedAt ?? b.createdAt).getTime() - new Date(a.updatedAt ?? a.createdAt).getTime()
+    );
+
+    return sorted.map((request) => {
+      const isRead = readRequestIds.includes(request.id);
+      const timeStr = formatRelativeTime(request.updatedAt ?? request.createdAt);
+
+      if (user.role === 'analista') {
+        // Notifications for Analyst: new requests from Authority
+        return {
+          id: request.id,
+          title: `Nueva solicitud: ${request.title}`,
+          message: `Prioridad: ${priorityLabels[request.priority] || request.priority}. Plazo: ${request.dueDate || 'Sin fecha'}. ${request.description}`,
+          time: timeStr,
+          read: isRead,
+          type: (request.priority === 'critical' || request.priority === 'high' ? 'warning' : 'info') as 'info' | 'warning' | 'success',
+        };
+      } else {
+        // Notifications for Authority: updates on requests
+        const statusLabel = authorityRequestStatusLabels[request.status] || request.status;
+        return {
+          id: request.id,
+          title: `Actualización de solicitud: ${request.title}`,
+          message: `Estado actual: ${statusLabel}. ${request.analystResponse ? `Respuesta: ${request.analystResponse}` : ''}`,
+          time: timeStr,
+          read: isRead,
+          type: (request.status === 'done' ? 'success' : 'info') as 'info' | 'warning' | 'success',
+        };
+      }
+    });
+  }, [requests, user, readRequestIds]);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -211,19 +271,20 @@ export default function Header() {
   };
 
   const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id
-          ? { ...notification, read: true }
-          : notification
-      )
-    );
+    if (!readRequestIds.includes(id)) {
+      saveReadRequestIds([...readRequestIds, id]);
+    }
   };
 
   const markAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, read: true }))
-    );
+    const allIds = notifications.map((n) => n.id);
+    saveReadRequestIds(allIds);
+  };
+
+  const handleNotificationClick = (id: string) => {
+    markAsRead(id);
+    setNotificationsOpen(false);
+    navigate(user?.role === 'analista' ? '/analyst/requests' : '/authority/requests');
   };
 
   const handleClickOutside = useCallback(
@@ -328,7 +389,7 @@ export default function Header() {
               <Search size={18} />
             </button>
 
-            {isAnalyst && (
+            {user && (
               <div style={{ position: 'relative' }}>
                 <button
                   ref={notifBtnRef}
@@ -358,38 +419,50 @@ export default function Header() {
                           {unreadCount} sin leer
                         </div>
                       </div>
-                      <button className="header-text-btn" onClick={markAllAsRead}>
-                        Marcar todas
-                      </button>
+                      {notifications.length > 0 && (
+                        <button className="header-text-btn" onClick={markAllAsRead}>
+                          Marcar todas
+                        </button>
+                      )}
                     </div>
                     <div className="header-dropdown-list">
-                      {notifications.map((notification) => (
-                        <button
-                          key={notification.id}
-                          className={`notification-item ${
-                            notification.read ? '' : 'unread'
-                          }`}
-                          onClick={() => markAsRead(notification.id)}
-                        >
-                          <div className={`notification-dot ${notification.type}`} />
-                          <div className="notification-copy">
-                            <div className="notification-title-row">
-                              <span className="notification-title">
-                                {notification.title}
-                              </span>
-                              {!notification.read && (
-                                <span className="notification-badge">Nuevo</span>
-                              )}
-                            </div>
-                            <p className="notification-message">
-                              {notification.message}
-                            </p>
-                            <span className="notification-time">
-                              {notification.time}
-                            </span>
+                      {notifications.length === 0 ? (
+                        <div className="header-dropdown-empty">
+                          <Bell size={24} />
+                          <div className="header-dropdown-empty-title">De momento no hay notificaciones</div>
+                          <div className="header-dropdown-empty-subtitle">
+                            A la espera de novedades...
                           </div>
-                        </button>
-                      ))}
+                        </div>
+                      ) : (
+                        notifications.map((notification) => (
+                          <button
+                            key={notification.id}
+                            className={`notification-item ${
+                              notification.read ? '' : 'unread'
+                            }`}
+                            onClick={() => handleNotificationClick(notification.id)}
+                          >
+                            <div className={`notification-dot ${notification.type}`} />
+                            <div className="notification-copy">
+                              <div className="notification-title-row">
+                                <span className="notification-title">
+                                  {notification.title}
+                                </span>
+                                {!notification.read && (
+                                  <span className="notification-badge">Nuevo</span>
+                                )}
+                              </div>
+                              <p className="notification-message">
+                                {notification.message}
+                              </p>
+                              <span className="notification-time">
+                                {notification.time}
+                              </span>
+                            </div>
+                          </button>
+                        ))
+                      )}
                     </div>
                   </div>
                 )}

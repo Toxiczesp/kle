@@ -204,9 +204,9 @@ export default function AuthorityDateRangeField({
           </div>
 
           <div className="authority-calendar-hint">
-            {!start && 'Haz clic en el dia de inicio y despues en el dia de fin.'}
-            {start && !end && 'Ahora elige el dia en el que quieres terminar el rango.'}
-            {start && end && 'Si haces clic en otro dia, empezarás un rango nuevo.'}
+            {!start && 'Haga clic en el día de inicio y después en el día de fin.'}
+            {start && !end && 'Ahora elija el día en el que quiere terminar el rango.'}
+            {start && end && 'Si hace clic en otro día, empezará un rango nuevo.'}
           </div>
 
           <div className="authority-date-range-actions">

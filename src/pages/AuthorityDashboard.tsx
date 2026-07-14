@@ -16,31 +16,31 @@ import { mockInteractions } from '../data/interactions';
 const quickLinks = [
   {
     title: 'Buscador KLE',
-    description: 'Consulta dosieres, documentos y fichas completas de otras autoridades.',
+    description: 'Consulte dosieres, documentos y fichas completas de otras autoridades.',
     icon: Users,
     to: '/authority/kle',
   },
   {
     title: 'Interacciones',
-    description: 'Filtra reuniones por rango de fechas, país, lugar y organismo.',
+    description: 'Filtre reuniones por rango de fechas, país, lugar y organismo.',
     icon: ClipboardList,
     to: '/authority/interactions',
   },
   {
     title: 'Valoraciones',
-    description: 'Valora el dosier KLE y registra el resultado de cada interacción.',
+    description: 'Valore el dosier KLE y registre el resultado de cada interacción.',
     icon: ClipboardCheck,
     to: '/authority/evaluations',
   },
   {
     title: 'Solicitud de informes',
-    description: 'Encarga nuevos trabajos al equipo de análisis y sigue su estado.',
+    description: 'Encargue nuevos trabajos al equipo de análisis y siga su estado.',
     icon: FilePlus2,
     to: '/authority/requests',
   },
   {
     title: 'Asistente IA',
-    description: 'Consulta informes, históricos y valoraciones desde una única interfaz conversacional.',
+    description: 'Consulte informes, históricos y valoraciones desde una única interfaz conversacional.',
     icon: BrainCircuit,
     to: '/authority/ai',
   },

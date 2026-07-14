@@ -652,7 +652,7 @@ export default function AuthorityEvaluations() {
             <div className="authority-panel-header">
               <div>
                 <h2>Histórico de interacciones valoradas</h2>
-                <p>Consulta el seguimiento de reuniones ya evaluadas por la autoridad.</p>
+                <p>Consulte el seguimiento de reuniones ya evaluadas por la autoridad.</p>
               </div>
             </div>
             <div className="authority-status-stack">
@@ -1013,7 +1013,7 @@ export default function AuthorityEvaluations() {
                         value={observationForm.usedInterpreters}
                         onChange={(e) => setObservationForm((prev) => ({ ...prev, usedInterpreters: e.target.value }))}
                       >
-                        <option value="">Selecciona...</option>
+                        <option value="">Seleccione...</option>
                         <option value="si">Sí</option>
                         <option value="no">No</option>
                       </select>
@@ -1369,7 +1369,7 @@ export default function AuthorityEvaluations() {
             <div className="authority-panel-header">
               <div>
                 <h2>Histórico de cuestionarios</h2>
-                <p>Consulta rápidamente los cuestionarios de observación ya completados.</p>
+                <p>Consulte rápidamente los cuestionarios de observación ya completados.</p>
               </div>
             </div>
             <div className="authority-status-stack">

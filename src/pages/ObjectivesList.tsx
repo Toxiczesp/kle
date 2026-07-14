@@ -146,7 +146,7 @@ export default function ObjectivesList() {
         <div>
           <h2 className="section-title">Buscador</h2>
           <p className="section-subtitle">
-            Localiza autoridades y solicitudes por autoridad objetivo, pais, estado, autoridad
+            Localice autoridades y solicitudes por autoridad objetivo, pais, estado, autoridad
             solicitante, interacciones o rango de fecha.
           </p>
         </div>

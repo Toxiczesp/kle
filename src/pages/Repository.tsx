@@ -128,7 +128,7 @@ export default function Repository() {
         <div>
           <h2 className="section-title">Repositorio</h2>
           <p className="section-subtitle">
-            Consulta el contenido documental existente organizado en cuatro bloques de trabajo.
+            Consulte el contenido documental existente organizado en cuatro bloques de trabajo.
           </p>
         </div>
       </div>

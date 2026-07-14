@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   FileText,
@@ -172,7 +172,7 @@ export default function Reports() {
   const handleUploadSharedDocument = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedObjective || !user || !selectedFile) {
-      showToast('Selecciona un PDF antes de subirlo al portal de autoridad.');
+      showToast('Seleccione un PDF antes de subirlo al portal de autoridad.');
       return;
     }
 

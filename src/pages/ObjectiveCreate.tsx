@@ -36,7 +36,7 @@ export default function ObjectiveCreate() {
         <div>
           <h2 className="section-title">{pageTitle}</h2>
           <p className="section-subtitle">
-            Completa los datos mínimos, guarda el objetivo en la plataforma y abre su informe inicial.
+            Complete los datos mínimos, guarde el objetivo en la plataforma y abra su informe inicial.
           </p>
         </div>
       </div>

@@ -615,10 +615,50 @@ const server = createServer(async (req, res) => {
           return [];
         })();
 
-        const [tavilyData, ddgImages, yahooImages] = await Promise.all([
+        const fetchWikiPromise = (async () => {
+          try {
+            const searchUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(query)}&gsrlimit=40&prop=imageinfo&iiprop=url&format=json&origin=*`;
+            const response = await fetch(searchUrl, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              }
+            });
+
+            if (response.ok) {
+              const json = await response.json();
+              const pages = json.query?.pages || {};
+              const list = [];
+              for (const id in pages) {
+                const page = pages[id];
+                const imageInfo = page.imageinfo?.[0];
+                if (imageInfo?.url) {
+                  const url = imageInfo.url;
+                  const lowerUrl = url.toLowerCase();
+                  // Skip video or document formats not renderable in <img>
+                  if (lowerUrl.endsWith('.webm') || lowerUrl.endsWith('.ogv') || lowerUrl.endsWith('.pdf')) {
+                    continue;
+                  }
+                  list.push({
+                    url,
+                    description: page.title 
+                      ? page.title.replace(/^File:/, '').replace(/\.[^/.]+$/, "").replace(/_/g, ' ') 
+                      : ''
+                  });
+                }
+              }
+              return list;
+            }
+          } catch (err) {
+            console.error('Error querying Wikimedia Commons:', err);
+          }
+          return [];
+        })();
+
+        const [tavilyData, ddgImages, yahooImages, wikiImages] = await Promise.all([
           fetchTavilyPromise,
           fetchDdgPromise,
-          fetchYahooPromise
+          fetchYahooPromise,
+          fetchWikiPromise
         ]);
 
         // Define stop words to prevent filtering out short names (like "Xi", "Li")
@@ -670,7 +710,7 @@ const server = createServer(async (req, res) => {
           );
           if (isJunk) return;
 
-          // Curated images from Tavily/Yahoo/DuckDuckGo are trusted
+          // Curated images from Tavily/Yahoo/DuckDuckGo/Wiki are trusted
           if (isTrustedSource) {
             seenUrls.add(url);
             collectedImages.push({ url, description });
@@ -688,22 +728,27 @@ const server = createServer(async (req, res) => {
           }
         };
 
-        // 1. Process Yahoo dedicated image search results first
+        // 1. Process Wikimedia Commons images
+        if (Array.isArray(wikiImages)) {
+          wikiImages.forEach((img) => addImage(img, true));
+        }
+
+        // 2. Process Yahoo dedicated image search results first
         if (Array.isArray(yahooImages)) {
           yahooImages.forEach((img) => addImage(img, true));
         }
 
-        // 2. Process DuckDuckGo dedicated image search results
+        // 3. Process DuckDuckGo dedicated image search results
         if (Array.isArray(ddgImages)) {
           ddgImages.forEach((img) => addImage(img, true));
         }
 
-        // 3. Process Tavily top-level curated images
+        // 4. Process Tavily top-level curated images
         if (tavilyData && Array.isArray(tavilyData.images)) {
           tavilyData.images.forEach((img) => addImage(img, true));
         }
 
-        // 4. Process nested webpage images (using the layout + name filter to expand results cleanly)
+        // 5. Process nested webpage images (using the layout + name filter to expand results cleanly)
         if (tavilyData && Array.isArray(tavilyData.results)) {
           tavilyData.results.forEach((result) => {
             if (Array.isArray(result.images)) {

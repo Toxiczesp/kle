@@ -51,6 +51,7 @@ import type {
 
 type SaveState = 'saved' | 'unsaved' | 'saving' | 'error' | 'offline';
 type MobileTab = 'source' | 'final';
+type SourceViewMode = 'pdf' | 'text';
 
 interface PendingTransfer {
   html: string;
@@ -154,6 +155,22 @@ function formatDate(value: string) {
   return new Date(value).toLocaleString('es-ES');
 }
 
+function isPdfDocumentLike(document: { mimeType?: string; name?: string } | null | undefined) {
+  const mimeType = String(document?.mimeType || '').toLowerCase();
+  const name = String(document?.name || '').toLowerCase();
+  return mimeType.includes('pdf') || name.endsWith('.pdf');
+}
+
+function createBackupSafeReport(report: DashboardReport): DashboardReport {
+  return {
+    ...report,
+    sourceDocuments: report.sourceDocuments?.map((document) => ({
+      ...document,
+      contentBase64: undefined,
+    })),
+  };
+}
+
 interface RichTextEditorProps {
   value: string;
   className?: string;
@@ -251,6 +268,7 @@ export default function Dashboard() {
   const [processingFile, setProcessingFile] = useState(false);
   const [sourceSearch, setSourceSearch] = useState('');
   const [sourceSearchResult, setSourceSearchResult] = useState<string>('');
+  const [sourceViewMode, setSourceViewMode] = useState<SourceViewMode>('text');
   const [sourceCurrentPage, setSourceCurrentPage] = useState(1);
   const [sourceTotalPages, setSourceTotalPages] = useState(1);
   const [historySnapshot, setHistorySnapshot] = useState<DashboardReport | null>(null);
@@ -274,6 +292,7 @@ export default function Dashboard() {
         uploadedAt: report.sourceFile.uploadedAt || new Date().toISOString(),
         contentHtml: report.sourceDocumentHtml,
         contentText: report.sourceDocumentText || '',
+        pageCount: report.sourceFile.pageCount,
         extractionWarnings: report.sourceFile.extractionWarnings || [],
       });
     }
@@ -281,6 +300,23 @@ export default function Dashboard() {
     const active = docs.find((d) => d.id === activeId) || docs[0] || null;
     return { sourceDocs: docs, activeSourceDocId: activeId, activeSourceDoc: active };
   }, [report]);
+
+  const canPreviewPdf = Boolean(
+    activeSourceDoc &&
+    isPdfDocumentLike(activeSourceDoc) &&
+    activeSourceDoc.contentBase64
+  );
+  const isLegacyPdfTextOnly = Boolean(
+    activeSourceDoc &&
+    isPdfDocumentLike(activeSourceDoc) &&
+    !activeSourceDoc.contentBase64
+  );
+  const sourcePdfSrc = useMemo(() => {
+    if (!canPreviewPdf || !activeSourceDoc?.contentBase64) {
+      return '';
+    }
+    return `data:application/pdf;base64,${activeSourceDoc.contentBase64}#page=${sourceCurrentPage}&view=FitH`;
+  }, [activeSourceDoc?.contentBase64, canPreviewPdf, sourceCurrentPage]);
 
   const filteredReports = useMemo(() => {
     const needle = reportFilter.trim().toLowerCase();
@@ -397,7 +433,15 @@ export default function Dashboard() {
     }
 
     if (saveState === 'unsaved' || saveState === 'error' || saveState === 'offline') {
-      localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify({ reportId: report.id, updatedAt: report.updatedAt, report }));
+      try {
+        localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify({
+          reportId: report.id,
+          updatedAt: report.updatedAt,
+          report: createBackupSafeReport(report),
+        }));
+      } catch {
+        // Skip local backup when the payload is too large.
+      }
     }
   }, [handleSave, report, saveState]);
 
@@ -434,6 +478,13 @@ export default function Dashboard() {
   }, [handleSave, report, saveState]);
 
   const updateSourcePagination = useCallback(() => {
+    if (sourceViewMode === 'pdf') {
+      const totalPages = Math.max(1, activeSourceDoc?.pageCount || 1);
+      setSourceTotalPages(totalPages);
+      setSourceCurrentPage((current) => Math.min(totalPages, Math.max(1, current)));
+      return;
+    }
+
     const element = sourceEditorRef.current;
     const viewport = sourcePageViewportRef.current;
     if (!element || !viewport) {
@@ -451,7 +502,7 @@ export default function Dashboard() {
 
     setSourceTotalPages(totalPages);
     setSourceCurrentPage(currentPage);
-  }, []);
+  }, [activeSourceDoc?.pageCount, sourceViewMode]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -465,11 +516,22 @@ export default function Dashboard() {
       window.cancelAnimationFrame(frame);
       window.removeEventListener('resize', handleResize);
     };
-  }, [report?.sourceDocumentHtml, updateSourcePagination]);
+  }, [report?.sourceDocumentHtml, sourceViewMode, updateSourcePagination]);
 
   useEffect(() => {
     setSourceCurrentPage(1);
   }, [report?.id]);
+
+  useEffect(() => {
+    if (canPreviewPdf) {
+      setSourceViewMode('pdf');
+      setSourceCurrentPage(1);
+      setSourceTotalPages(Math.max(1, activeSourceDoc?.pageCount || 1));
+      return;
+    }
+
+    setSourceViewMode('text');
+  }, [activeSourceDoc?.id, activeSourceDoc?.pageCount, canPreviewPdf]);
 
   function restoreLocalBackup(serverReport: DashboardReport) {
     const backupRaw = localStorage.getItem(LOCAL_BACKUP_KEY);
@@ -808,16 +870,21 @@ export default function Dashboard() {
         size: file.size,
         contentBase64,
       });
+      const isPdfUpload = file.name.toLowerCase().endsWith('.pdf') || file.type.toLowerCase().includes('pdf');
+      const resolvedMimeType = extracted.file?.mimeType || file.type || (isPdfUpload ? 'application/pdf' : '');
+      const resolvedContentBase64 = extracted.contentBase64 || (isPdfUpload ? contentBase64 : undefined);
 
       const newDoc = {
         id: `doc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: extracted.file ? extracted.file.name : file.name,
-        mimeType: extracted.file ? extracted.file.mimeType : file.type,
+        mimeType: resolvedMimeType,
         size: extracted.file ? extracted.file.size : file.size,
         lastModified: file.lastModified,
         uploadedAt: extracted.file ? extracted.file.uploadedAt : new Date().toISOString(),
         contentHtml: extracted.html,
         contentText: extracted.text,
+        contentBase64: resolvedContentBase64,
+        pageCount: extracted.pageCount ?? extracted.file?.pageCount,
         extractionWarnings: extracted.warnings,
       };
 
@@ -835,6 +902,7 @@ export default function Dashboard() {
             uploadedAt: prevReport.sourceFile.uploadedAt || new Date().toISOString(),
             contentHtml: prevReport.sourceDocumentHtml,
             contentText: prevReport.sourceDocumentText || '',
+            pageCount: prevReport.sourceFile.pageCount,
             extractionWarnings: prevReport.sourceFile.extractionWarnings || [],
           });
         }
@@ -883,6 +951,7 @@ export default function Dashboard() {
           uploadedAt: prevReport.sourceFile.uploadedAt || new Date().toISOString(),
           contentHtml: prevReport.sourceDocumentHtml,
           contentText: prevReport.sourceDocumentText || '',
+          pageCount: prevReport.sourceFile.pageCount,
           extractionWarnings: prevReport.sourceFile.extractionWarnings || [],
         });
       }
@@ -917,6 +986,11 @@ export default function Dashboard() {
   }
 
   function goToSourcePage(direction: -1 | 1) {
+    if (sourceViewMode === 'pdf') {
+      setSourceCurrentPage((current) => Math.min(sourceTotalPages, Math.max(1, current + direction)));
+      return;
+    }
+
     const viewport = sourcePageViewportRef.current;
     if (!viewport) {
       return;
@@ -1259,6 +1333,30 @@ export default function Dashboard() {
 
           {sourceSearchResult && <div className="analyst-inline-status">{sourceSearchResult}</div>}
 
+          {isLegacyPdfTextOnly && (
+            <div className="analyst-inline-status analyst-inline-status-warning">
+              Este PDF se guardo antes de activar la vista visual. Ahora mismo solo existe el texto extraido.
+              Para ver fotos, sellos y maquetacion real, vuelve a subir ese PDF.
+            </div>
+          )}
+
+          {canPreviewPdf && sourceViewMode === 'pdf' && (
+            <div className="analyst-source-selection-helper">
+              <div>
+                <strong>Seleccion en PDF</strong>
+                <p>En la vista PDF del navegador no podemos capturar la seleccion para arrastrarla al informe. Usa "Texto extraido" para que aparezca la tarjeta de anadir y arrastrar.</p>
+              </div>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => setSourceViewMode('text')}
+              >
+                <ClipboardPlus size={16} />
+                Ir a Texto extraido
+              </button>
+            </div>
+          )}
+
           {pendingTransfer && (
             <div className="analyst-selection-card">
               <div className="analyst-selection-card-top">
@@ -1313,6 +1411,7 @@ export default function Dashboard() {
                           size: selectedDoc.size,
                           lastModified: selectedDoc.lastModified,
                           uploadedAt: selectedDoc.uploadedAt,
+                          pageCount: selectedDoc.pageCount,
                           extractionWarnings: selectedDoc.extractionWarnings,
                         } : null,
                       });
@@ -1347,6 +1446,7 @@ export default function Dashboard() {
                           size: nextActiveDoc.size,
                           lastModified: nextActiveDoc.lastModified,
                           uploadedAt: nextActiveDoc.uploadedAt,
+                          pageCount: nextActiveDoc.pageCount,
                           extractionWarnings: nextActiveDoc.extractionWarnings,
                         } : null,
                       });
@@ -1357,6 +1457,24 @@ export default function Dashboard() {
                 )}
               </div>
               <div className="analyst-source-pdf-meta">
+                {canPreviewPdf && (
+                  <div className="analyst-source-view-toggle" role="tablist" aria-label="Modo de vista del PDF">
+                    <button
+                      type="button"
+                      className={`analyst-source-view-btn ${sourceViewMode === 'pdf' ? 'active' : ''}`}
+                      onClick={() => setSourceViewMode('pdf')}
+                    >
+                      Vista PDF
+                    </button>
+                    <button
+                      type="button"
+                      className={`analyst-source-view-btn ${sourceViewMode === 'text' ? 'active' : ''}`}
+                      onClick={() => setSourceViewMode('text')}
+                    >
+                      Texto extraido
+                    </button>
+                  </div>
+                )}
                 <button
                   type="button"
                   className="analyst-source-page-btn"
@@ -1382,23 +1500,39 @@ export default function Dashboard() {
             <div className="analyst-source-pdf-page">
               <div
                 ref={sourcePageViewportRef}
-                className="analyst-source-pdf-viewport"
-                onScroll={updateSourcePagination}
+                className={`analyst-source-pdf-viewport ${sourceViewMode === 'pdf' ? 'is-pdf-preview' : ''}`}
+                onScroll={sourceViewMode === 'text' ? updateSourcePagination : undefined}
               >
-                <RichTextEditor
-                  className="analyst-rich-editor analyst-source-pdf-editor"
-                  editorRef={sourceEditorRef}
-                  value={activeSourceDoc ? activeSourceDoc.contentHtml : ''}
-                  ariaLabel="Documento fuente editable"
-                  onFocus={(element) => {
-                    activeEditableRef.current = element;
-                  }}
-                  onInput={handleSourceInput}
-                  onMouseUp={handleSourceSelectionCapture}
-                  onKeyUp={handleSourceSelectionCapture}
-                />
+                {canPreviewPdf && sourceViewMode === 'pdf' ? (
+                  <div className="analyst-source-pdf-frame-wrap">
+                    <iframe
+                      key={sourcePdfSrc}
+                      src={sourcePdfSrc}
+                      className="analyst-source-pdf-frame"
+                      title={activeSourceDoc?.name || 'Vista previa del PDF'}
+                    />
+                  </div>
+                ) : (
+                  <RichTextEditor
+                    className="analyst-rich-editor analyst-source-pdf-editor"
+                    editorRef={sourceEditorRef}
+                    value={activeSourceDoc ? activeSourceDoc.contentHtml : ''}
+                    ariaLabel="Documento fuente editable"
+                    onFocus={(element) => {
+                      activeEditableRef.current = element;
+                    }}
+                    onInput={handleSourceInput}
+                    onMouseUp={handleSourceSelectionCapture}
+                    onKeyUp={handleSourceSelectionCapture}
+                  />
+                )}
               </div>
             </div>
+            {canPreviewPdf && sourceViewMode === 'pdf' && (
+              <div className="analyst-inline-status">
+                La vista PDF muestra imagenes, sellos y maquetacion reales. Para seleccionar texto y pasarlo al informe, cambia a "Texto extraido".
+              </div>
+            )}
           </div>
           <input
             ref={sourceFileInputRef}

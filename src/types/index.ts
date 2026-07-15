@@ -119,6 +119,7 @@ export interface DashboardSourceFile {
   size: number;
   lastModified: number;
   uploadedAt: string;
+  pageCount?: number;
   extractionWarnings: string[];
 }
 
@@ -131,6 +132,8 @@ export interface DashboardSourceDocument {
   uploadedAt: string;
   contentHtml: string;
   contentText: string;
+  contentBase64?: string;
+  pageCount?: number;
   extractionWarnings: string[];
 }
 

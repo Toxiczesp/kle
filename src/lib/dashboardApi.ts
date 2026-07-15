@@ -75,6 +75,8 @@ export function extractDashboardDocument(payload: {
   return postJson<{
     html: string;
     text: string;
+    contentBase64?: string;
+    pageCount?: number;
     warnings: string[];
     file: DashboardReport['sourceFile'];
   }>('/api/dashboard/extract-document', payload);

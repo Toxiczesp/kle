@@ -254,7 +254,9 @@ export function updateReportFromInput(report, input, user) {
     sourceDocumentHtml: sanitizeEditorHtml(input.sourceDocumentHtml),
     sourceDocumentText: htmlToPlainText(input.sourceDocumentHtml),
     sourceFile: normalizeSourceFile(input.sourceFile, now),
-    sourceDocuments: input.sourceDocuments !== undefined ? input.sourceDocuments : report.sourceDocuments,
+    sourceDocuments: input.sourceDocuments !== undefined
+      ? normalizeSourceDocuments(input.sourceDocuments, now)
+      : report.sourceDocuments,
     activeSourceDocumentId: input.activeSourceDocumentId !== undefined ? input.activeSourceDocumentId : report.activeSourceDocumentId,
     sections: normalizeReportSections(input.sections),
     updatedAt: now,
@@ -303,10 +305,40 @@ function normalizeSourceFile(file, fallbackDate) {
     size: Number(file.size || 0),
     lastModified: Number(file.lastModified || 0),
     uploadedAt: String(file.uploadedAt || fallbackDate),
+    pageCount: Math.max(0, Number(file.pageCount || 0)) || undefined,
     extractionWarnings: Array.isArray(file.extractionWarnings)
       ? file.extractionWarnings.map((item) => String(item))
       : [],
   };
+}
+
+function normalizeSourceDocument(document, index, fallbackDate) {
+  const html = sanitizeEditorHtml(document?.contentHtml);
+  return {
+    id: String(document?.id || `doc-${index + 1}`),
+    name: String(document?.name || '').trim(),
+    mimeType: String(document?.mimeType || '').trim(),
+    size: Number(document?.size || 0),
+    lastModified: Number(document?.lastModified || 0),
+    uploadedAt: String(document?.uploadedAt || fallbackDate),
+    contentHtml: html,
+    contentText: String(document?.contentText || htmlToPlainText(html)),
+    contentBase64: typeof document?.contentBase64 === 'string' && document.contentBase64.trim()
+      ? document.contentBase64.trim()
+      : undefined,
+    pageCount: Math.max(0, Number(document?.pageCount || 0)) || undefined,
+    extractionWarnings: Array.isArray(document?.extractionWarnings)
+      ? document.extractionWarnings.map((item) => String(item))
+      : [],
+  };
+}
+
+function normalizeSourceDocuments(documents, fallbackDate) {
+  if (!Array.isArray(documents)) {
+    return undefined;
+  }
+
+  return documents.map((document, index) => normalizeSourceDocument(document, index, fallbackDate));
 }
 
 function normalizeTemplateSections(sections) {
@@ -499,6 +531,7 @@ export async function extractDocumentText({ fileName, mimeType, size, contentBas
   const fileBuffer = Buffer.from(String(contentBase64 || ''), 'base64');
   const warnings = [];
   let html = '';
+  let pageCount;
 
   if (extension === '.txt') {
     const text = fileBuffer.toString('utf8');
@@ -513,10 +546,12 @@ export async function extractDocumentText({ fileName, mimeType, size, contentBas
 
   if (extension === '.pdf') {
     const parser = new PDFParse({ data: fileBuffer });
+    const info = await parser.getInfo();
     const result = await parser.getText();
     await parser.destroy();
     const text = String(result.text || '').trim();
     html = paragraphsToHtml(text);
+    pageCount = Math.max(0, Number(info?.total || 0)) || undefined;
     if (!text) {
       warnings.push('El PDF no contiene texto extraíble. No hay OCR disponible en este proyecto.');
     }
@@ -525,6 +560,8 @@ export async function extractDocumentText({ fileName, mimeType, size, contentBas
   return {
     html,
     text: htmlToPlainText(html),
+    contentBase64: extension === '.pdf' ? String(contentBase64 || '') : undefined,
+    pageCount,
     warnings,
     file: {
       name: fileName,
@@ -532,6 +569,7 @@ export async function extractDocumentText({ fileName, mimeType, size, contentBas
       size,
       lastModified: Date.now(),
       uploadedAt: new Date().toISOString(),
+      pageCount,
       extractionWarnings: warnings,
     },
   };

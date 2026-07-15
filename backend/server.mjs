@@ -592,7 +592,34 @@ const server = createServer(async (req, res) => {
           return [];
         })();
 
-        const [tavilyData, ddgImages] = await Promise.all([fetchTavilyPromise, fetchDdgPromise]);
+        const fetchYahooPromise = (async () => {
+          try {
+            const searchUrl = `https://images.search.yahoo.com/search/images?p=${encodeURIComponent(query)}`;
+            const response = await fetch(searchUrl, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              }
+            });
+
+            if (response.ok) {
+              const html = await response.text();
+              const matches = [...html.matchAll(/"iurl":"([^"]+)"/g)];
+              return matches.map(m => {
+                const url = m[1].replace(/\\/g, '');
+                return { url, description: '' };
+              });
+            }
+          } catch (err) {
+            console.error('Error querying Yahoo Images:', err);
+          }
+          return [];
+        })();
+
+        const [tavilyData, ddgImages, yahooImages] = await Promise.all([
+          fetchTavilyPromise,
+          fetchDdgPromise,
+          fetchYahooPromise
+        ]);
 
         // Define stop words to prevent filtering out short names (like "Xi", "Li")
         const stopWords = new Set([
@@ -643,7 +670,7 @@ const server = createServer(async (req, res) => {
           );
           if (isJunk) return;
 
-          // Curated images from Tavily and direct image search results from DuckDuckGo are trusted
+          // Curated images from Tavily/Yahoo/DuckDuckGo are trusted
           if (isTrustedSource) {
             seenUrls.add(url);
             collectedImages.push({ url, description });
@@ -661,17 +688,22 @@ const server = createServer(async (req, res) => {
           }
         };
 
-        // 1. Process DuckDuckGo dedicated image search results first
+        // 1. Process Yahoo dedicated image search results first
+        if (Array.isArray(yahooImages)) {
+          yahooImages.forEach((img) => addImage(img, true));
+        }
+
+        // 2. Process DuckDuckGo dedicated image search results
         if (Array.isArray(ddgImages)) {
           ddgImages.forEach((img) => addImage(img, true));
         }
 
-        // 2. Process Tavily top-level curated images
+        // 3. Process Tavily top-level curated images
         if (tavilyData && Array.isArray(tavilyData.images)) {
           tavilyData.images.forEach((img) => addImage(img, true));
         }
 
-        // 3. Process nested webpage images (using the layout + name filter to expand results cleanly)
+        // 4. Process nested webpage images (using the layout + name filter to expand results cleanly)
         if (tavilyData && Array.isArray(tavilyData.results)) {
           tavilyData.results.forEach((result) => {
             if (Array.isArray(result.images)) {

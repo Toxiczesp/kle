@@ -5,6 +5,9 @@ import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
 import { exec } from 'node:child_process';
 
+// Ignore self-signed or invalid SSL/TLS certificates on source web hosts
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 // ── Load .env.local into process.env (dotenv-lite) ──
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -798,14 +801,31 @@ const server = createServer(async (req, res) => {
         for (let i = 0; i < urls.length; i++) {
           const imgUrl = urls[i];
           try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout per image
+            // Add a small 250ms spacing between downloads to prevent burst rate limits (HTTP 429)
+            if (i > 0) {
+              await new Promise(resolve => setTimeout(resolve, 250));
+            }
 
-            const imgResponse = await fetch(imgUrl, { signal: controller.signal });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout per image for large files
+
+            // Wikipedia API policy requires a contact User-Agent for programmatic downloads and blocks generic browser ones
+            const isWikimedia = imgUrl.includes('wikimedia.org') || imgUrl.includes('wikipedia.org');
+            const userAgent = isWikimedia
+              ? 'KLE-Analyst-Platform/1.0 (https://github.com/Toxiczesp/kle; contact@kle-intelligence.es)'
+              : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+
+            const imgResponse = await fetch(imgUrl, {
+              signal: controller.signal,
+              headers: {
+                'User-Agent': userAgent,
+              }
+            });
             clearTimeout(timeoutId);
 
             if (!imgResponse.ok) {
-              downloadResults.push({ url: imgUrl, success: false, reason: `HTTP ${imgResponse.status}` });
+              console.warn(`[Download Failure] ${imgUrl} failed with HTTP ${imgResponse.status}`);
+              downloadResults.push({ url: imgUrl, success: false, reason: `HTTP ${imgResponse.status} (Error de origen)` });
               continue;
             }
 
@@ -822,6 +842,7 @@ const server = createServer(async (req, res) => {
 
             downloadResults.push({ url: imgUrl, success: true, file: fileName });
           } catch (downloadErr) {
+            console.error(`[Download Error] Failed to download ${imgUrl}:`, downloadErr);
             downloadResults.push({
               url: imgUrl,
               success: false,

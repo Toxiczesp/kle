@@ -154,7 +154,9 @@
 }
 
 @keyframes imgsearch-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ─── Error Banner ─── */
@@ -268,7 +270,16 @@
 
 .imgsearch-card.selected {
   border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 2px rgba(71, 102, 166, 0.2), 0 6px 20px rgba(71, 102, 166, 0.14);
+  box-shadow: 0 0 0 4px rgba(71, 102, 166, 0.3), 0 8px 24px rgba(71, 102, 166, 0.18);
+  transform: scale(0.96) !important;
+}
+
+.imgsearch-card.selected .imgsearch-card-img-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(71, 102, 166, 0.12);
+  pointer-events: none;
 }
 
 .imgsearch-card-img-wrapper {
@@ -339,21 +350,39 @@
 /* ─── Card Selection Checkbox ─── */
 .imgsearch-card-check {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  color: rgba(255, 255, 255, 0.7);
+  top: 10px;
+  left: 10px;
+  z-index: 10;
   opacity: 0;
-  transition: opacity var(--transition-fast), color var(--transition-fast);
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+  transform: scale(0.85);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
 .imgsearch-card:hover .imgsearch-card-check,
 .imgsearch-card-check.visible {
   opacity: 1;
+  transform: scale(1);
 }
 
-.imgsearch-card.selected .imgsearch-card-check {
-  color: var(--color-primary-400);
+.imgsearch-check-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.imgsearch-card.selected .imgsearch-check-badge {
+  background: var(--color-primary-500);
+  border-color: var(--color-primary-600);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(71, 102, 166, 0.4);
 }
 
 /* ─── Card Description ─── */
@@ -413,12 +442,10 @@
 .imgsearch-skeleton-img {
   width: 100%;
   aspect-ratio: 4 / 3;
-  background: linear-gradient(
-    90deg,
-    var(--color-bg-raised) 25%,
-    var(--color-bg-hover) 50%,
-    var(--color-bg-raised) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--color-bg-raised) 25%,
+      var(--color-bg-hover) 50%,
+      var(--color-bg-raised) 75%);
   background-size: 200% 100%;
   animation: imgsearch-shimmer 1.5s ease-in-out infinite;
 }
@@ -427,12 +454,10 @@
   height: 12px;
   margin: var(--space-2) var(--space-3);
   border-radius: 4px;
-  background: linear-gradient(
-    90deg,
-    var(--color-bg-raised) 25%,
-    var(--color-bg-hover) 50%,
-    var(--color-bg-raised) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--color-bg-raised) 25%,
+      var(--color-bg-hover) 50%,
+      var(--color-bg-raised) 75%);
   background-size: 200% 100%;
   animation: imgsearch-shimmer 1.5s ease-in-out infinite;
 }
@@ -443,8 +468,13 @@
 }
 
 @keyframes imgsearch-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ─── Success Banner ─── */
@@ -465,13 +495,66 @@
 }
 
 @keyframes imgsearch-fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .imgsearch-success-icon {
   color: var(--color-primary-600);
   flex-shrink: 0;
+}
+
+.imgsearch-success-text {
+  flex: 1;
+  line-height: 1.45;
+}
+
+.imgsearch-success-close {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--color-primary-400);
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-fast);
+}
+
+.imgsearch-success-close:hover {
+  color: var(--color-primary-600);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  .imgsearch-search-bar {
+    flex-direction: column;
+  }
+
+  .imgsearch-search-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .imgsearch-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .imgsearch-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .imgsearch-toolbar-right {
+    flex-wrap: wrap;
+  }
 }
 
 .imgsearch-success-text {

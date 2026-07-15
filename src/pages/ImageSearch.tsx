@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   XCircle,
   Images,
+  Check,
 } from 'lucide-react';
 import { postJson } from '../lib/apiClient';
 import '../styles/workspace-image-search.css';
@@ -350,7 +351,9 @@ export default function ImageSearch() {
                     </button>
                   </div>
                   <div className={`imgsearch-card-check ${isSelected ? 'visible' : ''}`}>
-                    {isSelected ? <CheckSquare size={20} /> : <Square size={20} />}
+                    <div className="imgsearch-check-badge">
+                      <Check size={12} strokeWidth={3} />
+                    </div>
                   </div>
                 </div>
                 {img.description && (

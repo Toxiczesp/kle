@@ -217,9 +217,9 @@
 
 .analyst-dashboard-panel-header {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-4);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
   padding-bottom: var(--space-4);
   border-bottom: 1px solid rgba(71, 102, 166, 0.12);
 }
@@ -694,10 +694,16 @@
   padding: 1rem 1rem 1.1rem;
   transition:
     border-color var(--transition-fast),
-    background-color var(--transition-fast);
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
   content-visibility: auto;
   contain: layout paint style;
   contain-intrinsic-size: 280px;
+}
+
+.analyst-final-section:hover {
+  border-color: rgba(71, 102, 166, 0.24);
+  box-shadow: 0 4px 20px rgba(71, 102, 166, 0.04);
 }
 
 .analyst-final-section.can-receive-transfer {
@@ -724,23 +730,119 @@
 
 .analyst-final-section-head {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
   gap: var(--space-3);
   margin-bottom: var(--space-3);
 }
 
-.analyst-section-toggle {
+.analyst-section-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.analyst-section-drag-handle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  cursor: grab;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  margin-top: 1px;
+}
+
+.analyst-section-drag-handle:hover {
+  background-color: rgba(71, 102, 166, 0.08);
+  color: var(--color-text-primary);
+}
+
+.analyst-section-drag-handle:active {
+  cursor: grabbing;
+}
+
+.analyst-section-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-2);
+  border-top: 1px dashed rgba(71, 102, 166, 0.08);
+}
+
+.analyst-section-reorder-group {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  background: rgba(71, 102, 166, 0.04);
+  padding: 2px;
+  border-radius: 8px;
+  border: 1px solid rgba(71, 102, 166, 0.08);
+}
+
+.analyst-section-reorder-group button {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.analyst-section-reorder-group button:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.analyst-section-add-btn {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(71, 102, 166, 0.15);
+  color: var(--color-text-primary);
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.analyst-section-add-btn:hover {
+  background: var(--color-bg-white);
+  border-color: rgba(71, 102, 166, 0.3);
+  color: var(--color-primary);
+  box-shadow: 0 2px 4px rgba(71, 102, 166, 0.06);
+}
+
+.analyst-section-toggle {
+  display: inline-flex;
+  align-items: flex-start;
   gap: 0.55rem;
   border: none;
   background: transparent;
   color: var(--color-text-primary);
-  font-size: 1rem;
+  font-size: 0.88rem;
   font-weight: 700;
   padding: 0;
   cursor: pointer;
+  text-align: left;
+}
+
+.analyst-section-toggle svg {
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
 .analyst-section-title-input {
@@ -748,7 +850,7 @@
   border-bottom: 1px dashed rgba(71, 102, 166, 0.24);
   background: transparent;
   color: var(--color-text-primary);
-  font-size: 1rem;
+  font-size: 0.88rem;
   font-weight: 700;
   outline: none;
   min-width: 220px;

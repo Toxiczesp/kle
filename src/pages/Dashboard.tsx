@@ -16,6 +16,7 @@ import {
   FileInput,
   FilePlus2,
   FileSearch,
+  GripVertical,
   LoaderCircle,
   Plus,
   RefreshCcw,
@@ -257,6 +258,7 @@ export default function Dashboard() {
   const [dragBlock, setDragBlock] = useState<{ blockId: string; sectionId: string } | null>(null);
   const [dragSelectionActive, setDragSelectionActive] = useState(false);
   const [dropTargetSectionId, setDropTargetSectionId] = useState<string | null>(null);
+  const [dragSectionId, setDragSectionId] = useState<string | null>(null);
   const [templateName, setTemplateName] = useState('');
   const [templateDescription, setTemplateDescription] = useState('');
 
@@ -639,6 +641,19 @@ export default function Dashboard() {
     });
   }
 
+  function moveSection(sectionId: string, direction: -1 | 1) {
+    if (!report) return;
+    const index = report.sections.findIndex((s) => s.id === sectionId);
+    const target = index + direction;
+    if (index < 0 || target < 0 || target >= report.sections.length) {
+      return;
+    }
+    const nextSections = [...report.sections];
+    [nextSections[index], nextSections[target]] = [nextSections[target], nextSections[index]];
+    const updatedSections = nextSections.map((s, idx) => ({ ...s, order: idx }));
+    markDirty({ ...report, sections: updatedSections });
+  }
+
   function toggleSection(sectionId: string) {
     updateSection(sectionId, (section) => ({ ...section, collapsed: !section.collapsed }));
   }
@@ -995,6 +1010,26 @@ export default function Dashboard() {
       return;
     }
 
+    if (dragSectionId) {
+      if (dragSectionId === targetSectionId) {
+        setDragSectionId(null);
+        setDropTargetSectionId(null);
+        return;
+      }
+      const sourceIndex = report.sections.findIndex((s) => s.id === dragSectionId);
+      const targetIndex = report.sections.findIndex((s) => s.id === targetSectionId);
+      if (sourceIndex >= 0 && targetIndex >= 0) {
+        const nextSections = [...report.sections];
+        const [movedSection] = nextSections.splice(sourceIndex, 1);
+        nextSections.splice(targetIndex, 0, movedSection);
+        const updatedSections = nextSections.map((s, idx) => ({ ...s, order: idx }));
+        markDirty({ ...report, sections: updatedSections });
+      }
+      setDragSectionId(null);
+      setDropTargetSectionId(null);
+      return;
+    }
+
     if (!dragBlock) {
       return;
     }
@@ -1033,7 +1068,7 @@ export default function Dashboard() {
   }
 
   function handleSectionDragEnter(targetSectionId: string) {
-    if (!dragSelectionActive && !dragBlock) {
+    if (!dragSelectionActive && !dragBlock && !dragSectionId) {
       return;
     }
     setDropTargetSectionId(targetSectionId);
@@ -1383,7 +1418,6 @@ export default function Dashboard() {
           <div className="analyst-dashboard-panel-header">
             <div>
               <h3>Informe final estructurado</h3>
-              <p>Organiza el informe por apartados, reordena bloques y edita el contenido directamente.</p>
             </div>
             <div className="btn-group analyst-panel-head-actions">
               <button type="button" className="btn btn-ghost btn-sm" onClick={addCustomSection}>
@@ -1414,22 +1448,62 @@ export default function Dashboard() {
                 onDrop={() => handleDropOnSection(section.id)}
               >
                 <div className="analyst-final-section-head">
-                  <button type="button" className="analyst-section-toggle" onClick={() => toggleSection(section.id)}>
-                    {section.collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
-                    {section.renamable ? (
-                      <input
-                        className="analyst-section-title-input"
-                        value={section.title}
-                        onChange={(event) => updateSection(section.id, (current) => ({ ...current, title: event.target.value }))}
-                      />
-                    ) : (
-                      <strong>{section.title}</strong>
-                    )}
-                  </button>
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => addManualBlock(section.id)}>
-                    <Plus size={16} />
-                    Añadir bloque
-                  </button>
+                  <div className="analyst-section-title-row">
+                    <span
+                      className="analyst-section-drag-handle"
+                      draggable
+                      onDragStart={(e) => {
+                        e.stopPropagation();
+                        setDragSectionId(section.id);
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', section.id);
+                      }}
+                      onDragEnd={() => {
+                        setDragSectionId(null);
+                      }}
+                    >
+                      <GripVertical size={16} />
+                    </span>
+                    <button type="button" className="analyst-section-toggle" onClick={() => toggleSection(section.id)}>
+                      {section.collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                      {section.renamable ? (
+                        <input
+                          className="analyst-section-title-input"
+                          value={section.title}
+                          onChange={(event) => updateSection(section.id, (current) => ({ ...current, title: event.target.value }))}
+                        />
+                      ) : (
+                        <strong>{section.title}</strong>
+                      )}
+                    </button>
+                  </div>
+                  <div className="analyst-section-actions-row">
+                    <div className="analyst-section-reorder-group">
+                      <button
+                        type="button"
+                        onClick={() => moveSection(section.id, -1)}
+                        title="Subir sección"
+                        aria-label="Subir sección"
+                      >
+                        <ArrowUp size={14} /> Subir
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveSection(section.id, 1)}
+                        title="Bajar sección"
+                        aria-label="Bajar sección"
+                      >
+                        <ArrowDown size={14} /> Bajar
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      className="analyst-section-add-btn"
+                      onClick={() => addManualBlock(section.id)}
+                    >
+                      <Plus size={14} /> Añadir bloque
+                    </button>
+                  </div>
                 </div>
 
                 {pendingTransfer && (

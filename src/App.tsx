@@ -9,6 +9,7 @@ import Repository from './pages/Repository';
 import Interactions from './pages/Interactions';
 import Analysis from './pages/Analysis';
 import AIChat from './pages/AIChat';
+import ImageSearch from './pages/ImageSearch';
 import Reports from './pages/Reports';
 import AnalystRequests from './pages/AnalystRequests';
 import AuthPage from './pages/Auth';
@@ -137,6 +138,14 @@ function AppRoutes() {
               element={
                 <RequireRole allowedRoles={['analista']}>
                   <AnalystRequests />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/image-search"
+              element={
+                <RequireRole allowedRoles={['analista']}>
+                  <ImageSearch />
                 </RequireRole>
               }
             />

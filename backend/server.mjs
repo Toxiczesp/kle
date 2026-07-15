@@ -1,8 +1,32 @@
 import { createServer } from 'node:http';
-import { promises as fs } from 'node:fs';
+import { promises as fs, readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
+import { exec } from 'node:child_process';
+
+// ── Load .env.local into process.env (dotenv-lite) ──
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(__dirname, '..');
+
+for (const envFile of ['.env.local', '.env']) {
+  const envPath = path.join(rootDir, envFile);
+  if (existsSync(envPath)) {
+    const lines = readFileSync(envPath, 'utf8').split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eqIndex = trimmed.indexOf('=');
+      if (eqIndex < 0) continue;
+      const key = trimmed.slice(0, eqIndex).trim();
+      const value = trimmed.slice(eqIndex + 1).trim().replace(/^["']|["']$/g, '');
+      if (!process.env[key]) {
+        process.env[key] = value;
+      }
+    }
+  }
+}
+
 import { defaultAuthorityData, defaultUsers } from './seed-data.mjs';
 import {
   buildDocxBuffer,
@@ -16,9 +40,6 @@ import {
   sanitizeEditorHtml,
   updateReportFromInput,
 } from './dashboard-utils.mjs';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.resolve(__dirname, '..');
 
 const dataDir = process.env.HOME
   ? path.join(process.env.HOME, 'kle-data')
@@ -482,6 +503,281 @@ const server = createServer(async (req, res) => {
           return;
         }
       }
+    }
+
+    /* ── Image Search via Tavily ────────────────────────────── */
+    if (req.method === 'POST' && url.pathname === '/api/image-search') {
+      const user = await getSessionUser(req);
+      if (!user) {
+        sendJson(res, 401, { error: 'No autorizado.' });
+        return;
+      }
+
+      const tavilyKey = process.env.TAVILY_API_KEY;
+      if (!tavilyKey) {
+        sendJson(res, 500, { error: 'TAVILY_API_KEY no está configurada en el servidor.' });
+        return;
+      }
+
+      const body = await parseBody(req);
+      const query = String(body.query || '').trim();
+      if (!query) {
+        sendJson(res, 400, { error: 'El campo "query" es obligatorio.' });
+        return;
+      }
+
+      try {
+        // Fetch from Tavily and DuckDuckGo in parallel
+        const fetchTavilyPromise = (async () => {
+          try {
+            const tavilyResponse = await fetch('https://api.tavily.com/search', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                api_key: tavilyKey,
+                query: query,
+                search_depth: 'advanced',
+                include_images: true,
+                include_image_descriptions: true,
+                max_results: 20,
+              }),
+            });
+            if (tavilyResponse.ok) {
+              return await tavilyResponse.json();
+            }
+          } catch (err) {
+            console.error('Error querying Tavily:', err);
+          }
+          return null;
+        })();
+
+        const fetchDdgPromise = (async () => {
+          try {
+            // 1. Fetch main page to extract the VQD token
+            const searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
+            const pageResponse = await fetch(searchUrl, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              }
+            });
+
+            if (!pageResponse.ok) return [];
+
+            const html = await pageResponse.text();
+            const vqdMatch = html.match(/vqd=([\'"])(.*?)\1/) || html.match(/vqd\s*=\s*[\'"]([^\'"]+)[\'"]/);
+            if (!vqdMatch) return [];
+            const vqd = vqdMatch[2] || vqdMatch[1];
+
+            // 2. Fetch the JSON image results payload
+            const imagesUrl = `https://duckduckgo.com/i.js?l=us-en&o=json&q=${encodeURIComponent(query)}&vqd=${vqd}&f=,,,&p=-1`;
+            const imagesResponse = await fetch(imagesUrl, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Referer': 'https://duckduckgo.com/',
+              }
+            });
+
+            if (imagesResponse.ok) {
+              const json = await imagesResponse.json();
+              if (json && Array.isArray(json.results)) {
+                return json.results.map(r => ({
+                  url: r.image,
+                  description: r.title || ''
+                }));
+              }
+            }
+          } catch (err) {
+            console.error('Error querying DuckDuckGo:', err);
+          }
+          return [];
+        })();
+
+        const [tavilyData, ddgImages] = await Promise.all([fetchTavilyPromise, fetchDdgPromise]);
+
+        // Define stop words to prevent filtering out short names (like "Xi", "Li")
+        const stopWords = new Set([
+          'de', 'la', 'el', 'en', 'y', 'con', 'del', 'los', 'las', 'un', 'una',
+          'the', 'and', 'of', 'in', 'on', 'for', 'with', 'at', 'by', 'an', 'a', 'to'
+        ]);
+
+        const queryTerms = query
+          .toLowerCase()
+          .split(/\s+/)
+          .filter((t) => t.length > 0 && !stopWords.has(t));
+
+        // Keywords commonly found in design assets, logos, icons and buttons
+        const junkKeywords = [
+          'logo', 'icon', 'menu', 'nav', 'header', 'footer', 'sidebar',
+          'button', 'avatar', 'social', 'facebook', 'twitter', 'instagram',
+          'linkedin', 'youtube', 'pinterest', 'sprite', 'loading', 'placeholder',
+          'widget', 'theme', 'default', 'favicon', 'banner', 'pixel', 'tracker',
+          'lock', 'padlock', 'edit', 'pencil', 'signature', 'globe', 'disambig',
+          'magnifying', 'symbol', 'shield', 'chevron', 'arrow', 'bullet',
+          'internal-link', 'external-link', 'powered-by', 'checkmark'
+        ];
+
+        const collectedImages = [];
+        const seenUrls = new Set();
+
+        const addImage = (img, isTrustedSource) => {
+          if (!img) return;
+          const url = typeof img === 'string' ? img : img.url;
+          const description = typeof img === 'string' ? '' : (img.description || '');
+          
+          if (!url || seenUrls.has(url)) return;
+
+          // Always ignore vector graphics, gifs, and data URIs (usually layout items or icons)
+          const lowerUrl = url.toLowerCase();
+          if (
+            lowerUrl.endsWith('.svg') ||
+            lowerUrl.endsWith('.gif') ||
+            lowerUrl.startsWith('data:image/')
+          ) {
+            return;
+          }
+
+          // Filter out layout junk
+          const lowerDesc = description.toLowerCase();
+          const isJunk = junkKeywords.some(
+            (kw) => lowerUrl.includes(kw) || lowerDesc.includes(kw)
+          );
+          if (isJunk) return;
+
+          // Curated images from Tavily and direct image search results from DuckDuckGo are trusted
+          if (isTrustedSource) {
+            seenUrls.add(url);
+            collectedImages.push({ url, description });
+            return;
+          }
+
+          // For nested webpage images, ensure either the URL or description references the person's name
+          const matchesQuery = queryTerms.some(
+            (term) => lowerUrl.includes(term) || lowerDesc.includes(term)
+          );
+
+          if (matchesQuery) {
+            seenUrls.add(url);
+            collectedImages.push({ url, description });
+          }
+        };
+
+        // 1. Process DuckDuckGo dedicated image search results first
+        if (Array.isArray(ddgImages)) {
+          ddgImages.forEach((img) => addImage(img, true));
+        }
+
+        // 2. Process Tavily top-level curated images
+        if (tavilyData && Array.isArray(tavilyData.images)) {
+          tavilyData.images.forEach((img) => addImage(img, true));
+        }
+
+        // 3. Process nested webpage images (using the layout + name filter to expand results cleanly)
+        if (tavilyData && Array.isArray(tavilyData.results)) {
+          tavilyData.results.forEach((result) => {
+            if (Array.isArray(result.images)) {
+              result.images.forEach((img) => addImage(img, false));
+            }
+          });
+        }
+
+        sendJson(res, 200, { ok: true, query, images: collectedImages });
+      } catch (fetchErr) {
+        sendJson(res, 502, {
+          error: 'Error al buscar imágenes en los motores de búsqueda.',
+          detail: fetchErr instanceof Error ? fetchErr.message : String(fetchErr),
+        });
+      }
+      return;
+    }
+
+    /* ── Download Images to Local Folder ────────────────────── */
+    if (req.method === 'POST' && url.pathname === '/api/download-images') {
+      const user = await getSessionUser(req);
+      if (!user) {
+        sendJson(res, 401, { error: 'No autorizado.' });
+        return;
+      }
+
+      const body = await parseBody(req);
+      const query = String(body.query || '').trim();
+      const urls = body.urls;
+
+      if (!query || !Array.isArray(urls) || urls.length === 0) {
+        sendJson(res, 400, { error: 'Los campos "query" y "urls" (array no vacío) son obligatorios.' });
+        return;
+      }
+
+      try {
+        // Sanitize name for folder creation
+        const safeFolderName = query.replace(/[\\/:*?"<>|]/g, '_').slice(0, 80);
+        const folderPath = path.join(dataDir, 'downloads', safeFolderName);
+        await fs.mkdir(folderPath, { recursive: true });
+
+        const downloadResults = [];
+
+        for (let i = 0; i < urls.length; i++) {
+          const imgUrl = urls[i];
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout per image
+
+            const imgResponse = await fetch(imgUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (!imgResponse.ok) {
+              downloadResults.push({ url: imgUrl, success: false, reason: `HTTP ${imgResponse.status}` });
+              continue;
+            }
+
+            const contentType = imgResponse.headers.get('content-type') || '';
+            let ext = '.jpg';
+            if (contentType.includes('png')) ext = '.png';
+            else if (contentType.includes('webp')) ext = '.webp';
+            else if (contentType.includes('gif')) ext = '.gif';
+
+            const buffer = Buffer.from(await imgResponse.arrayBuffer());
+            const fileName = `foto-${i + 1}${ext}`;
+            const filePath = path.join(folderPath, fileName);
+            await fs.writeFile(filePath, buffer);
+
+            downloadResults.push({ url: imgUrl, success: true, file: fileName });
+          } catch (downloadErr) {
+            downloadResults.push({
+              url: imgUrl,
+              success: false,
+              reason: downloadErr instanceof Error ? downloadErr.message : String(downloadErr)
+            });
+          }
+        }
+
+        // Open directory on Windows Explorer
+        if (process.platform === 'win32') {
+          const winPath = folderPath.replace(/\//g, '\\');
+          exec(`start "" "${winPath}"`, (execErr) => {
+            if (execErr) {
+              console.warn('Fallback to explorer.exe:', execErr.message);
+              exec(`explorer.exe "${winPath}"`);
+            }
+          });
+        }
+
+        const successfulCount = downloadResults.filter(r => r.success).length;
+
+        sendJson(res, 200, {
+          ok: true,
+          query,
+          folderPath,
+          successfulCount,
+          totalCount: urls.length,
+          results: downloadResults
+        });
+      } catch (err) {
+        sendJson(res, 500, {
+          error: 'Error al descargar las imágenes en el servidor.',
+          detail: err instanceof Error ? err.message : String(err)
+        });
+      }
+      return;
     }
 
     sendJson(res, 404, { error: 'Ruta no encontrada.' });

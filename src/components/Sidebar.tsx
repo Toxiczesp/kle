@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
+  Camera,
   ClipboardCheck,
   ClipboardList,
   FilePlus2,
@@ -16,6 +17,7 @@ const analystNavItems = [
   { to: '/objectives', icon: Users, label: 'Buscador' },
   { to: '/repository', icon: FolderOpen, label: 'Repositorio' },
   { to: '/analyst/requests', icon: FilePlus2, label: 'Solicitudes' },
+  { to: '/image-search', icon: Camera, label: 'Buscador Fotos' },
   { to: '/ai-chat', icon: MessageSquareText, label: 'Asistente IA' },
 ];
 

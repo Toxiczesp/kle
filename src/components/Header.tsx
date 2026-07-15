@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell,
   BrainCircuit,
+  Camera,
   ClipboardCheck,
   ClipboardList,
   FilePlus2,
@@ -28,6 +29,7 @@ const analystPageTitles: Record<string, string> = {
   '/interactions': 'Interacciones',
   '/analysis': 'Info Autoridad Objetivo',
   '/analyst/requests': 'Solicitudes',
+  '/image-search': 'Buscador de Imágenes',
   '/ai-chat': 'Asistente IA',
   '/reports': 'Informes',
 };
@@ -65,6 +67,12 @@ const analystSearchablePages = [
     label: 'Solicitudes',
     icon: FilePlus2,
     description: 'Solicitudes nuevas, en proceso y finalizadas',
+  },
+  {
+    path: '/image-search',
+    label: 'Buscador de Imágenes',
+    icon: Camera,
+    description: 'Busca y descarga fotos de personas desde internet',
   },
   {
     path: '/ai-chat',

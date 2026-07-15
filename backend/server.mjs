@@ -539,7 +539,7 @@ const server = createServer(async (req, res) => {
                 search_depth: 'advanced',
                 include_images: true,
                 include_image_descriptions: true,
-                max_results: 20,
+                max_results: 50,
               }),
             });
             if (tavilyResponse.ok) {
@@ -623,7 +623,7 @@ const server = createServer(async (req, res) => {
           if (!img) return;
           const url = typeof img === 'string' ? img : img.url;
           const description = typeof img === 'string' ? '' : (img.description || '');
-          
+
           if (!url || seenUrls.has(url)) return;
 
           // Always ignore vector graphics, gifs, and data URIs (usually layout items or icons)

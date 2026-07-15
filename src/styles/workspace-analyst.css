@@ -342,31 +342,6 @@
   color: #80510f;
 }
 
-.analyst-source-selection-helper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.95rem 1rem;
-  border-radius: 18px;
-  border: 1px solid rgba(71, 102, 166, 0.14);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(241, 246, 252, 0.98));
-  box-shadow: 0 10px 24px rgba(31, 45, 77, 0.05);
-}
-
-.analyst-source-selection-helper strong {
-  display: block;
-  margin-bottom: 0.22rem;
-  color: var(--color-text-primary);
-}
-
-.analyst-source-selection-helper p {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: 0.84rem;
-  line-height: 1.55;
-}
-
 .analyst-selection-chip {
   display: inline-flex;
   align-items: center;
@@ -437,14 +412,17 @@
 
 .analyst-source-pdf-toolbar {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: var(--space-3);
 }
 
 .analyst-source-pdf-chip-group {
   display: inline-flex;
+  flex: 1 1 340px;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.65rem;
 }
 
@@ -513,9 +491,12 @@
 
 .analyst-source-pdf-meta {
   display: flex;
+  flex: 1 1 320px;
   flex-wrap: wrap;
   gap: 0.45rem;
   align-items: center;
+  justify-content: flex-end;
+  margin-left: auto;
 }
 
 .analyst-source-view-toggle {
@@ -581,7 +562,7 @@
 
 .analyst-source-pdf-viewport.is-pdf-preview {
   overflow: hidden;
-  padding: 1rem;
+  padding: 0.35rem;
   background:
     linear-gradient(180deg, #edf2f9 0%, #e2e9f3 100%);
 }
@@ -589,7 +570,7 @@
 .analyst-source-pdf-frame-wrap {
   width: 100%;
   height: 100%;
-  border-radius: 20px;
+  border-radius: 18px;
   overflow: hidden;
   background: #ffffff;
   box-shadow:
@@ -1904,6 +1885,18 @@
   .analyst-dashboard-panel-header {
     flex-direction: column;
   }
+
+  .analyst-source-pdf-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .analyst-source-pdf-chip-group,
+  .analyst-source-pdf-meta {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    margin-left: 0;
+  }
 }
 
 @media (max-width: 760px) {
@@ -1932,11 +1925,6 @@
   .analyst-dashboard-meta-line,
   .analyst-final-section-head,
   .analyst-report-library-item {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .analyst-source-pdf-toolbar {
     flex-direction: column;
     align-items: stretch;
   }

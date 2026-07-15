@@ -315,7 +315,7 @@ export default function Dashboard() {
     if (!canPreviewPdf || !activeSourceDoc?.contentBase64) {
       return '';
     }
-    return `data:application/pdf;base64,${activeSourceDoc.contentBase64}#page=${sourceCurrentPage}&view=FitH`;
+    return `data:application/pdf;base64,${activeSourceDoc.contentBase64}#page=${sourceCurrentPage}&zoom=page-width&navpanes=0`;
   }, [activeSourceDoc?.contentBase64, canPreviewPdf, sourceCurrentPage]);
 
   const filteredReports = useMemo(() => {
@@ -1337,23 +1337,6 @@ export default function Dashboard() {
             <div className="analyst-inline-status analyst-inline-status-warning">
               Este PDF se guardo antes de activar la vista visual. Ahora mismo solo existe el texto extraido.
               Para ver fotos, sellos y maquetacion real, vuelve a subir ese PDF.
-            </div>
-          )}
-
-          {canPreviewPdf && sourceViewMode === 'pdf' && (
-            <div className="analyst-source-selection-helper">
-              <div>
-                <strong>Seleccion en PDF</strong>
-                <p>En la vista PDF del navegador no podemos capturar la seleccion para arrastrarla al informe. Usa "Texto extraido" para que aparezca la tarjeta de anadir y arrastrar.</p>
-              </div>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={() => setSourceViewMode('text')}
-              >
-                <ClipboardPlus size={16} />
-                Ir a Texto extraido
-              </button>
             </div>
           )}
 

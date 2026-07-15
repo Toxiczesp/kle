@@ -617,7 +617,7 @@ const server = createServer(async (req, res) => {
 
         const fetchWikiPromise = (async () => {
           try {
-            const searchUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(query)}&gsrlimit=40&prop=imageinfo&iiprop=url&format=json&origin=*`;
+            const searchUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(query)}&gsrlimit=40&prop=imageinfo&iiprop=url&iiurlwidth=500&format=json&origin=*`;
             const response = await fetch(searchUrl, {
               headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -631,15 +631,17 @@ const server = createServer(async (req, res) => {
               for (const id in pages) {
                 const page = pages[id];
                 const imageInfo = page.imageinfo?.[0];
-                if (imageInfo?.url) {
-                  const url = imageInfo.url;
-                  const lowerUrl = url.toLowerCase();
+                if (imageInfo) {
+                  const rawUrl = imageInfo.url || '';
+                  const thumbUrl = imageInfo.thumburl || rawUrl;
+                  const lowerUrl = rawUrl.toLowerCase();
                   // Skip video or document formats not renderable in <img>
                   if (lowerUrl.endsWith('.webm') || lowerUrl.endsWith('.ogv') || lowerUrl.endsWith('.pdf')) {
                     continue;
                   }
                   list.push({
-                    url,
+                    url: thumbUrl,
+                    originalUrl: rawUrl,
                     description: page.title 
                       ? page.title.replace(/^File:/, '').replace(/\.[^/.]+$/, "").replace(/_/g, ' ') 
                       : ''
@@ -689,6 +691,7 @@ const server = createServer(async (req, res) => {
         const addImage = (img, isTrustedSource) => {
           if (!img) return;
           const url = typeof img === 'string' ? img : img.url;
+          const originalUrl = typeof img === 'string' ? img : (img.originalUrl || img.url);
           const description = typeof img === 'string' ? '' : (img.description || '');
 
           if (!url || seenUrls.has(url)) return;
@@ -713,7 +716,7 @@ const server = createServer(async (req, res) => {
           // Curated images from Tavily/Yahoo/DuckDuckGo/Wiki are trusted
           if (isTrustedSource) {
             seenUrls.add(url);
-            collectedImages.push({ url, description });
+            collectedImages.push({ url, originalUrl, description });
             return;
           }
 
@@ -724,7 +727,7 @@ const server = createServer(async (req, res) => {
 
           if (matchesQuery) {
             seenUrls.add(url);
-            collectedImages.push({ url, description });
+            collectedImages.push({ url, originalUrl, description });
           }
         };
 

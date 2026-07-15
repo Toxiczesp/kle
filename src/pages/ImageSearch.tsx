@@ -17,6 +17,7 @@ import '../styles/workspace-image-search.css';
 
 interface ImageResult {
   url: string;
+  originalUrl?: string;
   description: string;
 }
 
@@ -127,7 +128,7 @@ export default function ImageSearch() {
   const downloadSelectedLocal = async () => {
     const urlsToDownload = Array.from(selected)
       .filter((idx) => !failedImages.has(idx))
-      .map((idx) => images[idx].url);
+      .map((idx) => images[idx].originalUrl || images[idx].url);
 
     if (urlsToDownload.length === 0) return;
 
